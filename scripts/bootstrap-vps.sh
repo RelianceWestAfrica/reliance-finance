@@ -103,7 +103,7 @@ fi
 echo ""
 echo "============================================================"
 echo "  Reliance Finance deploye !"
-echo "  URL : https://reliance.auxeoagency.com"
+echo "  URL : https://finances.rwa-core.com"
 echo "  (DNS peut prendre 5-15 min a se propager)"
 echo "============================================================"
 echo ""

@@ -8,9 +8,9 @@
 | IP publique | 76.13.61.238 |
 | OS | Ubuntu 24.04 LTS |
 | Reverse proxy | Traefik (pre-installe via template Hostinger) - reseau Docker `traefik`, SSL Let's Encrypt automatique |
-| URL prod | https://reliance.auxeoagency.com |
+| URL prod | https://finances.rwa-core.com |
 | Registry image | ghcr.io/reliancewestafrica/reliance-finance:latest |
-| DNS A record | `reliance.auxeoagency.com` -> 76.13.61.238 (configure via API Hostinger) |
+| DNS A record | `finances.rwa-core.com` -> 76.13.61.238 (a creer manuellement, voir section "Configuration DNS") |
 
 ## Architecture
 
@@ -61,9 +61,9 @@ Ce script :
 
 ### 4. Verifier le deploiement
 
-- Resolution DNS : `dig reliance.auxeoagency.com` doit renvoyer 76.13.61.238
-- HTTP : `curl -I https://reliance.auxeoagency.com` doit renvoyer 200
-- Login : ouvrir `https://reliance.auxeoagency.com/login`
+- Resolution DNS : `dig finances.rwa-core.com` doit renvoyer 76.13.61.238
+- HTTP : `curl -I https://finances.rwa-core.com` doit renvoyer 200
+- Login : ouvrir `https://finances.rwa-core.com/login`
   - Email : `admin@reliancewestafrica.com`
   - Mot de passe : `ChangeMe123!` **(a changer immediatement !)**
 
@@ -133,18 +133,40 @@ gpg -d /var/backups/reliance-finance/db-XXXXXX.sql.gz.gpg | gunzip | \
   docker compose -f docker-compose.prod.yml exec -T postgres psql -U reliance -d reliance_finance
 ```
 
-## Configurer un domaine reliancewestafrica.com (optionnel)
+## Configuration DNS (a faire avant le bootstrap)
 
-Le domaine `reliancewestafrica.com` n'est pas gere par le compte Hostinger
-courant. Pour pointer un sous-domaine dessus vers la prod :
+Le domaine `rwa-core.com` est dans un compte Hostinger dont l'API DNS
+n'est pas accessible depuis le token courant (scope restreint a
+`auxeoagency.com`). Le record doit etre cree manuellement.
 
-1. Chez le registrar de `reliancewestafrica.com` : ajouter un CNAME
-   - `finance` -> `reliance.auxeoagency.com.`
-2. Sur le VPS, mettre a jour `.env.production` :
-   - `APP_DOMAIN=finance.reliancewestafrica.com`
-   - `NEXT_PUBLIC_APP_URL=https://finance.reliancewestafrica.com`
+### Via le panel Hostinger
+1. Se connecter sur https://hpanel.hostinger.com
+2. Domains > rwa-core.com > DNS / Nameservers > Manage DNS records
+3. Add record :
+   - Type : `A`
+   - Name : `finances`
+   - Points to : `76.13.61.238`
+   - TTL : `3600`
+4. Save
+
+### Verification
+```bash
+dig +short finances.rwa-core.com   # doit renvoyer 76.13.61.238
+```
+
+La propagation prend 5-15 min apres creation. Une fois resolue, Traefik
+genere automatiquement le certificat Let's Encrypt au premier hit HTTPS.
+
+## Configurer un alias reliancewestafrica.com (optionnel, plus tard)
+
+`reliancewestafrica.com` est aussi dans le portefeuille mais DNS API non
+accessible. Pour ajouter un alias :
+
+1. Chez Hostinger (panel) : creer un CNAME
+   - `finance` -> `finances.rwa-core.com.`
+2. Sur le VPS, ajouter le host a `.env.production` via une regle Traefik
+   multi-host, ou changer `APP_DOMAIN`
 3. Restart : `docker compose -f docker-compose.prod.yml up -d web`
-4. Traefik genere automatiquement un nouveau certificat Let's Encrypt
 
 ## Securite
 
@@ -157,7 +179,7 @@ courant. Pour pointer un sous-domaine dessus vers la prod :
 
 ## Monitoring (a configurer en polish)
 
-- Uptime Kuma : ping sur `https://reliance.auxeoagency.com`
+- Uptime Kuma : ping sur `https://finances.rwa-core.com`
 - Sentry SDK : variable `SENTRY_DSN` dans `.env.production`
 - OpenTelemetry : `OTEL_EXPORTER_OTLP_ENDPOINT` pour traces
 
