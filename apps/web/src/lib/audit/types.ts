@@ -140,6 +140,16 @@ export const AuditAction = {
   SYSCOHADA_EXPORTED: 'accounting.syscohada_exported',
   ERP_WEBHOOK_SENT: 'accounting.erp_webhook_sent',
   ERP_WEBHOOK_FAILED: 'accounting.erp_webhook_failed',
+
+  // M13 Controle interne
+  CONTROL_CHECKS_RUN: 'control_checks.run',
+  ANOMALY_ASSIGNED: 'anomaly.assigned',
+  ANOMALY_INVESTIGATED: 'anomaly.investigated',
+  ANOMALY_FALSE_POSITIVE: 'anomaly.false_positive',
+  ANOMALY_SANCTION_REQUESTED: 'anomaly.sanction_requested',
+
+  // M14 Reporting / KPIs
+  KPI_SNAPSHOT_CAPTURED: 'kpi.snapshot.captured',
 } as const;
 
 export type AuditActionType = typeof AuditAction[keyof typeof AuditAction];

@@ -61,6 +61,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <a href="/accounting" className="hover:text-[var(--color-foreground)]">
                 Compta
               </a>
+              <a href="/anomalies" className="hover:text-[var(--color-foreground)]">
+                Anomalies
+              </a>
+              <a href="/reporting" className="hover:text-[var(--color-foreground)]">
+                Reporting
+              </a>
               <a href="/audit" className="hover:text-[var(--color-foreground)]">
                 Audit
               </a>
