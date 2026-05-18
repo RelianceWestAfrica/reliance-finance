@@ -150,6 +150,13 @@ export const AuditAction = {
 
   // M14 Reporting / KPIs
   KPI_SNAPSHOT_CAPTURED: 'kpi.snapshot.captured',
+
+  // M11 Cash forecast 13 semaines
+  CASH_FORECAST_CREATED: 'cash_forecast.created',
+  CASH_FORECAST_UPDATED: 'cash_forecast.updated',
+  CASH_FORECAST_LINE_ADDED: 'cash_forecast.line_added',
+  CASH_FORECAST_COMMITTED: 'cash_forecast.committed',
+  CASH_RUPTURE_DETECTED: 'cash_forecast.rupture_detected',
 } as const;
 
 export type AuditActionType = typeof AuditAction[keyof typeof AuditAction];
