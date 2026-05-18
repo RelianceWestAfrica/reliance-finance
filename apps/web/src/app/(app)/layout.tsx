@@ -49,9 +49,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <a href="/purchase-orders" className="hover:text-[var(--color-foreground)]">
                 BC
               </a>
-              <span className="cursor-not-allowed opacity-50" title="Disponible en session M8">
+              <a href="/receptions" className="hover:text-[var(--color-foreground)]">
+                PV
+              </a>
+              <a href="/invoices" className="hover:text-[var(--color-foreground)]">
                 Factures
-              </span>
+              </a>
               <span className="cursor-not-allowed opacity-50" title="Disponible en session M10">
                 Paiements
               </span>

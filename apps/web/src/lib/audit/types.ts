@@ -91,6 +91,29 @@ export const AuditAction = {
   PAYMENT_EXECUTED: 'payment.executed',
   BANK_ACCOUNT_CHANGE_REQUESTED: 'bank_account_change.requested',
   BANK_ACCOUNT_CHANGE_APPROVED: 'bank_account_change.approved',
+
+  // M7 Reception (PV)
+  RECEPTION_CREATED: 'reception.created',
+  RECEPTION_UPDATED: 'reception.updated',
+  RECEPTION_ITEM_ADDED: 'reception.item_added',
+  RECEPTION_SIGNED_OPS: 'reception.signed_ops',
+  RECEPTION_SIGNED_TECH: 'reception.signed_tech',
+  RECEPTION_SIGNED_FINANCE: 'reception.signed_finance',
+  RECEPTION_FINALIZED: 'reception.finalized',
+  RECEPTION_REJECTED: 'reception.rejected',
+
+  // M8 Invoice + 3-way match
+  INVOICE_CREATED: 'invoice.created',
+  INVOICE_UPDATED: 'invoice.updated',
+  INVOICE_LINE_ADDED: 'invoice.line_added',
+  INVOICE_LINE_REMOVED: 'invoice.line_removed',
+  INVOICE_THREE_WAY_MATCH_RUN: 'invoice.three_way_match.run',
+  INVOICE_THREE_WAY_MATCH_OK: 'invoice.three_way_match.ok',
+  INVOICE_THREE_WAY_MATCH_KO: 'invoice.three_way_match.ko',
+  INVOICE_APPROVED: 'invoice.approved',
+  INVOICE_DISPUTED: 'invoice.disputed',
+  INVOICE_PAID: 'invoice.paid',
+  CREDIT_NOTE_CREATED: 'credit_note.created',
 } as const;
 
 export type AuditActionType = typeof AuditAction[keyof typeof AuditAction];
