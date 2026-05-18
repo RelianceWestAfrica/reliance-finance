@@ -114,6 +114,19 @@ export const AuditAction = {
   INVOICE_DISPUTED: 'invoice.disputed',
   INVOICE_PAID: 'invoice.paid',
   CREDIT_NOTE_CREATED: 'credit_note.created',
+
+  // M10 Treasury / Payments
+  PAYMENT_CREATED: 'payment.created',
+  PAYMENT_ANTI_FRAUD_PASSED: 'payment.anti_fraud.passed',
+  PAYMENT_ANTI_FRAUD_BLOCKED: 'payment.anti_fraud.blocked',
+  PAYMENT_SIGNED: 'payment.signed',
+  PAYMENT_SCHEDULED: 'payment.scheduled',
+  PAYMENT_EXECUTION_ATTEMPTED: 'payment.execution.attempted',
+  PAYMENT_EXECUTION_BLOCKED: 'payment.execution.blocked',
+  PAYMENT_RECONCILED: 'payment.reconciled',
+  PAYMENT_FAILED: 'payment.failed',
+  PAYMENT_CANCELLED: 'payment.cancelled',
+  PAYMENT_RATE_LIMITED: 'payment.rate_limited',
 } as const;
 
 export type AuditActionType = typeof AuditAction[keyof typeof AuditAction];
