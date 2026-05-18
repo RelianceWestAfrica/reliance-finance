@@ -39,6 +39,21 @@ export const AuditAction = {
   CHART_ACCOUNT_TOGGLED: 'chart_account.toggled',
   USER_PREFERENCES_UPDATED: 'user.preferences.updated',
 
+  // M3 Suppliers + anti-fraude RIB
+  SUPPLIER_CREATED: 'supplier.created',
+  SUPPLIER_UPDATED: 'supplier.updated',
+  SUPPLIER_ARCHIVED: 'supplier.archived',
+  SUPPLIER_SENSITIVITY_CHANGED: 'supplier.sensitivity_changed',
+  BANK_ACCOUNT_CREATED: 'bank_account.created',
+  BANK_ACCOUNT_VERIFIED: 'bank_account.verified',
+  BANK_ACCOUNT_DEACTIVATED: 'bank_account.deactivated',
+  BANK_ACCOUNT_CHANGE_APPROVED_1: 'bank_account_change.approved_1',
+  BANK_ACCOUNT_CHANGE_APPROVED_2: 'bank_account_change.approved_2',
+  BANK_ACCOUNT_CHANGE_REJECTED: 'bank_account_change.rejected',
+  BANK_ACCOUNT_CHANGE_ACTIVATED: 'bank_account_change.activated',
+  ANOMALY_DETECTED: 'anomaly.detected',
+  ANOMALY_RESOLVED: 'anomaly.resolved',
+
   // Future modules (placeholder)
   EXPENSE_REQUEST_CREATED: 'expense_request.created',
   EXPENSE_REQUEST_SUBMITTED: 'expense_request.submitted',

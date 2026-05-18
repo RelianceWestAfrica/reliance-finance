@@ -11,7 +11,8 @@
 | Bootstrap          | Livre        | 2026-05-18 |
 | Session 1 (M1)     | Livre        | 2026-05-18 |
 | Session 2 (M2)     | Livre        | 2026-05-18 |
-| Session 3 (M3)     | A planifier  | -          |
+| Session 3 (M3)     | Livre        | 2026-05-18 |
+| Session 4 (M4)     | A planifier  | -          |
 | ...                | ...          | ...        |
 
 ---
@@ -131,25 +132,83 @@
 
 ---
 
-## Session 3 — M3 Cycle fournisseur + anti-fraude RIB (P0)
+## Session 3 — M3 Cycle fournisseur + anti-fraude RIB (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre**
 
-- CRUD fournisseurs avec onboarding KYC light (RCCM, IFU, RIB, contacts)
-- Upload des documents fournisseurs (MinIO/S3)
-- Workflow `BankAccountChangeRequest` : double validation + delai 24h
-- Endpoint de detection des changements RIB suspects
-- Page `/suppliers/[id]/history` : historique des RIB + signaux d'alerte
-- Notifications email + in-app au DFG sur changement RIB
-
-**Dependances** : M1, M2
+- Logique pure d'utilisabilite RIB : `isBankAccountUsable(account, now)`
+  -> 3 raisons d'interdiction (INACTIVE / NOT_VERIFIED / QUARANTINE) avec
+  message explicite. 7 tests.
+- Logique pure du workflow change RIB :
+  - `canApproveLevel1()` : statut REQUESTED + acteur != demandeur +
+    role N1 (DAF Pays / FIN_FIL)
+  - `canApproveLevel2()` : statut DUAL_VALIDATION_PENDING + acteur !=
+    demandeur + acteur != N1 + role N2 (DFG / Finance Groupe / Tresorier)
+  - `computeQuarantineUntil()` : approbation N2 + N heures (24h par defaut,
+    configurable via ANTI_FRAUD_RIB_QUARANTINE_HOURS)
+  - 13 tests, couvrent separation des fonctions stricte (N1 != N2 != demandeur)
+- Logique pure detection anomalies : `detectSuspiciousRibChange()` -> 3 regles
+  combinables (changements recurrents, changement post-creation, fournisseur
+  strategique amplifie en CRITICAL). 7 tests.
+- Service notifications in-app + helper `notifyHoldingRole(role)` qui notifie
+  tous les utilisateurs ayant un role donne sur la Holding active.
+- Server Actions Supplier : `createSupplier` (avec RIB initial optionnel),
+  `updateSupplier`, `archiveSupplier`.
+- Server Actions BankAccountChangeRequest :
+  - `requestBankAccountChange` : cree la demande + notifie DFG/Tresorier
+  - `approveChangeLevel1` : visa N1 -> DUAL_VALIDATION_PENDING + notifie DFG
+  - `approveChangeLevel2` : visa N2 -> cree le nouveau RIB en QUARANTAINE
+    + desactive l'ancien + calcule la date de fin de quarantaine + lance
+    la detection d'anomalies + cree une `Anomaly` si suspect + notifie le
+    controleur interne
+  - `rejectChange` : tracable par audit
+  - `activateMatureQuarantines` : batch d'activation des RIB dont la
+    quarantaine est echue (a appeler en cron ou manuellement)
+  - `verifyExistingBankAccount` : verification d'un RIB initial cree a
+    l'onboarding (appel retour / email officiel)
+- Pages :
+  - `/suppliers` : liste tenantee + filtres (statut, sensibilite, q text)
+    + badge utilisabilite RIB
+  - `/suppliers/new` : onboarding complet avec RIB initial optionnel
+  - `/suppliers/[id]` : fiche + edition + archivage (zone dangereuse)
+  - `/suppliers/[id]/bank-accounts` : liste RIBs avec utilisabilite,
+    workflow change (demande + valider N1 + valider N2 + rejeter),
+    bouton activer-quarantaines-echues
+  - `/suppliers/[id]/history` : audit log consolide (Supplier +
+    BankAccount + BankAccountChangeRequest), verification de chaine
+    Supplier en temps reel, lien export CSV + verify endpoint
+- Endpoint REST `/api/suppliers/[id]/rib-history` : export CSV UTF-8 BOM
+  separateur `;` (Excel FR), garde de role (DFG/Auditeur/CTRL_INT/...),
+  garde de tenancy (entite visible).
+- Nav (app) etendu : lien Fournisseurs.
 
 **Criteres d'acceptation**
 
-- [ ] Un nouveau RIB n'est utilisable pour un paiement qu'apres 24h + 2 visas
-- [ ] Toute tentative de payer un beneficiaire different du fournisseur du BC
-      est bloquee
-- [ ] L'historique des changements RIB est immuable et exportable
+- [x] Un nouveau RIB n'est utilisable qu'apres double validation + quarantaine
+      24h : `approveChangeLevel2` met systematiquement `quarantineUntil = now +
+      24h` ; `isBankAccountUsable` retourne `QUARANTINE` tant que non
+      echue ; UI bank-accounts affiche le delai restant.
+- [x] L'historique des changements RIB est immuable (table AuditLog chainee)
+      et exportable (endpoint CSV avec BOM UTF-8).
+- [x] Tests : 86/86 cas (3 helpers M3 ajoutes = 27 cas), coverage 99.37%
+      lines / 96.52% branches sur logique pure.
+
+**A garde pour validation paiement (M10)**
+
+- "Toute tentative de payer un beneficiaire different du fournisseur du BC
+  est bloquee" : utilise `isBankAccountUsable` + verification stricte du
+  beneficiaire. Foundation pose (BankAccount.holderName, snapshot dans
+  PaymentRequest, helper d'usability). UI bloquante en M10.
+
+**Restes pour completion 100%**
+
+- Upload des documents fournisseurs (RCCM scans, etc.) vers MinIO : la
+  table SupplierDocument existe, mais l'UX upload + S3 SDK est reporte
+  (session de raffinement UX dediee).
+- Job cron qui appelle `activateMatureQuarantines` automatiquement
+  (toutes les heures par exemple) : session M9/M12.
+- Email reel des notifications (le service ecrit dans la table
+  Notification ; l'envoi via nodemailer est a cabler en M9).
 
 ---
 

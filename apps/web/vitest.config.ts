@@ -29,6 +29,9 @@ export default defineConfig({
         'src/lib/audit/log.ts',
         'src/lib/audit/types.ts',
         'src/lib/thresholds/resolve.ts',
+        'src/lib/bank-accounts/usability.ts',
+        'src/lib/bank-accounts/change-validation.ts',
+        'src/lib/bank-accounts/anomaly-detection.ts',
       ],
       exclude: ['**/*.test.ts', '**/*.spec.ts', '**/*.d.ts'],
       thresholds: {
