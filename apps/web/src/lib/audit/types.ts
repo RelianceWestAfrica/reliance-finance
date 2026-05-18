@@ -127,6 +127,19 @@ export const AuditAction = {
   PAYMENT_FAILED: 'payment.failed',
   PAYMENT_CANCELLED: 'payment.cancelled',
   PAYMENT_RATE_LIMITED: 'payment.rate_limited',
+
+  // M12 Comptabilite + export SYSCOHADA / FEC
+  JOURNAL_ENTRY_CREATED: 'journal_entry.created',
+  JOURNAL_ENTRY_POSTED: 'journal_entry.posted',
+  JOURNAL_ENTRY_REVERSED: 'journal_entry.reversed',
+  JOURNAL_ENTRY_ARCHIVED: 'journal_entry.archived',
+  ACCOUNTING_PERIOD_OPENED: 'accounting_period.opened',
+  ACCOUNTING_PERIOD_CLOSED: 'accounting_period.closed',
+  ACCOUNTING_PERIOD_REOPENED: 'accounting_period.reopened',
+  FEC_EXPORTED: 'accounting.fec_exported',
+  SYSCOHADA_EXPORTED: 'accounting.syscohada_exported',
+  ERP_WEBHOOK_SENT: 'accounting.erp_webhook_sent',
+  ERP_WEBHOOK_FAILED: 'accounting.erp_webhook_failed',
 } as const;
 
 export type AuditActionType = typeof AuditAction[keyof typeof AuditAction];
