@@ -1,65 +1,183 @@
-# Deploiement - Reliance Finance
+# Deploiement Reliance Finance - VPS Hostinger
 
-> Document a etoffer en session 12. Cette ebauche fixe les choix structurants.
+## Infrastructure
 
-## Cible
+| Composant | Detail |
+| --------- | ------ |
+| VPS | Hostinger KVM 2 (2 CPU / 8 GB RAM / 100 GB disk) - srv1563947.hstgr.cloud |
+| IP publique | 76.13.61.238 |
+| OS | Ubuntu 24.04 LTS |
+| Reverse proxy | Traefik (pre-installe via template Hostinger) - reseau Docker `traefik`, SSL Let's Encrypt automatique |
+| URL prod | https://reliance.auxeoagency.com |
+| Registry image | ghcr.io/reliancewestafrica/reliance-finance:latest |
+| DNS A record | `reliance.auxeoagency.com` -> 76.13.61.238 (configure via API Hostinger) |
 
-- **Production** : VPS Hostinger (Ubuntu LTS) provisionne par
-  `scripts/provision-vps.sh` (a livrer)
-- **Staging** : optionnel, second VPS ou container compose isole
-- **Dev**     : docker-compose.yml (cf. README)
+## Architecture
 
-## Stack runtime (prod)
+```
+Internet -> Traefik (80/443) -> Reliance Finance container :3000
+                                      |
+                                      +-> Postgres 16 (internal network)
+                                      +-> MinIO S3 (internal network)
+                                      +-> SMTP Hostinger (port 587)
+```
 
-- Docker + docker-compose v2
-- Caddy 2 (reverse proxy + TLS Let's Encrypt + HTTP/3)
-- PostgreSQL 16 (containerise pour MVP, externalise vers Hostinger Postgres pour scale)
-- MinIO ou S3 Hostinger (a evaluer cout/perf)
-- Node 22 LTS (image runtime alpine)
+## Premier deploiement (one-shot)
 
-## Secrets
+### 1. Obtenir un PAT GitHub (lecture seule sur le repo)
 
-- En clair dans le VPS : `/etc/reliance-finance/.env` (chmod 600, owner deploy user)
-- En clair dans GitHub Actions : secrets (`AUTH_SECRET`, `DATABASE_URL`, `SSH_PRIVATE_KEY`)
-- **Aucun secret committe** (cf. `.gitignore`)
-- Rotation reguliere (90 jours) documentee
+GitHub > Settings > Developer settings > Personal access tokens > Fine-grained
+- Scope : `Contents: Read-only` sur `RelianceWestAfrica/reliance-finance`
+- Note : nomme-le `reliance-vps-pull`
 
-## Pipeline CI/CD
+### 2. SSH dans le VPS
 
-`.github/workflows/deploy.yml` (a livrer) :
+```bash
+ssh root@76.13.61.238
+```
 
-1. Trigger : push sur `main`
-2. Steps :
-   - Checkout
-   - Setup Node + pnpm
-   - `pnpm install --frozen-lockfile`
-   - `pnpm typecheck`
-   - `pnpm lint`
-   - `pnpm build`
-   - `pnpm test` (si tests presents)
-   - Build image Docker (multi-stage)
-   - Push vers GHCR (`ghcr.io/reliancewestafrica/reliance-finance:sha`)
-   - SSH deploy : `ssh deploy@vps "cd /srv/reliance-finance && ./deploy.sh ${SHA}"`
+### 3. Lancer le bootstrap script
 
-## Backups
+```bash
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxx
+curl -fsSL https://raw.githubusercontent.com/RelianceWestAfrica/reliance-finance/main/scripts/bootstrap-vps.sh | bash
+```
 
-`scripts/backup.sh` (a livrer) :
+Si le repo est prive, le `curl` echouera. Alternative :
 
-- `pg_dump` quotidien -> `/srv/backups/db-$(date).sql.gz.gpg`
-- Chiffrement GPG (cle publique en clair, prive ailleurs)
-- Rotation 30 jours locale + sync vers Hostinger Object Storage
-- Test de restauration mensuel obligatoire
+```bash
+git clone https://x-access-token:${GITHUB_TOKEN}@github.com/RelianceWestAfrica/reliance-finance.git /opt/reliance-finance
+cd /opt/reliance-finance
+bash scripts/bootstrap-vps.sh
+```
 
-## Monitoring
+Ce script :
+- Verifie Docker + Traefik OK
+- Clone le repo dans `/opt/reliance-finance`
+- Cree `.env.production` (te demande de remplir les secrets)
+- Pull l'image GHCR + lance le compose
+- Applique les migrations Prisma
+- Propose de seeder (admin + plan SYSCOHADA)
 
-- `/health` (lite) + `/ready` (DB + S3 + SMTP) endpoints
-- Sentry SDK pour erreurs runtime
-- Uptime Kuma externalise pour pings
+### 4. Verifier le deploiement
 
-## Rollback
+- Resolution DNS : `dig reliance.auxeoagency.com` doit renvoyer 76.13.61.238
+- HTTP : `curl -I https://reliance.auxeoagency.com` doit renvoyer 200
+- Login : ouvrir `https://reliance.auxeoagency.com/login`
+  - Email : `admin@reliancewestafrica.com`
+  - Mot de passe : `ChangeMe123!` **(a changer immediatement !)**
 
-- `./deploy.sh` garde les 3 dernieres images
-- `./rollback.sh ${PREVIOUS_SHA}` en cas de probleme
-- Tag git `prod-rollback-YYYY-MM-DD` cree automatiquement
+## CI/CD automatique (deploiements suivants)
 
-A detailler en session 12.
+### Setup unique des GitHub Secrets
+
+GitHub > Settings > Secrets and variables > Actions > New repository secret :
+
+| Secret | Valeur |
+| ------ | ------ |
+| `VPS_HOST` | `76.13.61.238` |
+| `VPS_USER` | `root` |
+| `VPS_SSH_KEY` | contenu de la cle privee SSH (correspond a `claude-auxeo` deja attachee) |
+
+### Workflow
+
+Chaque `git push` sur `main` declenche `.github/workflows/deploy.yml` :
+1. Tests + typecheck + lint (sinon abort)
+2. Build de l'image Docker multi-stage
+3. Push vers `ghcr.io/reliancewestafrica/reliance-finance:sha-XXXXXX` + `latest`
+4. SSH sur le VPS : pull + restart container `web` (zero downtime via Traefik)
+5. Healthcheck Postgres
+6. Prune des images obsoletes
+
+## Operations courantes
+
+### Logs
+
+```bash
+ssh root@76.13.61.238 'docker compose -f /opt/reliance-finance/docker-compose.prod.yml logs -f --tail=100 web'
+```
+
+### Rollback rapide
+
+```bash
+ssh root@76.13.61.238 'cd /opt/reliance-finance && echo "IMAGE_TAG=sha-XXXXXX" > .env.runtime && docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml up -d --no-deps web'
+```
+
+### Migrations manuelles
+
+```bash
+ssh root@76.13.61.238 'cd /opt/reliance-finance && docker compose --env-file .env.production -f docker-compose.prod.yml exec web npx prisma migrate deploy --schema=/app/packages/database/prisma/schema.prisma'
+```
+
+### Backups
+
+Configurer cron sur le VPS :
+
+```bash
+sudo crontab -e
+# Ajoute :
+0 3 * * * /opt/reliance-finance/scripts/backup.sh >> /var/log/reliance-backup.log 2>&1
+```
+
+Generer une cle GPG pour chiffrer les backups :
+
+```bash
+gpg --quick-generate-key admin@reliancewestafrica.com
+export BACKUP_GPG_RECIPIENT=admin@reliancewestafrica.com
+```
+
+Restauration :
+
+```bash
+gpg -d /var/backups/reliance-finance/db-XXXXXX.sql.gz.gpg | gunzip | \
+  docker compose -f docker-compose.prod.yml exec -T postgres psql -U reliance -d reliance_finance
+```
+
+## Configurer un domaine reliancewestafrica.com (optionnel)
+
+Le domaine `reliancewestafrica.com` n'est pas gere par le compte Hostinger
+courant. Pour pointer un sous-domaine dessus vers la prod :
+
+1. Chez le registrar de `reliancewestafrica.com` : ajouter un CNAME
+   - `finance` -> `reliance.auxeoagency.com.`
+2. Sur le VPS, mettre a jour `.env.production` :
+   - `APP_DOMAIN=finance.reliancewestafrica.com`
+   - `NEXT_PUBLIC_APP_URL=https://finance.reliancewestafrica.com`
+3. Restart : `docker compose -f docker-compose.prod.yml up -d web`
+4. Traefik genere automatiquement un nouveau certificat Let's Encrypt
+
+## Securite
+
+- Mot de passe admin par defaut a changer **immediatement** au premier login
+- Cle GPG des backups stockee hors VPS
+- Rotation trimestrielle des secrets `.env.production` (genere via openssl)
+- Audit log chaine SHA-256 active depuis l'application (cf. M1 ADR 0001 §2.6)
+- Headers HSTS / X-Frame-Options / CSP configures dans `next.config.ts`
+- Firewall VPS : seuls ports 22 / 80 / 443 / ICMP autorises
+
+## Monitoring (a configurer en polish)
+
+- Uptime Kuma : ping sur `https://reliance.auxeoagency.com`
+- Sentry SDK : variable `SENTRY_DSN` dans `.env.production`
+- OpenTelemetry : `OTEL_EXPORTER_OTLP_ENDPOINT` pour traces
+
+## Couts mensuels
+
+| Item | Cout |
+| ---- | ---- |
+| VPS KVM 2 | 21,49 EUR (deja paye, non-incremental) |
+| Domaine `auxeoagency.com` | 14,30 EUR / an (deja paye) |
+| Hostinger Email | 15,90 EUR / an (deja paye) |
+| GitHub Container Registry | gratuit |
+| Let's Encrypt | gratuit |
+| **Total marginal pour Reliance Finance** | **0 EUR/mois** |
+
+## Limites connues (sessions polish)
+
+- Le repo est prive : il faut un PAT GitHub avec scope `read:packages` pour pull
+  l'image GHCR sur le VPS
+- Image GHCR initialement privee : si echec login, rendre publique via GitHub
+  ou ajouter le secret GHCR_TOKEN dans le workflow
+- Pas de Redis pour le rate limiting (in-memory single process pour l'instant)
+- Pas de monitoring externe configure (Uptime Kuma a deployer separement)
+- Pas de WAF / CloudFlare devant Traefik

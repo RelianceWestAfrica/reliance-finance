@@ -1,0 +1,108 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    name: Tests + Lint + Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+  build:
+    name: Build & Push image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short
+
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to VPS
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: SSH deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -euo pipefail
+            cd /opt/reliance-finance
+            echo "IMAGE_TAG=sha-${GITHUB_SHA::7}" > .env.runtime
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml pull web
+            docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml up -d --no-deps web
+            docker compose -f docker-compose.prod.yml exec -T web node -e "require('@reliance-finance/database').prisma.\$queryRaw\`SELECT 1\`.then(() => console.log('DB OK')).catch(e => { console.error(e); process.exit(1) })"
+            docker image prune -f
+        env:
+          GITHUB_SHA: ${{ github.sha }}

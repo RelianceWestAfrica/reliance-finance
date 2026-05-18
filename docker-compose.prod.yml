@@ -1,0 +1,136 @@
+# =============================================================================
+# Reliance Finance - Stack production (VPS Hostinger + Traefik)
+# =============================================================================
+# Prerequis sur le VPS :
+#   - Docker + docker-compose v2
+#   - Traefik deja en route sur le reseau `traefik` (provient du template
+#     Hostinger "Ubuntu 24.04 with Docker and Traefik")
+#   - Reseau Docker externe `traefik` cree par le template
+#
+# Demarrage :
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d
+#
+# Logs :
+#   docker compose -f docker-compose.prod.yml logs -f web
+#
+# Migrations :
+#   docker compose -f docker-compose.prod.yml exec web pnpm db:migrate:deploy
+# =============================================================================
+
+name: reliance-finance
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: reliance-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-reliance}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-reliance_finance}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C.UTF-8 --lc-ctype=C.UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reliance} -d ${POSTGRES_DB:-reliance_finance}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: reliance-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: reliance-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+      mc mb --ignore-existing local/reliance-finance-attachments &&
+      mc anonymous set download local/reliance-finance-attachments &&
+      echo 'MinIO bucket ready' && exit 0
+      "
+    networks:
+      - internal
+    restart: "no"
+
+  web:
+    image: ghcr.io/reliancewestafrica/reliance-finance:${IMAGE_TAG:-latest}
+    container_name: reliance-web
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-reliance}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-reliance_finance}?schema=public&connection_limit=10
+      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_TRUST_HOST: "true"
+      AUTH_SESSION_MAX_AGE_SECONDS: ${AUTH_SESSION_MAX_AGE_SECONDS:-900}
+      EMAIL_SERVER_HOST: ${EMAIL_SERVER_HOST}
+      EMAIL_SERVER_PORT: ${EMAIL_SERVER_PORT:-587}
+      EMAIL_SERVER_USER: ${EMAIL_SERVER_USER}
+      EMAIL_SERVER_PASSWORD: ${EMAIL_SERVER_PASSWORD}
+      EMAIL_FROM: ${EMAIL_FROM}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+      S3_BUCKET: reliance-finance-attachments
+      S3_FORCE_PATH_STYLE: "true"
+      NEXT_PUBLIC_APP_URL: https://${APP_DOMAIN}
+      NEXT_PUBLIC_APP_NAME: "Reliance Finance"
+      NEXT_PUBLIC_DEFAULT_TIMEZONE: Africa/Lome
+      NEXT_PUBLIC_DEFAULT_CURRENCY: XOF
+      ANTI_FRAUD_RIB_QUARANTINE_HOURS: ${ANTI_FRAUD_RIB_QUARANTINE_HOURS:-24}
+      AUDIT_RETENTION_YEARS: 10
+    networks:
+      - internal
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      # HTTPS router avec resolveur Let's Encrypt
+      - "traefik.http.routers.reliance-web.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.reliance-web.entrypoints=websecure"
+      - "traefik.http.routers.reliance-web.tls=true"
+      - "traefik.http.routers.reliance-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.reliance-web.loadbalancer.server.port=3000"
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.reliance-web-http.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.reliance-web-http.entrypoints=web"
+      - "traefik.http.routers.reliance-web-http.middlewares=reliance-https-redirect"
+      - "traefik.http.middlewares.reliance-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.reliance-https-redirect.redirectscheme.permanent=true"
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge
+  traefik:
+    external: true
