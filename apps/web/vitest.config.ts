@@ -24,9 +24,11 @@ export default defineConfig({
       include: [
         'src/lib/tenancy/filter.ts',
         'src/lib/tenancy/models.ts',
+        'src/lib/tenancy/expand.ts',
         'src/lib/audit/hash.ts',
         'src/lib/audit/log.ts',
         'src/lib/audit/types.ts',
+        'src/lib/thresholds/resolve.ts',
       ],
       exclude: ['**/*.test.ts', '**/*.spec.ts', '**/*.d.ts'],
       thresholds: {

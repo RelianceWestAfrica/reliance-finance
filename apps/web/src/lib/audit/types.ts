@@ -21,6 +21,24 @@ export const AuditAction = {
   MEMBERSHIP_ADDED: 'rbac.membership.added',
   MEMBERSHIP_REVOKED: 'rbac.membership.revoked',
 
+  // M2 Referentiel
+  ENTITY_CREATED: 'entity.created',
+  ENTITY_UPDATED: 'entity.updated',
+  ENTITY_ARCHIVED: 'entity.archived',
+  PROJECT_CREATED: 'project.created',
+  PROJECT_UPDATED: 'project.updated',
+  PROJECT_ARCHIVED: 'project.archived',
+  COST_CENTER_CREATED: 'cost_center.created',
+  COST_CENTER_UPDATED: 'cost_center.updated',
+  COST_CENTER_ARCHIVED: 'cost_center.archived',
+  THRESHOLD_CREATED: 'threshold.created',
+  THRESHOLD_REPLACED: 'threshold.replaced',
+  THRESHOLD_DEACTIVATED: 'threshold.deactivated',
+  CHART_ACCOUNT_CREATED: 'chart_account.created',
+  CHART_ACCOUNT_UPDATED: 'chart_account.updated',
+  CHART_ACCOUNT_TOGGLED: 'chart_account.toggled',
+  USER_PREFERENCES_UPDATED: 'user.preferences.updated',
+
   // Future modules (placeholder)
   EXPENSE_REQUEST_CREATED: 'expense_request.created',
   EXPENSE_REQUEST_SUBMITTED: 'expense_request.submitted',

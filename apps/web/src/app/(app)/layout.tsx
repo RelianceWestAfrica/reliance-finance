@@ -58,6 +58,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <a href="/settings/users" className="hover:text-[var(--color-foreground)]">
                 Parametres
               </a>
+              <a href="/profile" className="hover:text-[var(--color-foreground)]">
+                Profil
+              </a>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">

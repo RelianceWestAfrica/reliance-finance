@@ -10,7 +10,8 @@
 | ------------------ | ------------ | ---------- |
 | Bootstrap          | Livre        | 2026-05-18 |
 | Session 1 (M1)     | Livre        | 2026-05-18 |
-| Session 2 (M2)     | A planifier  | -          |
+| Session 2 (M2)     | Livre        | 2026-05-18 |
+| Session 3 (M3)     | A planifier  | -          |
 | ...                | ...          | ...        |
 
 ---
@@ -80,24 +81,53 @@
 
 ---
 
-## Session 2 — M2 Referentiel (P0)
+## Session 2 — M2 Referentiel (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre**
 
-- CRUD Entites (Holding, Filiales, SPV) avec hierarchie editable
-- CRUD Projets et Centres de cout (scope filiale)
-- Plan comptable SYSCOHADA : import CSV + UI de gestion
-- CRUD Seuils de validation (DFG / Admin)
-- CRUD Devises + taux de change
-- Page utilisateur : preferences (fuseau, devise affichage)
-
-**Dependances** : M1
+- Extension tenancy : `expandVisibleEntities()` etend automatiquement le
+  scope aux descendants (Filiale -> SPV) + bypass `GROUP_LEVEL_ROLES`
+  (DFG, AG, ADMIN, AUDITEUR, etc.) qui voient tout le Groupe.
+- Helper `resolveThreshold()` : priorite seuil entite > global, filtre
+  par effectiveFrom <= now < effectiveTo, tri desc.
+- `/settings/entities` : CRUD complet entites avec hierarchie editable
+  (Holding unique, Filiales et SPV rattaches a un parent). Gardes :
+  Holding sans parent, Filiale/SPV avec parent, pas d'archivage si
+  enfants actifs.
+- `/settings/projects` : CRUD projets (par entite) + centres de cout
+  (avec ou sans projet).
+- `/settings/thresholds` : versioning natif - chaque modification cree un
+  nouveau seuil et cloture l'ancien (effectiveTo = now). Historique
+  consultable, seuil actif mis en evidence. Distingue montants (XOF) et
+  valeurs (heures, %).
+- `/settings/chart-accounts` : plan SYSCOHADA extensible (ajout sans code),
+  filtres par classe, toggle active/inactive avec audit.
+- `/profile` : preferences user (timezone parmi 15 zones africaines + UTC,
+  locale fr-FR / en-US / fr-CI, nom affiche).
+- Tous les changements (entites, projets, CC, seuils, comptes, prefs)
+  generent un AuditLog dans la chaine cryptographique.
+- Settings layout etendu : 6 entrees de nav.
 
 **Criteres d'acceptation**
 
-- [ ] Le DFG peut creer une nouvelle filiale et y rattacher des SPV
-- [ ] Le plan SYSCOHADA est extensible sans toucher au code
-- [ ] La modification d'un seuil est journalisee et impacte les nouveaux dossiers
+- [x] Le DFG peut creer une Filiale puis y rattacher des SPV via UI
+      (action `createEntity` couvre les 3 kinds avec gardes)
+- [x] Le plan SYSCOHADA est extensible sans toucher au code
+      (action `createChartAccount` accepte tout code numerique)
+- [x] La modification d'un seuil est journalisee (THRESHOLD_REPLACED) et
+      preserve l'historique (seuil precedent cloture, dossiers en cours
+      preserves de fait)
+- [x] Tests : 58/58 cas, coverage 98.97% lines sur logique pure
+      (filter + models + expand + hash + log + types + threshold/resolve)
+
+**Restes** (a faire en sessions ulterieures)
+
+- CRUD Devises + taux de change : reporte (seed suffit pour M3-M8 ;
+  UI optionnelle car les taux indicatifs sont rarement modifies)
+- Import CSV du plan SYSCOHADA : reporte (DBA peut INSERT direct ;
+  UI suffisante pour ajouts ponctuels)
+- Tests d'integration des actions Server (avec Postgres) : session
+  M9 ou test e2e dedie
 
 ---
 

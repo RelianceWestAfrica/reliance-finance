@@ -31,7 +31,31 @@ export default async function SettingsLayout({ children }: { children: React.Rea
             href="/settings/memberships"
             className="block rounded-md px-3 py-2 hover:bg-[var(--color-muted)]"
           >
-            Roles & entites
+            Roles
+          </Link>
+          <Link
+            href="/settings/entities"
+            className="block rounded-md px-3 py-2 hover:bg-[var(--color-muted)]"
+          >
+            Entites
+          </Link>
+          <Link
+            href="/settings/projects"
+            className="block rounded-md px-3 py-2 hover:bg-[var(--color-muted)]"
+          >
+            Projets &amp; centres de cout
+          </Link>
+          <Link
+            href="/settings/thresholds"
+            className="block rounded-md px-3 py-2 hover:bg-[var(--color-muted)]"
+          >
+            Seuils
+          </Link>
+          <Link
+            href="/settings/chart-accounts"
+            className="block rounded-md px-3 py-2 hover:bg-[var(--color-muted)]"
+          >
+            Plan SYSCOHADA
           </Link>
         </nav>
       </aside>

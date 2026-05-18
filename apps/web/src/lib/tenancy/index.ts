@@ -17,10 +17,16 @@ import { prisma } from '@reliance-finance/database';
 import { auth } from '@/lib/auth';
 import { getUserMemberships, UnauthorizedError, ForbiddenError } from '@/lib/rbac';
 import { tenancyExtension } from './extension.js';
+import { expandVisibleEntities } from './expand.js';
 
 export { tenancyExtension } from './extension.js';
 export { buildTenancyWhere, postFilterUniqueResult } from './filter.js';
 export { TENANT_SCOPED_MODELS, isTenantScoped, tenancyField } from './models.js';
+export {
+  GROUP_LEVEL_ROLES,
+  hasGroupLevelRole,
+  expandVisibleEntities,
+} from './expand.js';
 
 /**
  * Renvoie un client Prisma encapsule par l'extension de tenancy, configure
@@ -38,11 +44,24 @@ export const getTenantedDb = cache(async () => {
   }
 
   const memberships = await getUserMemberships(session.user.id);
-  const visibleEntityIds = Array.from(new Set(memberships.map((m) => m.entityId)));
+  if (memberships.length === 0) {
+    throw new ForbiddenError(
+      'Aucune entite accessible. Contactez un administrateur pour vous attribuer un role.',
+    );
+  }
+
+  // Charge l'arbre des entites actives une seule fois par requete (cached).
+  // L'expansion ajoute les descendants (Filiale -> SPV) et applique le bypass
+  // "role Groupe -> tout le Groupe".
+  const allEntities = await prisma.entity.findMany({
+    where: { isActive: true },
+    select: { id: true, parentEntityId: true },
+  });
+  const visibleEntityIds = expandVisibleEntities(memberships, allEntities);
 
   if (visibleEntityIds.length === 0) {
     throw new ForbiddenError(
-      'Aucune entite accessible. Contactez un administrateur pour vous attribuer un role.',
+      'Aucune entite accessible apres expansion. Verifiez votre arbre d\'entites.',
     );
   }
 
