@@ -32,6 +32,11 @@ export default defineConfig({
         'src/lib/bank-accounts/usability.ts',
         'src/lib/bank-accounts/change-validation.ts',
         'src/lib/bank-accounts/anomaly-detection.ts',
+        'src/lib/expense-requests/approval-chain.ts',
+        'src/lib/expense-requests/can-act.ts',
+        'src/lib/expense-requests/emergency-guards.ts',
+        'src/lib/document-sequence/allocate.ts',
+        'src/lib/signatures/service.ts',
       ],
       exclude: ['**/*.test.ts', '**/*.spec.ts', '**/*.d.ts'],
       thresholds: {

@@ -12,7 +12,8 @@
 | Session 1 (M1)     | Livre        | 2026-05-18 |
 | Session 2 (M2)     | Livre        | 2026-05-18 |
 | Session 3 (M3)     | Livre        | 2026-05-18 |
-| Session 4 (M4)     | A planifier  | -          |
+| Session 4 (M4)     | Livre        | 2026-05-18 |
+| Session 5 (M5+M6)  | A planifier  | -          |
 | ...                | ...          | ...        |
 
 ---

@@ -67,3 +67,11 @@ export class WorkflowEngine {
 }
 
 export * from './states/index.js';
+export {
+  transitionWorkflow,
+  type TransitionActor,
+  type TransitionInput,
+  type TransitionOk,
+  type TransitionKo,
+  type TransitionResult,
+} from './transition.js';

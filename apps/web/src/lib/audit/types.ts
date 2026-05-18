@@ -54,11 +54,16 @@ export const AuditAction = {
   ANOMALY_DETECTED: 'anomaly.detected',
   ANOMALY_RESOLVED: 'anomaly.resolved',
 
-  // Future modules (placeholder)
+  // M4 Expense requests + workflow
   EXPENSE_REQUEST_CREATED: 'expense_request.created',
+  EXPENSE_REQUEST_UPDATED: 'expense_request.updated',
   EXPENSE_REQUEST_SUBMITTED: 'expense_request.submitted',
+  EXPENSE_REQUEST_SIGNED: 'expense_request.signed',
   EXPENSE_REQUEST_APPROVED: 'expense_request.approved',
   EXPENSE_REQUEST_REJECTED: 'expense_request.rejected',
+  EXPENSE_REQUEST_CANCELLED: 'expense_request.cancelled',
+  EXPENSE_REQUEST_REGULARIZED: 'expense_request.regularized',
+  EXPENSE_REQUEST_EMERGENCY_OVERDUE: 'expense_request.emergency_overdue',
   PAYMENT_EXECUTED: 'payment.executed',
   BANK_ACCOUNT_CHANGE_REQUESTED: 'bank_account_change.requested',
   BANK_ACCOUNT_CHANGE_APPROVED: 'bank_account_change.approved',
