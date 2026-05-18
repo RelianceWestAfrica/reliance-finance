@@ -11,6 +11,7 @@ import { z } from 'zod';
 
 import { prisma } from '@reliance-finance/database';
 import { authConfig } from './auth.config';
+import { appendAudit, AuditAction } from './audit/log';
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -52,6 +53,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const valid = await argon2.verify(user.hashedPassword, password);
         if (!valid) {
+          await appendAudit({
+            entityType: 'User',
+            entityId: user.id,
+            action: AuditAction.LOGIN_FAILURE,
+            actorId: user.id,
+            payload: { reason: 'INVALID_PASSWORD', email: user.email },
+          }).catch(() => undefined);
           return null;
         }
 
@@ -83,4 +91,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       maxAge: 15 * 60, // 15 minutes
     }),
   ],
+  events: {
+    async signIn({ user, account, isNewUser }) {
+      if (!user?.id) return;
+      await appendAudit({
+        entityType: 'User',
+        entityId: user.id,
+        action: AuditAction.LOGIN_SUCCESS,
+        actorId: user.id,
+        payload: {
+          provider: account?.provider ?? 'unknown',
+          isNewUser: Boolean(isNewUser),
+          email: user.email ?? null,
+        },
+      }).catch(() => undefined);
+    },
+    async signOut(message) {
+      const userId =
+        'token' in message ? message.token?.userId : message.session?.userId;
+      if (typeof userId !== 'string') return;
+      await appendAudit({
+        entityType: 'User',
+        entityId: userId,
+        action: AuditAction.LOGOUT,
+        actorId: userId,
+        payload: {},
+      }).catch(() => undefined);
+    },
+  },
 });

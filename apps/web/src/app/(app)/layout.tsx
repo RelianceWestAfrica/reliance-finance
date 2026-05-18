@@ -1,11 +1,24 @@
 import { redirect } from 'next/navigation';
 import { auth, signOut } from '@/lib/auth';
 import { getUserMemberships } from '@/lib/rbac';
+import { prisma } from '@reliance-finance/database';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user?.id) {
     redirect('/login');
+  }
+
+  // Force le setup du mot de passe si premiere connexion (post-invitation)
+  const userState = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { hashedPassword: true, isActive: true },
+  });
+  if (!userState?.isActive) {
+    redirect('/login?error=AccountDisabled');
+  }
+  if (!userState.hashedPassword) {
+    redirect('/set-password');
   }
 
   const memberships = await getUserMemberships(session.user.id);
@@ -39,6 +52,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <span className="cursor-not-allowed opacity-50" title="Disponible en session M10">
                 Paiements
               </span>
+              <a href="/audit" className="hover:text-[var(--color-foreground)]">
+                Audit
+              </a>
+              <a href="/settings/users" className="hover:text-[var(--color-foreground)]">
+                Parametres
+              </a>
             </nav>
           </div>
           <div className="flex items-center gap-3 text-sm">

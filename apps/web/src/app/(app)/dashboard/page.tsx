@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth';
 import { getUserMemberships } from '@/lib/rbac';
+import { getTenantedDb } from '@/lib/tenancy';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 
@@ -10,12 +11,14 @@ export default async function DashboardPage() {
   }
 
   const memberships = await getUserMemberships(session.user.id);
-  const entityIds = Array.from(new Set(memberships.map((m) => m.entityId)));
+  // Client Prisma tenante - filtre automatique sur entityId visibles
+  const db = await getTenantedDb();
 
   const [entityCount, supplierCount, projectCount, thresholdCount] = await Promise.all([
-    prisma.entity.count({ where: { id: { in: entityIds } } }),
-    prisma.supplier.count({ where: { entityId: { in: entityIds }, status: 'ACTIVE' } }),
-    prisma.project.count({ where: { entityId: { in: entityIds }, isActive: true } }),
+    db.entity.count(),
+    db.supplier.count({ where: { status: 'ACTIVE' } }),
+    db.project.count({ where: { isActive: true } }),
+    // Threshold est tenant-scoped mais aussi global (entityId null) => raw
     prisma.threshold.count({ where: { isActive: true } }),
   ]);
 

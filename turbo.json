@@ -17,6 +17,10 @@
     "typecheck": {
       "dependsOn": ["^build", "^db:generate"]
     },
+    "test": {
+      "dependsOn": ["^db:generate"],
+      "outputs": ["coverage/**"]
+    },
     "db:generate": {
       "cache": false
     },
