@@ -1,0 +1,25 @@
+{
+  "name": "@reliance-finance/workflow-engine",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./states": "./src/states/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@reliance-finance/database": "workspace:*",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@reliance-finance/tsconfig": "workspace:*",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.7.3"
+  }
+}

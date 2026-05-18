@@ -1,0 +1,35 @@
+{
+  "name": "reliance-finance",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plateforme de gestion financiere Holding/Filiales/SPV - Reliance West Africa",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "packageManager": "pnpm@11.1.0",
+  "scripts": {
+    "dev": "turbo run dev --filter=@reliance-finance/web",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @reliance-finance/database db:generate",
+    "db:migrate": "pnpm --filter @reliance-finance/database db:migrate",
+    "db:migrate:deploy": "pnpm --filter @reliance-finance/database db:migrate:deploy",
+    "db:seed": "pnpm --filter @reliance-finance/database db:seed",
+    "db:reset": "pnpm --filter @reliance-finance/database db:reset",
+    "db:studio": "pnpm --filter @reliance-finance/database db:studio",
+    "clean": "turbo run clean && rimraf node_modules .turbo"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "rimraf": "^6.0.1",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  }
+}

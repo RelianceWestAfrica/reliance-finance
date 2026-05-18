@@ -1,0 +1,1467 @@
+// =============================================================================
+// Reliance Finance - Schema Prisma
+// =============================================================================
+// Source de verite : docs/cadre-normatif.md + docs/adr/0001-data-model.md
+// Couvre les 14 modules fonctionnels (M1 a M14) + transverses.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum EntityKind {
+  HOLDING
+  SUBSIDIARY
+  SPV
+}
+
+enum RoleCode {
+  ADMIN
+  DEMANDEUR
+  CHEF_PROJET
+  TECHNIQUE
+  DAF_PAYS
+  COMPTABLE_PAYS
+  AP_OFFICER
+  PAYROLL
+  CAISSIER
+  FINANCE_FIL_N1
+  FINANCE_FIL_N2
+  FINANCE_GROUPE
+  TRESORIER_GROUPE
+  CONTROLEUR_GROUPE
+  CHIEF_ACCOUNTANT
+  FP_AND_A
+  TAX_COMPLIANCE
+  CONTROLEUR_INTERNE
+  DFG
+  AG
+  AUDITEUR
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ExpenseRequestType {
+  FDA
+  FD
+  FD_URGENCE
+}
+
+enum ExpenseRequestStatus {
+  DRAFT
+  SUBMITTED
+  CONTROL_DOC_OK
+  CONTROL_DOC_KO
+  BUDGET_OK
+  BUDGET_KO
+  FINANCE_FIL_VISA_PENDING
+  FINANCE_FIL_VISA_OK
+  FINANCE_GROUPE_VISA_PENDING
+  FINANCE_GROUPE_VISA_OK
+  AG_APPROVAL_PENDING
+  AG_APPROVED
+  APPROVED
+  REJECTED
+  ARCHIVED
+  CANCELLED
+}
+
+enum OpexCapex {
+  OPEX
+  CAPEX
+}
+
+enum SupplierStatus {
+  DRAFT
+  ACTIVE
+  SUSPENDED
+  BLACKLISTED
+  ARCHIVED
+}
+
+enum SupplierSensitivity {
+  STANDARD
+  SENSITIVE
+  STRATEGIC
+}
+
+enum OfferComparisonStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum SoleSourceReason {
+  MONOPOLY
+  URGENCY_CRITICAL
+  TECHNICAL_COMPATIBILITY
+  CONTRACTUAL_REQUIREMENT
+  OTHER
+}
+
+enum PurchaseOrderType {
+  BC
+  CONTRACT
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  PENDING_SIGNATURES
+  SIGNED
+  SENT_TO_SUPPLIER
+  PARTIAL
+  CLOSED
+  CANCELLED
+}
+
+enum ReceptionType {
+  GOODS
+  SERVICE_DONE
+  WORK_ATTACHMENT
+}
+
+enum ReceptionStatus {
+  DRAFT
+  SIGNED_OPS
+  SIGNED_TECH
+  SIGNED_FINANCE
+  DEFINITIVE
+  PROVISIONAL
+  REJECTED
+}
+
+enum InvoiceType {
+  STANDARD
+  CREDIT_NOTE
+  DEPOSIT
+  ADVANCE
+}
+
+enum InvoiceStatus {
+  RECEIVED
+  CONTROL_3WAY_PENDING
+  CONTROL_3WAY_OK
+  CONTROL_3WAY_KO
+  APPROVED
+  SCHEDULED
+  PAID
+  PARTIALLY_PAID
+  ARCHIVED
+  DISPUTED
+}
+
+enum PaymentStatus {
+  DRAFT
+  ANTI_FRAUD_PENDING
+  SCHEDULED
+  EXECUTED
+  RECONCILED
+  FAILED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  SWIFT
+  CHECK
+  MOBILE_MONEY
+  CASH
+  OTHER
+}
+
+enum BankAccountChangeStatus {
+  REQUESTED
+  DUAL_VALIDATION_PENDING
+  QUARANTINE
+  ACTIVE
+  REJECTED
+}
+
+enum ThresholdType {
+  FILIALE_N2_REQUIRED_ABOVE
+  GROUPE_REQUIRED_ABOVE
+  AG_REQUIRED_ABOVE
+  CASH_PAYMENT_MAX
+  ADVANCE_MAX_PERCENT
+  URGENCY_MAX_AMOUNT
+  URGENCY_REGULARIZATION_HOURS
+  THREE_OFFERS_REQUIRED_ABOVE
+  PROVIDER_ONBOARDING_REQUIRED_ABOVE
+}
+
+enum DocumentType {
+  FDA
+  FD
+  FD_URGENCE
+  OFFER_COMPARISON
+  SOLE_SOURCE_JUSTIFICATION
+  BC
+  CONTRACT
+  PV
+  INVOICE
+  PAYMENT
+  JOURNAL_ENTRY
+  BANK_ACCOUNT_CHANGE
+}
+
+enum AnomalyType {
+  DUPLICATE_INVOICE
+  ABNORMAL_PRICE
+  REPEATED_URGENCY
+  SUSPICIOUS_RIB_CHANGE
+  MISSING_PV
+  PAYMENT_FRACTIONING
+  THRESHOLD_BYPASS
+  OUT_OF_BUDGET
+  SUPPLIER_FRAUD_ALERT
+  OTHER
+}
+
+enum AnomalySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AnomalyStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  FALSE_POSITIVE
+  SANCTION_REQUESTED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+enum WorkflowStepStatus {
+  PENDING
+  COMPLETED
+  SKIPPED
+  REJECTED
+}
+
+enum SignatureStage {
+  VISA_FILIALE_N1
+  VISA_FILIALE_N2
+  VISA_GROUPE
+  AUTHORIZATION_AG
+  EXECUTION_TRESORERIE
+  RECEPTION_OPS
+  RECEPTION_TECH
+  RECEPTION_FINANCE
+  ACCOUNTING_VALIDATION
+  SUPPLIER_ONBOARDING
+  RIB_CHANGE_APPROVAL_1
+  RIB_CHANGE_APPROVAL_2
+}
+
+enum CashFlowDirection {
+  INFLOW
+  OUTFLOW
+}
+
+enum CashFlowCategory {
+  REVENUE
+  SUPPLIER
+  PAYROLL
+  TAX
+  CAPEX
+  LOAN_REPAYMENT
+  INTEREST
+  EXCEPTIONAL
+  OTHER
+}
+
+enum JournalEntryStatus {
+  DRAFT
+  POSTED
+  REVERSED
+  ARCHIVED
+}
+
+// =============================================================================
+// M1 AUTH (NextAuth v5 / Auth.js Prisma Adapter)
+// =============================================================================
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  emailVerified     DateTime?
+  name              String?
+  image             String?
+  hashedPassword    String?
+  preferredTimezone String    @default("Africa/Lome")
+  preferredLocale   String    @default("fr-FR")
+  isActive          Boolean   @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  accounts                       Account[]
+  sessions                       Session[]
+  memberships                    Membership[]
+  signatures                     Signature[]
+  auditLogs                      AuditLog[]
+  notifications                  Notification[]
+  createdExpenseRequests         ExpenseRequest[]     @relation("ExpenseRequestCreator")
+  createdSuppliers               Supplier[]           @relation("SupplierCreator")
+  createdPurchaseOrders          PurchaseOrder[]      @relation("PurchaseOrderCreator")
+  createdReceptions              Reception[]          @relation("ReceptionCreator")
+  createdInvoices                Invoice[]            @relation("InvoiceCreator")
+  createdPayments                Payment[]            @relation("PaymentCreator")
+  ribChangesRequested            BankAccountChangeRequest[] @relation("BankChangeRequester")
+  ribChangesApproved1            BankAccountChangeRequest[] @relation("BankChangeApprover1")
+  ribChangesApproved2            BankAccountChangeRequest[] @relation("BankChangeApprover2")
+  anomaliesAssigned              Anomaly[]            @relation("AnomalyAssignee")
+  anomaliesReported              Anomaly[]            @relation("AnomalyReporter")
+  attachmentsUploaded            Attachment[]         @relation("AttachmentUploader")
+  archivedSuppliers              Supplier[]           @relation("SupplierArchiver")
+
+  @@index([email])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  userId    String
+  entityId  String
+  role      RoleCode
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entity Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entityId, role])
+  @@index([entityId, role])
+  @@index([userId])
+}
+
+// =============================================================================
+// M2 REFERENTIEL
+// =============================================================================
+
+model Entity {
+  id              String     @id @default(cuid())
+  code            String     @unique
+  name            String
+  kind            EntityKind
+  country         String?
+  defaultCurrency String     @default("XOF")
+  rccm            String?
+  ifu             String?
+  address         String?
+  parentEntityId  String?
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  parentEntity      Entity?            @relation("EntityHierarchy", fields: [parentEntityId], references: [id])
+  children          Entity[]           @relation("EntityHierarchy")
+  memberships       Membership[]
+  projects          Project[]
+  costCenters       CostCenter[]
+  thresholds        Threshold[]
+  suppliers         Supplier[]
+  expenseRequests   ExpenseRequest[]
+  purchaseOrders    PurchaseOrder[]
+  receptions        Reception[]
+  invoices          Invoice[]
+  payments          Payment[]
+  documentSequences DocumentSequence[]
+  cashForecasts     CashForecast[]
+  journalEntries    JournalEntry[]
+  anomalies         Anomaly[]
+  offerComparisons  OfferComparison[]
+  paymentBatches    PaymentBatch[]
+  accountingPeriods AccountingPeriod[]
+
+  @@index([kind])
+  @@index([parentEntityId])
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  entityId    String
+  code        String
+  name        String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  budget      Decimal?  @db.Decimal(18, 4)
+  currency    String    @default("XOF")
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  entity            Entity              @relation(fields: [entityId], references: [id])
+  costCenters       CostCenter[]
+  expenseRequests   ExpenseRequest[]
+  purchaseOrders    PurchaseOrder[]
+  receptions        Reception[]
+  invoices          Invoice[]
+  payments          Payment[]
+  cashForecasts     CashForecast[]
+  documentSequences DocumentSequence[]
+  offerComparisons  OfferComparison[]
+
+  @@unique([entityId, code])
+  @@index([entityId])
+}
+
+model CostCenter {
+  id        String   @id @default(cuid())
+  entityId  String
+  projectId String?
+  code      String
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entity          Entity              @relation(fields: [entityId], references: [id])
+  project         Project?            @relation(fields: [projectId], references: [id])
+  expenseRequests ExpenseRequest[]
+  journalEntryLines JournalEntryLine[]
+
+  @@unique([entityId, code])
+  @@index([entityId])
+}
+
+model ChartAccount {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  label     String
+  classCode String
+  className String
+  type      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  journalEntryLines JournalEntryLine[]
+
+  @@index([classCode])
+}
+
+model Currency {
+  code     String  @id
+  name     String
+  symbol   String
+  decimals Int     @default(2)
+  isActive Boolean @default(true)
+
+  exchangeRatesFrom ExchangeRate[] @relation("ExchangeRateFrom")
+  exchangeRatesTo   ExchangeRate[] @relation("ExchangeRateTo")
+}
+
+model ExchangeRate {
+  id            String   @id @default(cuid())
+  fromCurrency  String
+  toCurrency    String
+  rate          Decimal  @db.Decimal(18, 8)
+  effectiveDate DateTime
+  source        String?
+  createdAt     DateTime @default(now())
+
+  from Currency @relation("ExchangeRateFrom", fields: [fromCurrency], references: [code])
+  to   Currency @relation("ExchangeRateTo", fields: [toCurrency], references: [code])
+
+  @@unique([fromCurrency, toCurrency, effectiveDate])
+  @@index([effectiveDate])
+}
+
+model Threshold {
+  id            String        @id @default(cuid())
+  type          ThresholdType
+  entityId      String?
+  amount        Decimal?      @db.Decimal(18, 4)
+  currency      String?       @default("XOF")
+  value         Decimal?      @db.Decimal(18, 4)
+  description   String?
+  isActive      Boolean       @default(true)
+  effectiveFrom DateTime      @default(now())
+  effectiveTo   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  entity Entity? @relation(fields: [entityId], references: [id])
+
+  @@unique([type, entityId, effectiveFrom])
+  @@index([type, entityId, isActive])
+}
+
+// =============================================================================
+// M3 SUPPLIERS (Cycle fournisseur, KYC, RIB, anti-fraude)
+// =============================================================================
+
+model Supplier {
+  id            String              @id @default(cuid())
+  entityId      String
+  code          String
+  rccm          String?
+  ifu           String?
+  name          String
+  legalForm     String?
+  email         String?
+  phone         String?
+  address       String?
+  country       String?
+  sensitivity   SupplierSensitivity @default(STANDARD)
+  status        SupplierStatus      @default(DRAFT)
+  isStrategic   Boolean             @default(false)
+  notes         String?
+  createdById   String?
+  archivedAt    DateTime?
+  archivedById  String?
+  archiveReason String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  entity          Entity             @relation(fields: [entityId], references: [id])
+  createdBy       User?              @relation("SupplierCreator", fields: [createdById], references: [id])
+  archivedBy      User?              @relation("SupplierArchiver", fields: [archivedById], references: [id])
+  contacts        SupplierContact[]
+  bankAccounts    BankAccount[]
+  documents       SupplierDocument[]
+  expenseRequests ExpenseRequest[]
+  purchaseOrders  PurchaseOrder[]
+  invoices        Invoice[]
+  offers          Offer[]
+  bankChangeRequests BankAccountChangeRequest[]
+
+  @@unique([entityId, code])
+  @@index([entityId, status])
+  @@index([entityId, sensitivity])
+  @@index([rccm])
+}
+
+model SupplierContact {
+  id         String   @id @default(cuid())
+  supplierId String
+  name       String
+  role       String?
+  email      String?
+  phone      String?
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+}
+
+model BankAccount {
+  id              String    @id @default(cuid())
+  supplierId      String
+  bankName        String
+  holderName      String
+  iban            String?
+  rib             String?
+  swift           String?
+  country         String?
+  currency        String    @default("XOF")
+  isPrimary       Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  verifiedAt      DateTime?
+  verifiedById    String?
+  verifiedMethod  String?
+  quarantineUntil DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  supplier       Supplier                   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  payments       Payment[]
+  changeRequests BankAccountChangeRequest[]
+
+  @@index([supplierId, isActive])
+}
+
+model BankAccountChangeRequest {
+  id              String                  @id @default(cuid())
+  bankAccountId   String?
+  supplierId      String
+  oldIban         String?
+  oldRib          String?
+  newIban         String?
+  newRib          String?
+  newBankName     String?
+  newHolderName   String
+  justification   String
+  status          BankAccountChangeStatus @default(REQUESTED)
+  requestedById   String
+  approvedBy1Id   String?
+  approvedBy2Id   String?
+  approvedBy1At   DateTime?
+  approvedBy2At   DateTime?
+  rejectedReason  String?
+  quarantineUntil DateTime?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  bankAccount  BankAccount? @relation(fields: [bankAccountId], references: [id])
+  supplier     Supplier     @relation(fields: [supplierId], references: [id])
+  requestedBy  User         @relation("BankChangeRequester", fields: [requestedById], references: [id])
+  approvedBy1  User?        @relation("BankChangeApprover1", fields: [approvedBy1Id], references: [id])
+  approvedBy2  User?        @relation("BankChangeApprover2", fields: [approvedBy2Id], references: [id])
+
+  @@index([supplierId, status])
+}
+
+model SupplierDocument {
+  id           String    @id @default(cuid())
+  supplierId   String
+  type         String
+  fileName     String
+  attachmentId String    @unique
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  supplier   Supplier   @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  attachment Attachment @relation(fields: [attachmentId], references: [id])
+}
+
+// =============================================================================
+// M4 EXPENSE REQUEST (FDA + FD + FD_URGENCE) — Modele 5
+// =============================================================================
+
+model ExpenseRequest {
+  id              String               @id @default(cuid())
+  reference       String               @unique
+  type            ExpenseRequestType
+  status          ExpenseRequestStatus @default(DRAFT)
+  entityId        String
+  projectId       String?
+  costCenterId    String?
+  supplierId      String?
+  createdById     String
+  title           String
+  description     String?
+  justification   String?
+  urgency         UrgencyLevel         @default(LOW)
+  urgencyReason   String?
+  opexCapex       OpexCapex            @default(OPEX)
+  amount          Decimal              @db.Decimal(18, 4)
+  currency        String               @default("XOF")
+  amountInGroupCurrency Decimal?       @db.Decimal(18, 4)
+  budgetLineRef   String?
+  isOutOfBudget   Boolean              @default(false)
+  desiredDate     DateTime?
+  location        String?
+  // Urgence FD_URGENCE - regularisation
+  emergencyDeadlineAt DateTime?
+  regularizedAt   DateTime?
+  // Soft archive
+  archivedAt      DateTime?
+  rejectionReason String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  entity            Entity            @relation(fields: [entityId], references: [id])
+  project           Project?          @relation(fields: [projectId], references: [id])
+  costCenter        CostCenter?       @relation(fields: [costCenterId], references: [id])
+  supplier          Supplier?         @relation(fields: [supplierId], references: [id])
+  createdBy         User              @relation("ExpenseRequestCreator", fields: [createdById], references: [id])
+  items             ExpenseRequestItem[]
+  attachments       Attachment[]      @relation("ExpenseRequestAttachments")
+  offerComparison   OfferComparison?
+  soleSourceJustification SoleSourceJustification?
+  purchaseOrders    PurchaseOrder[]
+  workflowInstance  WorkflowInstance?
+
+  @@index([entityId, status])
+  @@index([entityId, type])
+  @@index([projectId])
+  @@index([supplierId])
+  @@index([createdById])
+}
+
+model ExpenseRequestItem {
+  id               String   @id @default(cuid())
+  expenseRequestId String
+  position         Int
+  description      String
+  quantity         Decimal  @db.Decimal(18, 4)
+  unit             String?
+  unitPrice        Decimal? @db.Decimal(18, 4)
+  totalPrice       Decimal? @db.Decimal(18, 4)
+  notes            String?
+
+  expenseRequest ExpenseRequest @relation(fields: [expenseRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([expenseRequestId, position])
+}
+
+// =============================================================================
+// M5 OFFER COMPARISON + SOLE SOURCE JUSTIFICATION — Modeles 1 & 2
+// =============================================================================
+
+model OfferComparison {
+  id               String                @id @default(cuid())
+  reference        String                @unique
+  status           OfferComparisonStatus @default(DRAFT)
+  entityId         String
+  projectId        String?
+  expenseRequestId String?               @unique
+  technicalSpecs   String?
+  desiredDelay     String?
+  paymentTerms     String?
+  warrantyRequired Boolean               @default(false)
+  warrantyMonths   Int?
+  penaltyClause    String?
+  recommendedOfferId String?             @unique
+  recommendationJustification String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  entity            Entity          @relation(fields: [entityId], references: [id])
+  project           Project?        @relation(fields: [projectId], references: [id])
+  expenseRequest    ExpenseRequest? @relation(fields: [expenseRequestId], references: [id])
+  recommendedOffer  Offer?          @relation("RecommendedOffer", fields: [recommendedOfferId], references: [id])
+  offers            Offer[]         @relation("ComparisonOffers")
+  attachments       Attachment[]    @relation("OfferComparisonAttachments")
+
+  @@index([entityId, status])
+}
+
+model Offer {
+  id                String   @id @default(cuid())
+  offerComparisonId String
+  supplierId        String
+  reference         String?
+  receivedAt        DateTime?
+  priceHt           Decimal  @db.Decimal(18, 4)
+  taxAmount         Decimal? @db.Decimal(18, 4)
+  retentionAmount   Decimal? @db.Decimal(18, 4)
+  priceTtc          Decimal  @db.Decimal(18, 4)
+  currency          String   @default("XOF")
+  deliveryDelay     String?
+  paymentTerms      String?
+  warranty          String?
+  technicallyCompliant Boolean @default(false)
+  immediatelyAvailable Boolean @default(false)
+  observations      String?
+  riskNotes         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  offerComparison   OfferComparison @relation("ComparisonOffers", fields: [offerComparisonId], references: [id], onDelete: Cascade)
+  supplier          Supplier        @relation(fields: [supplierId], references: [id])
+  recommendedIn     OfferComparison? @relation("RecommendedOffer")
+  attachments       Attachment[]    @relation("OfferAttachments")
+
+  @@index([offerComparisonId])
+  @@index([supplierId])
+}
+
+model SoleSourceJustification {
+  id               String           @id @default(cuid())
+  reference        String           @unique
+  expenseRequestId String           @unique
+  reason           SoleSourceReason
+  otherReason      String?
+  estimatedAmount  Decimal          @db.Decimal(18, 4)
+  currency         String           @default("XOF")
+  justification    String
+  // Mesures de securisation (cocher)
+  hasNegotiatedPrice    Boolean    @default(false)
+  hasReinforcedPaymentTerms Boolean @default(false)
+  hasWarrantyOrPenalty  Boolean    @default(false)
+  hasReinforcedReception Boolean   @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  expenseRequest ExpenseRequest @relation(fields: [expenseRequestId], references: [id], onDelete: Cascade)
+  attachments    Attachment[]   @relation("SoleSourceAttachments")
+}
+
+// =============================================================================
+// M6 PURCHASE ORDER / CONTRACT — Modele 3
+// =============================================================================
+
+model PurchaseOrder {
+  id               String              @id @default(cuid())
+  reference        String              @unique
+  type             PurchaseOrderType   @default(BC)
+  status           PurchaseOrderStatus @default(DRAFT)
+  entityId         String
+  projectId        String?
+  supplierId       String
+  expenseRequestId String?
+  createdById      String
+  objet            String
+  description      String?
+  deliveryLocation String?
+  deliveryDeadline DateTime?
+  incoterm         String?
+  // Totaux
+  subtotalHt       Decimal             @db.Decimal(18, 4)
+  taxAmount        Decimal             @default(0) @db.Decimal(18, 4)
+  retentionAmount  Decimal             @default(0) @db.Decimal(18, 4)
+  totalTtc         Decimal             @db.Decimal(18, 4)
+  currency         String              @default("XOF")
+  // Conditions de paiement
+  paymentTerms     String?
+  depositPercent   Decimal?            @db.Decimal(5, 2)
+  // Reception
+  requiresReceptionPv     Boolean      @default(true)
+  requiresServiceDone     Boolean      @default(false)
+  requiresWorkAttachment  Boolean      @default(false)
+  // Garanties & penalites
+  warrantyMonths   Int?
+  penaltyPerDay    Decimal?            @db.Decimal(18, 4)
+  // Anti-fraude RIB au moment du BC
+  bankAccountSnapshotId String?
+  // Soft archive
+  archivedAt       DateTime?
+  cancellationReason String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  entity           Entity              @relation(fields: [entityId], references: [id])
+  project          Project?            @relation(fields: [projectId], references: [id])
+  supplier         Supplier            @relation(fields: [supplierId], references: [id])
+  expenseRequest   ExpenseRequest?     @relation(fields: [expenseRequestId], references: [id])
+  createdBy        User                @relation("PurchaseOrderCreator", fields: [createdById], references: [id])
+  items            PurchaseOrderItem[]
+  receptions       Reception[]
+  invoices         Invoice[]
+  attachments      Attachment[]        @relation("PurchaseOrderAttachments")
+  workflowInstance WorkflowInstance?
+
+  @@index([entityId, status])
+  @@index([supplierId])
+  @@index([projectId])
+}
+
+model PurchaseOrderItem {
+  id              String  @id @default(cuid())
+  purchaseOrderId String
+  position        Int
+  description     String
+  quantity        Decimal @db.Decimal(18, 4)
+  unit            String?
+  unitPrice       Decimal @db.Decimal(18, 4)
+  totalHt         Decimal @db.Decimal(18, 4)
+
+  purchaseOrder PurchaseOrder    @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  receptionItems ReceptionItem[]
+
+  @@unique([purchaseOrderId, position])
+}
+
+// =============================================================================
+// M7 RECEPTION (PV) — Modele 4
+// =============================================================================
+
+model Reception {
+  id                String          @id @default(cuid())
+  reference         String          @unique
+  type              ReceptionType
+  status            ReceptionStatus @default(DRAFT)
+  entityId          String
+  projectId         String?
+  purchaseOrderId   String
+  createdById       String
+  receptionDate     DateTime        @default(now())
+  location          String?
+  isFullyCompliant  Boolean         @default(true)
+  hasReserves       Boolean         @default(false)
+  reservesDetail    String?
+  correctionDeadline DateTime?
+  correctionAssigneeId String?
+  decision          String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  entity         Entity          @relation(fields: [entityId], references: [id])
+  project        Project?        @relation(fields: [projectId], references: [id])
+  purchaseOrder  PurchaseOrder   @relation(fields: [purchaseOrderId], references: [id])
+  createdBy      User            @relation("ReceptionCreator", fields: [createdById], references: [id])
+  items          ReceptionItem[]
+  invoices       Invoice[]
+  attachments    Attachment[]    @relation("ReceptionAttachments")
+  workflowInstance WorkflowInstance?
+
+  @@index([entityId, status])
+  @@index([purchaseOrderId])
+}
+
+model ReceptionItem {
+  id                  String  @id @default(cuid())
+  receptionId         String
+  purchaseOrderItemId String?
+  position            Int
+  description         String
+  quantityExpected    Decimal @db.Decimal(18, 4)
+  quantityReceived    Decimal @db.Decimal(18, 4)
+  isCompliant         Boolean @default(true)
+  observations        String?
+
+  reception         Reception          @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  purchaseOrderItem PurchaseOrderItem? @relation(fields: [purchaseOrderItemId], references: [id])
+
+  @@unique([receptionId, position])
+}
+
+// =============================================================================
+// M8 INVOICES + 3-WAY MATCH
+// =============================================================================
+
+model Invoice {
+  id              String        @id @default(cuid())
+  reference       String        @unique
+  invoiceNumber   String
+  type            InvoiceType   @default(STANDARD)
+  status          InvoiceStatus @default(RECEIVED)
+  entityId        String
+  projectId       String?
+  supplierId      String
+  purchaseOrderId String?
+  receptionId     String?
+  createdById     String
+  // Dates
+  invoiceDate     DateTime
+  dueDate         DateTime?
+  receivedAt      DateTime      @default(now())
+  // Montants
+  subtotalHt      Decimal       @db.Decimal(18, 4)
+  taxAmount       Decimal       @default(0) @db.Decimal(18, 4)
+  retentionAmount Decimal       @default(0) @db.Decimal(18, 4)
+  totalTtc        Decimal       @db.Decimal(18, 4)
+  amountPaid      Decimal       @default(0) @db.Decimal(18, 4)
+  currency        String        @default("XOF")
+  // Mentions fiscales
+  taxLabel        String?
+  taxRate         Decimal?      @db.Decimal(5, 2)
+  // Anomalies / disputes
+  disputeReason   String?
+  archivedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  entity         Entity         @relation(fields: [entityId], references: [id])
+  project        Project?       @relation(fields: [projectId], references: [id])
+  supplier       Supplier       @relation(fields: [supplierId], references: [id])
+  purchaseOrder  PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  reception      Reception?     @relation(fields: [receptionId], references: [id])
+  createdBy      User           @relation("InvoiceCreator", fields: [createdById], references: [id])
+  lines          InvoiceLine[]
+  payments       Payment[]
+  threeWayMatch  ThreeWayMatch?
+  attachments    Attachment[]   @relation("InvoiceAttachments")
+  workflowInstance WorkflowInstance?
+
+  @@unique([supplierId, invoiceNumber])
+  @@index([entityId, status])
+  @@index([dueDate])
+}
+
+model InvoiceLine {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  position    Int
+  description String
+  quantity    Decimal  @db.Decimal(18, 4)
+  unitPrice   Decimal  @db.Decimal(18, 4)
+  totalHt     Decimal  @db.Decimal(18, 4)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@unique([invoiceId, position])
+}
+
+model ThreeWayMatch {
+  id              String   @id @default(cuid())
+  invoiceId       String   @unique
+  purchaseOrderId String
+  receptionId     String
+  quantityMatch   Boolean
+  priceMatch      Boolean
+  totalMatch      Boolean
+  discrepancies   Json
+  checkedAt       DateTime @default(now())
+  checkedById     String?
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+// =============================================================================
+// M9 WORKFLOW VALIDATION
+// =============================================================================
+
+model WorkflowInstance {
+  id                  String   @id @default(cuid())
+  entityType          DocumentType
+  definitionKey       String                            // ex: "expense_request_standard_v1"
+  definitionVersion   Int      @default(1)
+  currentStatus       String
+  contextSnapshot     Json
+  // FKs reverses (un seul est non-null)
+  expenseRequestId    String?  @unique
+  purchaseOrderId     String?  @unique
+  receptionId         String?  @unique
+  invoiceId           String?  @unique
+  paymentId           String?  @unique
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  expenseRequest ExpenseRequest? @relation(fields: [expenseRequestId], references: [id], onDelete: Cascade)
+  purchaseOrder  PurchaseOrder?  @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  reception      Reception?      @relation(fields: [receptionId], references: [id], onDelete: Cascade)
+  invoice        Invoice?        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  payment        Payment?        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  steps          WorkflowStep[]
+  signatures     Signature[]
+
+  @@index([entityType])
+  @@index([currentStatus])
+}
+
+model WorkflowStep {
+  id                 String             @id @default(cuid())
+  workflowInstanceId String
+  position           Int
+  stage              SignatureStage
+  fromStatus         String
+  toStatus           String
+  action             String
+  status             WorkflowStepStatus @default(PENDING)
+  triggeredAt        DateTime?
+  completedAt        DateTime?
+  rejectedReason     String?
+  guardsResult       Json?
+  createdAt          DateTime           @default(now())
+
+  workflowInstance WorkflowInstance @relation(fields: [workflowInstanceId], references: [id], onDelete: Cascade)
+  signatures       Signature[]
+
+  @@unique([workflowInstanceId, position])
+  @@index([workflowInstanceId, status])
+}
+
+model Signature {
+  id                 String         @id @default(cuid())
+  workflowInstanceId String
+  stepId             String?
+  actorId            String
+  role               RoleCode
+  stage              SignatureStage
+  documentHash       String
+  prevSignatureHash  String?
+  signatureHash      String         @unique
+  signedAt           DateTime       @default(now())
+  ip                 String?
+  userAgent          String?
+  comment            String?
+
+  workflowInstance WorkflowInstance @relation(fields: [workflowInstanceId], references: [id], onDelete: Cascade)
+  step             WorkflowStep?    @relation(fields: [stepId], references: [id])
+  actor            User             @relation(fields: [actorId], references: [id])
+
+  @@unique([workflowInstanceId, stepId, actorId, stage])
+  @@index([actorId])
+  @@index([workflowInstanceId])
+}
+
+// =============================================================================
+// M10 TREASURY (Payment + anti-fraude + preuves bancaires)
+// =============================================================================
+
+model PaymentBatch {
+  id          String   @id @default(cuid())
+  reference   String   @unique
+  entityId    String
+  scheduledAt DateTime
+  executedAt  DateTime?
+  totalAmount Decimal  @db.Decimal(18, 4)
+  currency    String   @default("XOF")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entity   Entity    @relation(fields: [entityId], references: [id])
+  payments Payment[]
+
+  @@index([entityId, scheduledAt])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  reference       String        @unique
+  status          PaymentStatus @default(DRAFT)
+  method          PaymentMethod @default(BANK_TRANSFER)
+  entityId        String
+  projectId       String?
+  invoiceId       String?
+  bankAccountId   String
+  paymentBatchId  String?
+  createdById     String
+  amount          Decimal       @db.Decimal(18, 4)
+  currency        String        @default("XOF")
+  scheduledAt     DateTime?
+  executedAt      DateTime?
+  // Preuves bancaires
+  swiftReference  String?
+  bankProofUrl    String?
+  bankProofAttachmentId String? @unique
+  transactionNumber String?
+  // Anti-fraude (snapshot au moment de l'execution)
+  beneficiaryName String
+  beneficiaryIban String?
+  beneficiaryRib  String?
+  ribVerifiedAt   DateTime?
+  ribVerifiedById String?
+  // Echec
+  failureReason   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  entity            Entity          @relation(fields: [entityId], references: [id])
+  project           Project?        @relation(fields: [projectId], references: [id])
+  invoice           Invoice?        @relation(fields: [invoiceId], references: [id])
+  bankAccount       BankAccount     @relation(fields: [bankAccountId], references: [id])
+  paymentBatch      PaymentBatch?   @relation(fields: [paymentBatchId], references: [id])
+  createdBy         User            @relation("PaymentCreator", fields: [createdById], references: [id])
+  bankProof         Attachment?     @relation("PaymentBankProof", fields: [bankProofAttachmentId], references: [id])
+  journalEntries    JournalEntry[]
+  workflowInstance  WorkflowInstance?
+
+  @@index([entityId, status])
+  @@index([invoiceId])
+  @@index([scheduledAt])
+}
+
+// =============================================================================
+// M11 CASH FORECAST 13 SEMAINES
+// =============================================================================
+
+model CashForecast {
+  id             String   @id @default(cuid())
+  entityId       String
+  projectId      String?
+  weekStart      DateTime
+  weekEnd        DateTime
+  currency       String   @default("XOF")
+  openingCash    Decimal  @db.Decimal(18, 4)
+  projectedInflow Decimal @default(0) @db.Decimal(18, 4)
+  projectedOutflow Decimal @default(0) @db.Decimal(18, 4)
+  closingCash    Decimal  @db.Decimal(18, 4)
+  isCommitted    Boolean  @default(false)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  entity  Entity             @relation(fields: [entityId], references: [id])
+  project Project?           @relation(fields: [projectId], references: [id])
+  lines   CashForecastLine[]
+
+  @@unique([entityId, projectId, weekStart])
+  @@index([entityId, weekStart])
+}
+
+model CashForecastLine {
+  id             String            @id @default(cuid())
+  cashForecastId String
+  category       CashFlowCategory
+  direction      CashFlowDirection
+  label          String
+  amount         Decimal           @db.Decimal(18, 4)
+  expectedDate   DateTime?
+  sourceRef      String?
+
+  cashForecast CashForecast @relation(fields: [cashForecastId], references: [id], onDelete: Cascade)
+
+  @@index([cashForecastId])
+}
+
+// =============================================================================
+// M12 ACCOUNTING (Journal entries, periods, archivage)
+// =============================================================================
+
+model AccountingPeriod {
+  id        String   @id @default(cuid())
+  entityId  String
+  year      Int
+  month     Int
+  isClosed  Boolean  @default(false)
+  closedAt  DateTime?
+  closedById String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entity         Entity         @relation(fields: [entityId], references: [id])
+  journalEntries JournalEntry[]
+
+  @@unique([entityId, year, month])
+  @@index([entityId, isClosed])
+}
+
+model JournalEntry {
+  id               String             @id @default(cuid())
+  reference        String             @unique
+  status           JournalEntryStatus @default(DRAFT)
+  entityId         String
+  periodId         String
+  paymentId        String?
+  journalCode      String                                       // ex: ACH, BNQ, OD
+  entryDate        DateTime
+  description      String
+  totalDebit       Decimal            @db.Decimal(18, 4)
+  totalCredit      Decimal            @db.Decimal(18, 4)
+  currency         String             @default("XOF")
+  reversedById     String?
+  postedAt         DateTime?
+  archivedAt       DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  entity   Entity             @relation(fields: [entityId], references: [id])
+  period   AccountingPeriod   @relation(fields: [periodId], references: [id])
+  payment  Payment?           @relation(fields: [paymentId], references: [id])
+  lines    JournalEntryLine[]
+
+  @@index([entityId, entryDate])
+  @@index([paymentId])
+}
+
+model JournalEntryLine {
+  id             String   @id @default(cuid())
+  journalEntryId String
+  position       Int
+  accountCode    String                                         // FK vers ChartAccount.code
+  costCenterId   String?
+  description    String?
+  debit          Decimal  @default(0) @db.Decimal(18, 4)
+  credit         Decimal  @default(0) @db.Decimal(18, 4)
+  currency       String   @default("XOF")
+
+  journalEntry JournalEntry  @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account      ChartAccount  @relation(fields: [accountCode], references: [code])
+  costCenter   CostCenter?   @relation(fields: [costCenterId], references: [id])
+
+  @@unique([journalEntryId, position])
+  @@index([accountCode])
+}
+
+// =============================================================================
+// M13 INTERNAL CONTROL (Anomalies + KPIs)
+// =============================================================================
+
+model Anomaly {
+  id            String           @id @default(cuid())
+  reference     String           @unique
+  type          AnomalyType
+  severity      AnomalySeverity  @default(MEDIUM)
+  status        AnomalyStatus    @default(OPEN)
+  entityId      String
+  // Cible (un seul de ces champs est attendu)
+  expenseRequestId String?
+  purchaseOrderId  String?
+  invoiceId        String?
+  paymentId        String?
+  supplierId       String?
+  // Description
+  title         String
+  description   String
+  detectedById  String?                                         // null = automatique
+  assigneeId    String?
+  reportedById  String?
+  detectionRule String?
+  evidence      Json?
+  resolution    String?
+  resolvedAt    DateTime?
+  sanctionRequested Boolean      @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  entity   Entity @relation(fields: [entityId], references: [id])
+  assignee User?  @relation("AnomalyAssignee", fields: [assigneeId], references: [id])
+  reporter User?  @relation("AnomalyReporter", fields: [reportedById], references: [id])
+
+  @@index([entityId, status])
+  @@index([type, severity])
+}
+
+model ControlCheck {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  category    String                                            // DUPLICATE | PRICE | URGENCY | RIB | PV | OTHER
+  ruleJson    Json
+  isActive    Boolean  @default(true)
+  lastRunAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model KPISnapshot {
+  id        String   @id @default(cuid())
+  entityId  String?
+  scope     String                                              // GROUP | ENTITY | PROJECT
+  scopeRef  String?
+  period    String                                              // 2026-05 | 2026-W20
+  metric    String                                              // PCT_COMPLETE_DOSSIER | AVG_LEAD_TIME_DAYS | ...
+  value     Decimal  @db.Decimal(18, 4)
+  unit      String?
+  capturedAt DateTime @default(now())
+
+  @@unique([scope, scopeRef, period, metric])
+  @@index([entityId, period])
+}
+
+// =============================================================================
+// TRANSVERSES : Sequences, Audit, Notifications, Attachments
+// =============================================================================
+
+model DocumentSequence {
+  id        String       @id @default(cuid())
+  type      DocumentType
+  entityId  String
+  projectId String?
+  year      Int
+  nextSeq   Int          @default(1)
+  updatedAt DateTime     @updatedAt
+
+  entity  Entity   @relation(fields: [entityId], references: [id])
+  project Project? @relation(fields: [projectId], references: [id])
+
+  @@unique([type, entityId, projectId, year])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  action     String
+  actorId    String?
+  payload    Json
+  prevHash   String?
+  hash       String   @unique
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String
+  channel   NotificationChannel @default(IN_APP)
+  status    NotificationStatus  @default(PENDING)
+  title     String
+  body      String?
+  linkUrl   String?
+  entityType String?
+  entityId  String?
+  sentAt    DateTime?
+  readAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, channel])
+}
+
+model Attachment {
+  id          String   @id @default(cuid())
+  fileName    String
+  mimeType    String
+  sizeBytes   Int
+  // Storage (S3/MinIO)
+  storageKey  String   @unique
+  storageBucket String @default("reliance-finance-attachments")
+  // Integrite
+  sha256      String
+  // Provenance
+  uploadedById String?
+  // Metadonnees optionnelles (EXIF, geolocalisation - capture chantier)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  uploadedBy User? @relation("AttachmentUploader", fields: [uploadedById], references: [id])
+
+  expenseRequests          ExpenseRequest[]          @relation("ExpenseRequestAttachments")
+  offerComparisons         OfferComparison[]         @relation("OfferComparisonAttachments")
+  offers                   Offer[]                   @relation("OfferAttachments")
+  soleSourceJustifications SoleSourceJustification[] @relation("SoleSourceAttachments")
+  purchaseOrders           PurchaseOrder[]           @relation("PurchaseOrderAttachments")
+  receptions               Reception[]               @relation("ReceptionAttachments")
+  invoices                 Invoice[]                 @relation("InvoiceAttachments")
+  supplierDocument         SupplierDocument?
+  paymentBankProof         Payment?                  @relation("PaymentBankProof")
+
+  @@index([uploadedById])
+}

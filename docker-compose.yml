@@ -1,0 +1,88 @@
+# =============================================================================
+# Reliance Finance - Stack de developpement local
+# =============================================================================
+# Services :
+#   - postgres : base de donnees principale (PostgreSQL 16)
+#   - minio    : stockage objets S3-compatible (pieces jointes, scans)
+#   - mailhog  : capture SMTP pour Magic Links et notifications en dev
+#
+# Demarrage :
+#   docker compose up -d
+#
+# Reset complet (efface les donnees) :
+#   docker compose down -v
+# =============================================================================
+
+name: reliance-finance
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: reliance-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: reliance
+      POSTGRES_PASSWORD: reliance_dev
+      POSTGRES_DB: reliance_finance
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # Locale UTF-8 + LC_COLLATE compatible accents francais
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C.UTF-8 --lc-ctype=C.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reliance -d reliance_finance"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: reliance-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: reliance
+      MINIO_ROOT_PASSWORD: reliance_dev_minio
+    ports:
+      - "9000:9000"   # API S3
+      - "9001:9001"   # Console web
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Cree automatiquement le bucket attachments au demarrage de MinIO
+  minio-init:
+    image: minio/mc:latest
+    container_name: reliance-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 reliance reliance_dev_minio &&
+      mc mb --ignore-existing local/reliance-finance-attachments &&
+      mc anonymous set download local/reliance-finance-attachments &&
+      echo 'MinIO bucket reliance-finance-attachments ready' &&
+      exit 0
+      "
+    restart: "no"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: reliance-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP (capture des emails sortants)
+      - "8025:8025"   # UI web (consultation des emails captures)
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
