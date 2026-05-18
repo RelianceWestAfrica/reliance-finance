@@ -37,6 +37,7 @@ export default defineConfig({
         'src/lib/expense-requests/emergency-guards.ts',
         'src/lib/document-sequence/allocate.ts',
         'src/lib/signatures/service.ts',
+        'src/lib/cron/auth.ts',
       ],
       exclude: ['**/*.test.ts', '**/*.spec.ts', '**/*.d.ts'],
       thresholds: {
