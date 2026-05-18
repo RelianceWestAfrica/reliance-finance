@@ -123,6 +123,34 @@ services:
       - "traefik.http.middlewares.reliance-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.reliance-https-redirect.redirectscheme.permanent=true"
 
+  # Cron interne : appelle les endpoints /api/cron/* en HTTP local (via le
+  # reseau interne, donc pas exposes via Traefik public). Header
+  # X-Cron-Secret pour authentification.
+  cron:
+    image: alpine:3.20
+    container_name: reliance-cron
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_started
+    environment:
+      CRON_SECRET: ${CRON_SECRET}
+    networks:
+      - internal
+    command: >
+      sh -c "
+      apk add --no-cache curl tzdata &&
+      cp /usr/share/zoneinfo/Africa/Lome /etc/localtime &&
+      echo 'Africa/Lome' > /etc/timezone &&
+      echo '*/15 * * * * curl -sf -X POST -H \"X-Cron-Secret: $$CRON_SECRET\" http://web:3000/api/cron/activate-quarantines >> /var/log/cron.log 2>&1' >> /etc/crontabs/root &&
+      echo '0 * * * * curl -sf -X POST -H \"X-Cron-Secret: $$CRON_SECRET\" http://web:3000/api/cron/control-checks >> /var/log/cron.log 2>&1' >> /etc/crontabs/root &&
+      echo '15 * * * * curl -sf -X POST -H \"X-Cron-Secret: $$CRON_SECRET\" http://web:3000/api/cron/stale-regularizations >> /var/log/cron.log 2>&1' >> /etc/crontabs/root &&
+      echo '30 6 * * * curl -sf -X POST -H \"X-Cron-Secret: $$CRON_SECRET\" http://web:3000/api/cron/cash-rupture >> /var/log/cron.log 2>&1' >> /etc/crontabs/root &&
+      touch /var/log/cron.log &&
+      crond -f -l 8 &
+      tail -f /var/log/cron.log
+      "
+
 volumes:
   postgres_data:
     driver: local
