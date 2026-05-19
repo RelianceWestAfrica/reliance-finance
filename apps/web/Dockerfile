@@ -21,9 +21,6 @@ COPY packages/workflow-engine/package.json ./packages/workflow-engine/
 COPY packages/config/eslint/package.json ./packages/config/eslint/
 COPY packages/config/typescript/package.json ./packages/config/typescript/
 
-# Approuve les build scripts (Prisma + argon2 + esbuild + sharp)
-RUN pnpm config set auto-install-peers true
-
 RUN pnpm install --frozen-lockfile --prod=false
 
 
