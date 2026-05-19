@@ -13,8 +13,9 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: false,
+    // Vitest pour les tests unitaires. Playwright tourne sur e2e/ separement.
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', '.next', 'dist'],
+    exclude: ['node_modules', '.next', 'dist', 'e2e/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
