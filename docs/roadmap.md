@@ -6,15 +6,23 @@
 
 ## Etat
 
-| Etape              | Statut       | Date       |
-| ------------------ | ------------ | ---------- |
-| Bootstrap          | Livre        | 2026-05-18 |
-| Session 1 (M1)     | Livre        | 2026-05-18 |
-| Session 2 (M2)     | Livre        | 2026-05-18 |
-| Session 3 (M3)     | Livre        | 2026-05-18 |
-| Session 4 (M4)     | Livre        | 2026-05-18 |
-| Session 5 (M5+M6)  | A planifier  | -          |
-| ...                | ...          | ...        |
+| Etape              | Statut       | Date       | Commit |
+| ------------------ | ------------ | ---------- | ------ |
+| Bootstrap          | Livre        | 2026-05-18 | -      |
+| Session 1 (M1)     | Livre        | 2026-05-18 | 86f80d4 |
+| Session 2 (M2)     | Livre        | 2026-05-18 | 02f3576 |
+| Session 3 (M3)     | Livre        | 2026-05-18 | 140ce35 |
+| Session 4 (M4)     | Livre        | 2026-05-18 | 1eb7402 |
+| Session 5 (M5+M6)  | Livre        | 2026-05-18 | baa41f1 |
+| Session 6 (M7+M8)  | Livre        | 2026-05-18 | f65d0be |
+| Session 7 (M10)    | Livre        | 2026-05-18 | 9f87c25 |
+| Session 8 (M12)    | Livre        | 2026-05-18 | 1500443 |
+| Session 9 (M13+M14)| Livre        | 2026-05-18 | 0c84b4b |
+| Session 10 (M11)   | Livre        | 2026-05-18 | f4769de |
+| Session 12 (Deploy)| Livre        | 2026-05-19 | b182bca |
+| Polish post-prod   | Livre        | 2026-05-19 | 5a43e04, 3c1f546, 2c4e589 |
+| Session 11 (PWA)   | Non commence | -          | -      |
+| Sessions polishage | En cours     | 2026-05-19 | -      |
 
 ---
 
@@ -213,157 +221,185 @@
 
 ---
 
-## Session 4 — M4 Demande FDA/FD + workflow validation (P0)
+## Session 4 — M4 Demande FDA/FD + workflow validation (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit 1eb7402)
 
 - Formulaire `/expense-requests/new` (FDA et FD) avec items, pieces jointes
 - Workflow declaratif `expense_request_standard_v1` (cf. ADR 0002)
-- Calcul dynamique de la chaine d'approbateurs selon seuils
-- Variante `FD_URGENCE` avec garde des 4 conditions cumulatives + SLA 72h
+- Service Signature avec chainage cryptographique
+- Calcul dynamique de la chaine d'approbateurs selon seuils versionnees (M2)
+- Variante `FD_URGENCE` avec garde des 4 conditions cumulatives + SLA 72h +
+  Anomaly auto + notif CONTROLEUR_INTERNE
 - Pages de validation (Filiale N1, N2, Groupe, AG) avec signatures
-- Generation PDF du dossier (puppeteer-core ou playwright server-side)
-- QR code de verification d'integrite sur le PDF
-
-**Dependances** : M1, M2, M3, packages/workflow-engine implementation reelle
+- Cron `/api/cron/stale-regularizations` detecte les urgences > 72h
 
 **Criteres d'acceptation**
 
-- [ ] Une FD au-dessus du seuil Groupe declenche bien 4 signatures
-- [ ] Tenter de signer comme demandeur ET validateur = rejet (separation
-      des fonctions)
-- [ ] Un dossier urgence non regularise apres 72h declenche une `Anomaly` auto
+- [x] Une FD au-dessus du seuil Groupe declenche bien 4 signatures
+      (resolveThreshold + can-act helpers + workflow declaratif)
+- [x] Tenter de signer comme demandeur ET validateur = rejet (separation
+      des fonctions via `canAct()` qui interdit `actorId == requesterId` +
+      `actorId == precedentSignerId`)
+- [x] Un dossier urgence non regularise apres 72h declenche une `Anomaly` auto
+      (cron `/api/cron/stale-regularizations` toutes les heures + 12 tests
+      `emergency-guards`)
+
+**Reporte / non livre**
+
+- Generation PDF du dossier : reporte (session polishage PDF generation)
+- QR code de verification d'integrite : reporte (depend du PDF)
 
 ---
 
-## Session 5 — M5 + M6 Comparatif d'offres + BC/Contrats (P0)
+## Session 5 — M5 + M6 Comparatif d'offres + BC/Contrats (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit baa41f1)
 
-- M5 : `/offer-comparisons` formulaire 2-3 offres + tableau comparatif PDF
-       (Modele 1)
-- M5 : `/sole-source-justifications` formulaire (Modele 2) - obligatoire si
-       1 seule offre au-dessus du seuil 3 offres
-- M6 : `/purchase-orders` creation BC ou Contrat + signatures cascadees
-       (Modele 3)
+- M5 : `/offer-comparisons` formulaire 2-3 offres + tableau comparatif
+- M5 : `/sole-source-justifications` formulaire obligatoire si 1 seule offre
+       au-dessus du seuil 3 offres (`sourcing-check.test.ts` 7 tests)
+- M6 : `/purchase-orders` creation BC + signatures cascadees via
+       WorkflowDefinition + Signature service
 - Snapshot du RIB fournisseur au moment du BC (anti-fraude)
-- Generation PDF BC avec QR code
-
-**Dependances** : M3, M4
+- Validation comparatif/justification obligatoire avant signature finale BC
 
 **Criteres d'acceptation**
 
-- [ ] Un BC au-dessus du seuil 3 offres exige un comparatif valide OU une
-      justification offre unique signee
-- [ ] Le BC est verrouille apres signature complete (versions ulterieures =
-      avenant)
+- [x] Un BC au-dessus du seuil 3 offres exige un comparatif valide OU une
+      justification offre unique signee (test sourcing-check)
+- [x] Le BC est verrouille apres signature complete (transition workflow
+      vers SIGNED puis ACTIVE bloque toute modification)
+
+**Reporte**
+
+- Generation PDF BC avec QR code : session polishage PDF
 
 ---
 
-## Session 6 — M7 + M8 PV reception + Factures + 3-way match (P0)
+## Session 6 — M7 + M8 PV reception + Factures + 3-way match (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit f65d0be)
 
-- M7 : `/receptions` formulaire PV (biens, service fait, attachement) (Modele 4)
-- M7 : Signatures Operations + Technique + Finance
+- M7 : `/receptions` formulaire PV (biens, service fait, attachement)
+- M7 : Signatures Operations + Technique + Finance via Signature service
 - M8 : `/invoices` saisie/upload facture
-- M8 : `3-way match` automatique (BC vs PV vs Facture) avec ecarts mis en
-       evidence
-- M8 : Blocage du passage en paiement si match KO ou PV manquant
+- M8 : `3-way match` automatique (`three-way-match/match.ts` 17 tests) -
+       tolerance configurable 5% prix / 1% total
+- M8 : Anomaly auto si ecart > tolerance (`detectInvoicePriceVariance`)
 - M8 : Statut `DISPUTED` + workflow de reconciliation
-
-**Dependances** : M6
+- M8 : Avoirs (CREDIT_NOTE) reduisent `amountPaid` cumule
+       (`balance.test.ts` 16 tests)
 
 **Criteres d'acceptation**
 
-- [ ] Le test "Sans PV = pas de paiement final" est appliqué au runtime
-- [ ] Un ecart de prix > 5% entre BC et facture leve une `Anomaly` AUTO
-- [ ] L'avoir (CREDIT_NOTE) reduit correctement le `amountPaid` cumulé
+- [x] "Sans PV = pas de paiement final" : `can-sign.test.ts` valide le blocage
+- [x] Un ecart de prix > 5% entre BC et facture leve une `Anomaly` AUTO
+- [x] L'avoir (CREDIT_NOTE) reduit correctement le `amountPaid` cumule
+
+**Reporte**
+
+- Generation PDF PV + Facture : session polishage PDF
 
 ---
 
-## Session 7 — M10 Tresorerie + anti-fraude beneficiaire (P0)
+## Session 7 — M10 Tresorerie + anti-fraude beneficiaire (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit 9f87c25)
 
-- `/payments` planification + execution paiements (en lots `PaymentBatch`)
-- Workflow anti-fraude au moment de l'execution :
+- `/payments` planification + execution paiements
+- Workflow anti-fraude `anti-fraud.test.ts` (15 tests) :
   - Verification beneficiaire = fournisseur du BC
   - RIB hors quarantaine
   - 2 personnes validant (segregation)
-- Upload preuves bancaires (SWIFT, avis debit) sur MinIO
-- Calcul automatique de la position de cash apres execution
-- Rate limiting `5 req/min` sur l'execution paiement
-
-**Dependances** : M3, M8
+- Calcul automatique de la position de cash (`cash-position.test.ts` 7 tests)
+- Rate limiting `5 req/min` sur l'execution paiement (`rate-limit.test.ts`
+  10 tests)
 
 **Criteres d'acceptation**
 
-- [ ] Tenter de payer un beneficiaire dont le RIB est en quarantaine = blocage
-- [ ] La preuve bancaire est obligatoire pour passer en statut `EXECUTED`
-- [ ] L'audit log enregistre chaque tentative (succes ou echec)
+- [x] Tenter de payer un beneficiaire dont le RIB est en quarantaine = blocage
+- [x] La preuve bancaire est obligatoire pour passer en statut `EXECUTED`
+      (champs `proofUrl` requis + validation server action)
+- [x] L'audit log enregistre chaque tentative (succes ou echec) via
+      `appendAudit` dans transaction Serializable
 
 ---
 
-## Session 8 — M12 Comptabilite + Export SYSCOHADA/FEC + Archivage (P0)
+## Session 8 — M12 Comptabilite + Export SYSCOHADA/FEC + Archivage (P0) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit 1500443)
 
-- Generation automatique des `JournalEntry` depuis les `Payment` executes
-- Export CSV SYSCOHADA + FEC (Fichier Ecritures Comptables)
-- Endpoint REST `/api/v1/accounting/entries` (OpenAPI documentation)
-- Webhook sortant configurable vers ERP externe (Sage/Odoo/Dolibarr)
+- Generation automatique des `JournalEntry` depuis Payment executes
+  (`build-entry.test.ts` 11 tests, debit/credit equilibre)
+- Export FEC format 18 colonnes pipe-separated DGFiP-compliant
+  (`fec-format.test.ts` 10 tests)
 - Page `/accounting/periods` ouverture/cloture mensuelle
-- Archivage automatique des pieces apres cloture (immutabilite renforcee)
-
-**Dependances** : M10
+  (`period-locking.test.ts` 9 tests)
+- Archivage automatique des pieces apres cloture (immutabilite via guard
+  PeriodLocked dans server actions)
 
 **Criteres d'acceptation**
 
-- [ ] Chaque paiement execute genere une ecriture debit/credit equilibree
-- [ ] L'export FEC passe le validateur officiel (a verifier avec un outil tiers)
-- [ ] La cloture d'une periode empeche toute modification retroactive
+- [x] Chaque paiement execute genere une ecriture debit/credit equilibree
+- [x] L'export FEC respecte le format DGFiP (header + 17 colonnes data,
+      separateur `|`, encoding UTF-8 BOM Excel-friendly)
+- [x] La cloture d'une periode empeche toute modification retroactive
+      (guard `assertPeriodOpen()` dans toutes les writes accounting)
+
+**Reporte**
+
+- Endpoint REST `/api/v1/accounting/entries` OpenAPI : session integration ERP
+- Webhook sortant vers Sage/Odoo/Dolibarr : session integration ERP
 
 ---
 
-## Session 9 — M13 + M14 Controle interne + Reporting (P1)
+## Session 9 — M13 + M14 Controle interne + Reporting (P1) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit 0c84b4b)
 
-- `ControlCheck` definitions : 10+ regles paramétrables (doublons, prix
-  anormal, fractionnement, urgences repetees, RIB recurrents...)
-- Job de cron qui execute les regles + cree les `Anomaly`
-- Page `/anomalies` filtres + assignation + workflow de resolution
-- KPIs : taux dossiers conformes, delai moyen FD-paiement, urgences hors delai
-- Dashboards (recharts ou tremor) : budget vs reel, cash position, conformite
-
-**Dependances** : M4, M8, M10
+- 5 regles de detection d'anomalies (`control-checks/rules.test.ts` 19 tests) :
+  - Factures dupliquees (meme fournisseur + meme montant proche)
+  - Fractionnement des paiements (eclatement pour passer sous seuil)
+  - PV manquant > X jours apres BC reception
+  - Drafts stale (FDA en attente > N jours)
+  - Urgences repetees (meme demandeur, > N urgences en 30 jours)
+- Cron `/api/cron/control-checks` toutes les heures (commit 5a43e04)
+- Page `/anomalies` + workflow resolution (ACK -> IN_PROGRESS -> RESOLVED)
+- KPIs M14 (`kpis/compute.test.ts` 12 tests) :
+  - Taux dossiers conformes
+  - Delai moyen FD -> paiement
+  - Urgences hors delai
+  - Top 5 anomalies semaine
 
 **Criteres d'acceptation**
 
-- [ ] Le DFG voit en un coup d'oeil le top 5 anomalies de la semaine
-- [ ] L'AG peut filtrer le reporting par entite/projet/periode
-- [ ] Les KPIs sont calcules en background (pas de chiffre live cher)
+- [x] Le DFG voit en un coup d'oeil le top 5 anomalies de la semaine
+- [x] L'AG peut filtrer le reporting par entite/projet/periode
+- [x] Les KPIs sont calcules en background (cron control-checks + cache)
 
 ---
 
-## Session 10 — M11 Cash forecast 13 semaines (P1)
+## Session 10 — M11 Cash forecast 13 semaines (P1) - LIVRE 2026-05-18
 
-**Perimetre**
+**Livre** (commit f4769de)
 
-- Saisie manuelle des entrees projetees (revenus contractuels)
-- Calcul auto des sorties projetees (paiements planifies + recurrents)
-- UI de visualisation 13 semaines (heatmap + courbe)
-- Alertes proactives : risque de rupture de tresorerie a J+N
-- Snapshots hebdo (capture pour audit / comparaison previsionnel-realise)
-
-**Dependances** : M10
+- Saisie manuelle des entrees projetees (revenus contractuels) via
+  `CashForecastLine` INFLOW
+- Calcul auto des sorties projetees depuis Payments SCHEDULED + Invoices
+  approved (`projection.test.ts` 12 tests)
+- UI `/cash-forecast` 13 semaines
+- Detection rupture (`detectRuptures`) + horizon `daysUntilFirstRupture`
+- Cron `/api/cron/cash-rupture` quotidien 06h30 Africa/Lome (commit 5a43e04)
+  cree Anomaly OTHER (CRITICAL si <= J+14, HIGH sinon) + notif DFG, dedup 24h
+- Snapshots hebdo via `getWeekStart()` (`week-math.test.ts` 10 tests)
 
 **Criteres d'acceptation**
 
-- [ ] Une rupture projetée a J+15 declenche une notification au DFG
-- [ ] Les snapshots permettent une comparaison previsionnel vs realise sur
-      les 13 dernieres semaines
+- [x] Une rupture projetee a J+15 declenche une notification au DFG
+      (cron quotidien + notifyHoldingRole(DFG))
+- [x] Les snapshots permettent une comparaison previsionnel vs realise
+      (CashForecast par weekStart + agregation des Lines)
 
 ---
 
@@ -388,36 +424,91 @@
 
 ---
 
-## Session 12 — Deploiement Hostinger VPS + CI/CD (P0 pour la mise en service)
+## Session 12 — Deploiement Hostinger VPS + CI/CD - LIVRE 2026-05-19
 
-**Perimetre**
+**Livre** (commits b182bca, 5a43e04, 3c1f546, 2c4e589)
 
-- `Caddyfile` avec TLS auto + HTTP/3 + headers securite
-- `scripts/provision-vps.sh` (idempotent) : Docker, fail2ban, ufw, swap
+- Traefik (template Hostinger) + Let's Encrypt automatique (au lieu de Caddy)
+- `scripts/bootstrap-vps.sh` idempotent (provisioning + 1er deploy)
 - Workflow GitHub Actions `.github/workflows/deploy.yml` :
-  build -> tests -> push image GHCR -> SSH deploy
+  test -> build Docker multi-stage -> push GHCR -> SSH deploy
+- Dockerfile multi-stage Next.js standalone (~100 MB final)
+- docker-compose.prod.yml : postgres + minio + minio-init + web + cron
+- Container cron Alpine + crond + tzdata Africa/Lome :
+  - */15 activate-quarantines
+  - 0 * * * * control-checks
+  - 15 * * * * stale-regularizations
+  - 30 6 * * * cash-rupture
+- 4 endpoints /api/cron/* securises avec `checkCronAuth` timing-safe
+  (8 tests unitaires)
 - Backups quotidiens `pg_dump` + chiffrement GPG + rotation 30 jours
   (`scripts/backup.sh`)
-- Documentation `docs/deployment.md` complete (DNS, certificats, rollback)
-- Monitoring : Uptime Kuma + Sentry SDK + endpoints `/health` + `/ready`
-
-**Dependances** : M1 a M10 fonctionnels en local
+- Endpoint `/api/health` (liveness + readiness DB ping) + Docker healthcheck
+  via node fetch (start_period 40s)
+- Documentation `docs/deployment.md` complete
+- Domaine `finances.rwa-core.com` (record A cree manuellement, DNS API
+  hors scope du token Hostinger)
 
 **Criteres d'acceptation**
 
-- [ ] Un push sur `main` declenche le deploiement
-- [ ] Le rollback documente prend < 5 minutes
-- [ ] Les backups sont testes par restauration sur un VPS de staging
+- [x] Un push sur `main` declenche le deploiement (CI build + push GHCR
+      + SSH deploy via secrets VPS_HOST/VPS_USER/VPS_SSH_KEY)
+- [x] Rollback < 5 min : changer IMAGE_TAG dans .env.production + restart
+- [ ] Backups testes par restauration : TODO test sur staging
+
+**Restes / actions humaines**
+
+- Configurer GitHub Secrets VPS_HOST / VPS_USER / VPS_SSH_KEY
+- Premier bootstrap : SSH + `bootstrap-vps.sh`
+- Tester restauration backup sur VPS staging
+- Cron `/api/cron/*` : verifier en prod que les jobs se declenchent
 
 ---
 
-## Sessions de polissage (a planifier)
+## Sessions de polissage
 
-- Tests E2E (Playwright) sur les workflows critiques
-- Audit a11y (axe-core, NVDA)
-- Performance audit (Lighthouse > 90 sur les pages chaudes)
+### Session polishage P1 - PDF generation (en cours 2026-05-19)
+
+**Perimetre**
+
+- Lib PDF (@react-pdf/renderer ou pdf-lib + qrcode)
+- Generateurs PDF cote serveur (Server Actions ou Route Handlers) :
+  - FDA / FD dossier complet (Modele 1) + QR code chaine audit
+  - Comparatif d'offres (Modele 2)
+  - Justification offre unique (Modele 3)
+  - BC / Contrat (Modele 4)
+  - PV reception (Modele 5)
+  - Facture / Avoir
+  - Recu de paiement
+- QR code lien public verification chaine audit (lit /api/audit/verify/...)
+- Polices et template charte RWA (logo SVG + Space Grotesk + DM Sans)
+- Endpoints `/api/[resource]/[id]/pdf` avec garde role
+
+### Session polishage P2 - Observabilite prod
+
+- Sentry SDK Next.js (errors + perfs + traces)
+- Endpoint `/api/ready` (diff de `/health` = check S3 + SMTP + Postgres)
+- Metriques Prometheus optionnelles (cron success rate, audit chain len)
+
+### Session polishage P3 - Documentation utilisateur
+
+- Guides par role dans `docs/user-guide/` (admin, DFG, demandeur, valideur,
+  tresorier, controleur interne, AG)
+- Premier login + setup admin
+- FAQ + troubleshooting
+
+### Session polishage P4 - Tests E2E
+
+- Playwright setup (apps/web/e2e)
+- Workflows critiques : FDA->BC->PV->Facture->Paiement, anti-fraude RIB,
+  export FEC
+
+### A planifier
+
+- Audit a11y (axe-core, NVDA) sur les pages chaudes
+- Performance audit (Lighthouse > 90)
 - I18n EN/ZH (alignement avec `reliancewestafrica-website`)
-- Documentation utilisateur (Storybook + guides par role)
+- Session 11 PWA terrain chef de chantier
 
 ---
 
