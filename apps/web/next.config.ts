@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -27,4 +28,24 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Sentry wrapper - active uniquement si les env vars sont definies. Sans
+// SENTRY_AUTH_TOKEN les sourcemaps ne sont pas uploadees mais le SDK runtime
+// continue de fonctionner si SENTRY_DSN est present.
+const withSentry = withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: !process.env.SENTRY_DEBUG,
+  // No-op si pas de token (sourcemap upload skip)
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // Reduit la surface de configuration en prod
+  tunnelRoute: undefined,
+  sourcemaps: { disable: false },
+  disableLogger: true,
+  automaticVercelMonitors: false,
+});
+
+// Permet de booter sans @sentry/nextjs cassant le build si SENTRY_* manquent
+// totalement (le wrapper accepte org/project undefined).
+export default process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN
+  ? withSentry
+  : nextConfig;
