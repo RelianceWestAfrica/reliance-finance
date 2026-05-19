@@ -2,7 +2,8 @@ import { prisma } from '@reliance-finance/database';
 import { redirect } from 'next/navigation';
 
 import { auth } from '@/lib/auth';
-import { ALLOWED_TIMEZONES, ALLOWED_LOCALES, updatePreferences } from './actions';
+import { updatePreferences } from './actions';
+import { ALLOWED_TIMEZONES, ALLOWED_LOCALES } from './constants';
 
 export default async function ProfilePage(props: {
   searchParams: Promise<{ error?: string }>;

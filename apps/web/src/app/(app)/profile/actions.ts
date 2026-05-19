@@ -8,25 +8,7 @@ import { auth } from '@/lib/auth';
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 import { getRequestActorContext } from '@/lib/audit/actor-context';
 
-const ALLOWED_TIMEZONES = [
-  'Africa/Lome',
-  'Africa/Abidjan',
-  'Africa/Dakar',
-  'Africa/Bamako',
-  'Africa/Cotonou',
-  'Africa/Ouagadougou',
-  'Africa/Niamey',
-  'Africa/Conakry',
-  'Africa/Nouakchott',
-  'Africa/Douala',
-  'Africa/Libreville',
-  'Africa/Brazzaville',
-  'Africa/Kinshasa',
-  'Europe/Paris',
-  'UTC',
-] as const;
-
-const ALLOWED_LOCALES = ['fr-FR', 'en-US', 'fr-CI'] as const;
+import { ALLOWED_TIMEZONES, ALLOWED_LOCALES } from './constants';
 
 const schema = z.object({
   name: z.string().min(2).max(100).trim().optional().or(z.literal('').transform(() => undefined)),
@@ -84,5 +66,3 @@ export async function updatePreferences(
   revalidatePath('/profile');
   return { ok: true };
 }
-
-export { ALLOWED_TIMEZONES, ALLOWED_LOCALES };

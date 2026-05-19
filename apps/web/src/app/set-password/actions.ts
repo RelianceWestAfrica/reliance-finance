@@ -25,7 +25,7 @@ const schema = z
     path: ['confirm'],
   });
 
-export type SetPasswordResult =
+type SetPasswordResult =
   | { ok: false; error: string }
   | { ok: true };
 
