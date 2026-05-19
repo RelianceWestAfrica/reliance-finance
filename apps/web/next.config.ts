@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
   experimental: {
     typedRoutes: false,
   },
+    webpack: (config) => {
+        config.resolve.extensionAlias = {
+            '.js': ['.ts', '.tsx', '.js'],
+        };
+      return config;
+    },
   async headers() {
     return [
       {
