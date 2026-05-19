@@ -1,8 +1,6 @@
 // =============================================================================
 // PDF components reutilisables - Header, Footer, FieldRow, SignatureBlock, ...
 // =============================================================================
-
-/* eslint-disable jsx-a11y/alt-text */
 import { Image, Text, View } from '@react-pdf/renderer';
 
 import { styles, colors } from './styles.js';
