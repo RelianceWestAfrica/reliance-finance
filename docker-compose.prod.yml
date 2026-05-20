@@ -146,7 +146,7 @@ services:
       echo '15 * * * * curl -sf -X POST -H \"X-Cron-Secret: $$CRON_SECRET\" http://web:3000/api/cron/stale-regularizations >> /var/log/cron.log 2>&1' >> /etc/crontabs/root &&
       echo '30 6 * * * curl -sf -X POST -H \"X-Cron-Secret: $$CRON_SECRET\" http://web:3000/api/cron/cash-rupture >> /var/log/cron.log 2>&1' >> /etc/crontabs/root &&
       touch /var/log/cron.log &&
-      crond -f -l 8 &
+      crond -b -l 8 &&
       tail -f /var/log/cron.log
       "
 
