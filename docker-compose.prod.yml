@@ -84,6 +84,10 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
+      # Next.js standalone bind sur $HOSTNAME (= container ID dans Docker)
+      # par defaut -> le loopback echoue. Force l'ecoute sur 0.0.0.0.
+      HOSTNAME: "0.0.0.0"
+      PORT: "3000"
       DATABASE_URL: postgresql://${POSTGRES_USER:-reliance}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-reliance_finance}?schema=public&connection_limit=10
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: "true"
