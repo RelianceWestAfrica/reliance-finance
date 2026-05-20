@@ -104,9 +104,15 @@ services:
       NEXT_PUBLIC_DEFAULT_CURRENCY: XOF
       ANTI_FRAUD_RIB_QUARANTINE_HOURS: ${ANTI_FRAUD_RIB_QUARANTINE_HOURS:-24}
       AUDIT_RETENTION_YEARS: 10
+      # Chemin absolu du binaire Query Engine Prisma (le bundle Next.js
+      # standalone ne le trace pas automatiquement)
+      PRISMA_QUERY_ENGINE_LIBRARY: /app/packages/database/src/generated/client/libquery_engine-linux-musl-openssl-3.0.x.so.node
+    # Expose en loopback uniquement : nginx (systeme) fait le reverse proxy
+    # + Let's Encrypt. Port 3001 (3000 deja pris par un autre service).
+    ports:
+      - "127.0.0.1:3001:3000"
     networks:
       - internal
-      - traefik
     healthcheck:
       # Utilise node fetch (global Node 22) plutot que wget/curl (non installes
       # dans l'image runner alpine). Exit 0 si /api/health repond 200.
@@ -115,21 +121,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 40s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      # HTTPS router avec resolveur Let's Encrypt
-      - "traefik.http.routers.reliance-web.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.reliance-web.entrypoints=websecure"
-      - "traefik.http.routers.reliance-web.tls=true"
-      - "traefik.http.routers.reliance-web.tls.certresolver=letsencrypt"
-      - "traefik.http.services.reliance-web.loadbalancer.server.port=3000"
-      # HTTP -> HTTPS redirect
-      - "traefik.http.routers.reliance-web-http.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.reliance-web-http.entrypoints=web"
-      - "traefik.http.routers.reliance-web-http.middlewares=reliance-https-redirect"
-      - "traefik.http.middlewares.reliance-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.reliance-https-redirect.redirectscheme.permanent=true"
 
   # Cron interne : appelle les endpoints /api/cron/* en HTTP local (via le
   # reseau interne, donc pas exposes via Traefik public). Header
@@ -168,5 +159,3 @@ volumes:
 networks:
   internal:
     driver: bridge
-  traefik:
-    external: true

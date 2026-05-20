@@ -65,6 +65,13 @@ COPY --from=builder /repo/apps/web/public ./apps/web/public
 COPY --from=builder /repo/packages/database/src/generated ./packages/database/src/generated
 COPY --from=builder /repo/packages/database/prisma ./packages/database/prisma
 
+# Le bundle Next.js standalone ne trace pas le binaire natif du Query Engine
+# Prisma (charge dynamiquement au runtime). On le copie explicitement a cote
+# du serveur standalone + dans les chemins ou Prisma le cherche.
+COPY --from=builder /repo/packages/database/src/generated/client/*.so.node ./apps/web/.next/server/
+RUN mkdir -p /app/apps/web/.prisma && \
+    cp /app/packages/database/src/generated/client/*.so.node /app/apps/web/ 2>/dev/null || true
+
 USER nextjs
 
 EXPOSE 3000
