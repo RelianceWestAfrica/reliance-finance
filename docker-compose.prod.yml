@@ -91,6 +91,10 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-reliance}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-reliance_finance}?schema=public&connection_limit=10
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: "true"
+      # URL canonique pour que NextAuth construise les callbacks/redirects
+      # avec le vrai domaine (sinon il utilise HOSTNAME=0.0.0.0:3000)
+      AUTH_URL: https://${APP_DOMAIN}
+      NEXTAUTH_URL: https://${APP_DOMAIN}
       AUTH_SESSION_MAX_AGE_SECONDS: ${AUTH_SESSION_MAX_AGE_SECONDS:-900}
       EMAIL_SERVER_HOST: ${EMAIL_SERVER_HOST}
       EMAIL_SERVER_PORT: ${EMAIL_SERVER_PORT:-587}
