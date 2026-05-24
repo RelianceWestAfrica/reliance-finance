@@ -95,6 +95,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
+          envs: GITHUB_SHA
           script: |
             set -euo pipefail
             cd /opt/reliance-finance
