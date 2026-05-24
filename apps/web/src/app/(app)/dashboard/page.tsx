@@ -36,9 +36,10 @@ export default async function DashboardPage() {
           Bienvenue, {session.user.name ?? session.user.email}
         </h1>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Squelette de l&apos;application Reliance Finance - les modules fonctionnels
-          (M1 a M14) seront livres dans les sessions suivantes. Voir{' '}
-          <code className="font-mono text-xs">docs/roadmap.md</code>.
+          Plateforme de gestion financiere Reliance West Africa - cycle complet de
+          la procedure normative : fournisseurs, demandes de depense, comparatifs,
+          bons de commande, receptions, factures (3-way match), tresorerie,
+          comptabilite SYSCOHADA et reporting.
         </p>
       </div>
 
@@ -88,27 +89,6 @@ export default async function DashboardPage() {
             </tbody>
           </table>
         )}
-      </section>
-
-      <section className="rounded-lg border border-dashed bg-[var(--color-card)] p-6">
-        <h2 className="text-lg font-semibold">Prochaines fonctionnalites</h2>
-        <ul className="mt-3 space-y-2 text-sm text-[var(--color-muted-foreground)]">
-          <li>
-            <span className="font-mono text-xs">M1</span> Auth & RBAC complet (groupes,
-            invitations, audit log)
-          </li>
-          <li>
-            <span className="font-mono text-xs">M2</span> Gestion entites, projets, plan
-            comptable
-          </li>
-          <li>
-            <span className="font-mono text-xs">M3</span> Cycle fournisseur + anti-fraude RIB
-          </li>
-          <li>
-            <span className="font-mono text-xs">M4</span> Demande de depense (FDA/FD) +
-            workflow
-          </li>
-        </ul>
       </section>
     </div>
   );
