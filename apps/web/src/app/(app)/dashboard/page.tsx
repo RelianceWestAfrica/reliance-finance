@@ -4,6 +4,14 @@ import { getTenantedDb } from '@/lib/tenancy';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 
+const iconProps = {
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.8,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+};
+
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -23,73 +31,118 @@ export default async function DashboardPage() {
   ]);
 
   const stats = [
-    { label: 'Entites accessibles', value: entityCount, note: 'Holding + filiales + SPV' },
-    { label: 'Fournisseurs actifs', value: supplierCount, note: 'Statut ACTIVE' },
-    { label: 'Projets actifs', value: projectCount, note: 'Periodes en cours' },
-    { label: 'Seuils configures', value: thresholdCount, note: 'Cadre normatif §5' },
+    {
+      label: 'Entités',
+      value: entityCount,
+      note: 'Holding + filiales + SPV',
+      icon: (
+        <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
+          <path d="M3 21h18M5 21V7l7-4 7 4v14" />
+          <path d="M9 21v-5h6v5" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Fournisseurs',
+      value: supplierCount,
+      note: 'Actifs · statut ACTIVE',
+      icon: (
+        <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
+          <path d="M3 7h18M3 12h18M3 17h12" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Projets',
+      value: projectCount,
+      note: 'Périodes en cours',
+      icon: (
+        <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
+          <path d="M3 7l9-4 9 4-9 4z" />
+          <path d="M3 7v10l9 4 9-4V7" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Seuils',
+      value: thresholdCount,
+      note: 'Configurés · cadre §5',
+      icon: (
+        <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
+          <path d="M4 21V10M12 21V4M20 21v-7" />
+          <circle cx="4" cy="7" r="2" />
+          <circle cx="20" cy="11" r="2" />
+        </svg>
+      ),
+    },
   ];
 
+  const firstName = (session.user.name ?? session.user.email ?? '').split(/[@.\s]/)[0];
+
   return (
-    <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Bienvenue, {session.user.name ?? session.user.email}
+    <div className="space-y-7">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Bonjour{firstName ? ', ' + firstName.charAt(0).toUpperCase() + firstName.slice(1) : ''}
         </h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          Plateforme de gestion financiere Reliance West Africa - cycle complet de
-          la procedure normative : fournisseurs, demandes de depense, comparatifs,
-          bons de commande, receptions, factures (3-way match), tresorerie,
-          comptabilite SYSCOHADA et reporting.
+        <p className="max-w-2xl text-sm leading-relaxed text-[var(--color-muted-foreground)]">
+          Vue consolidée du cycle financier — fournisseurs, demandes de dépense, comparatifs,
+          bons de commande, réceptions, factures (3-way match), trésorerie et comptabilité
+          SYSCOHADA.
         </p>
-      </div>
+      </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="rounded-lg border bg-[var(--color-card)] p-5 shadow-sm"
+            className="group relative overflow-hidden rounded-[var(--radius)] border bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]"
           >
-            <div className="text-sm font-medium text-[var(--color-muted-foreground)]">
-              {stat.label}
+            <span className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[var(--color-primary)] to-transparent opacity-0 transition-opacity group-hover:opacity-70" />
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-muted-foreground)]">
+                {stat.label}
+              </span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
+                {stat.icon}
+              </span>
             </div>
-            <div className="mt-2 text-3xl font-semibold tabular-nums">{stat.value}</div>
-            <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-              {stat.note}
-            </div>
+            <div className="mt-3.5 text-4xl font-bold tabular-nums leading-none">{stat.value}</div>
+            <div className="mt-2 text-xs text-[var(--color-faint)]">{stat.note}</div>
           </div>
         ))}
       </section>
 
-      <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h2 className="text-lg font-semibold">Vos roles</h2>
-        <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-          Permissions decrites dans{' '}
-          <code className="font-mono text-xs">docs/rbac-matrix.md</code>.
-        </p>
+      <section className="rounded-[var(--radius)] border bg-[var(--color-card)] shadow-[var(--shadow-card)]">
+        <div className="flex items-baseline justify-between border-b border-[var(--color-border-soft)] px-5 py-4">
+          <h2 className="text-base font-semibold">Vos rôles</h2>
+          <span className="font-mono text-[11px] text-[var(--color-faint)]">docs/rbac-matrix.md</span>
+        </div>
         {memberships.length === 0 ? (
-          <p className="mt-4 text-sm text-[var(--color-warning)]">
-            Aucun role actif. Contactez votre administrateur pour obtenir vos
-            permissions.
+          <p className="px-5 py-5 text-sm text-[var(--color-warning)]">
+            Aucun rôle actif. Contactez votre administrateur pour obtenir vos permissions.
           </p>
         ) : (
-          <table className="mt-4 w-full text-sm">
-            <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
-              <tr>
-                <th className="pb-2 font-medium">Role</th>
-                <th className="pb-2 font-medium">Entite</th>
-              </tr>
-            </thead>
-            <tbody>
-              {memberships.map((m) => (
-                <tr key={m.entityId + '-' + m.role} className="border-b last:border-0">
-                  <td className="py-2 font-mono text-xs">{m.role}</td>
-                  <td className="py-2">{m.entityCode}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul>
+            {memberships.map((m) => (
+              <li
+                key={m.entityId + '-' + m.role}
+                className="flex items-center justify-between border-b border-[var(--color-border-soft)] px-5 py-3.5 last:border-0"
+              >
+                <span className="rounded-md bg-[var(--color-primary-soft)] px-2.5 py-1 font-mono text-[11.5px] font-semibold text-[var(--color-primary)]">
+                  {m.role}
+                </span>
+                <span className="text-[13px] text-[var(--color-muted-foreground)]">{m.entityCode}</span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
+
+      <p className="flex items-center gap-2 text-[11.5px] text-[var(--color-faint)]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]" />
+        Système opérationnel · toute connexion est journalisée (cadre normatif §10).
+      </p>
     </div>
   );
 }
