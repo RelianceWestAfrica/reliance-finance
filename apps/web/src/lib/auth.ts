@@ -19,17 +19,25 @@ const credentialsSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
+// Connexion locale (email/mot de passe + lien magique) DÉSACTIVÉE par défaut :
+// le portail SSO RWA Core (Keycloak) est l'unique point d'entrée. Réactivable
+// en secours (panne portail) via LOCAL_LOGIN_ENABLED=true, sans changement de
+// code — même convention que les autres plateformes RWA (cf. domains).
+const localLoginEnabled = process.env.LOCAL_LOGIN_ENABLED === 'true';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
   providers: [
-    Credentials({
-      name: 'Mot de passe',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Mot de passe', type: 'password' },
-      },
-      async authorize(credentials) {
+    ...(localLoginEnabled
+      ? [
+          Credentials({
+            name: 'Mot de passe',
+            credentials: {
+              email: { label: 'Email', type: 'email' },
+              password: { label: 'Mot de passe', type: 'password' },
+            },
+            async authorize(credentials) {
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success) {
           return null;
@@ -88,9 +96,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           : undefined,
       },
-      from: process.env.EMAIL_FROM ?? 'no-reply@reliancewestafrica.com',
-      maxAge: 15 * 60, // 15 minutes
-    }),
+            from: process.env.EMAIL_FROM ?? 'no-reply@reliancewestafrica.com',
+            maxAge: 15 * 60, // 15 minutes
+          }),
+        ]
+      : []),
+    // SSO RWA Core (Keycloak) — point d'entrée unique en fonctionnement normal.
     ...(process.env.KEYCLOAK_ID && process.env.KEYCLOAK_SECRET && process.env.KEYCLOAK_ISSUER
       ? [
           Keycloak({
