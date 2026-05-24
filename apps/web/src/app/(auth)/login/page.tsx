@@ -1,10 +1,6 @@
 import { redirect } from 'next/navigation';
-import { auth, signIn } from '@/lib/auth';
+import { auth, signIn, localLoginEnabled } from '@/lib/auth';
 import { KeycloakSso } from './keycloak-sso';
-
-// Connexion locale désactivée par défaut : le portail SSO RWA Core est l'unique
-// point d'entrée. Réactivable en secours via LOCAL_LOGIN_ENABLED=true.
-const localLoginEnabled = process.env.LOCAL_LOGIN_ENABLED === 'true';
 
 export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;

@@ -23,7 +23,13 @@ const credentialsSchema = z.object({
 // le portail SSO RWA Core (Keycloak) est l'unique point d'entrée. Réactivable
 // en secours (panne portail) via LOCAL_LOGIN_ENABLED=true, sans changement de
 // code — même convention que les autres plateformes RWA (cf. domains).
-const localLoginEnabled = process.env.LOCAL_LOGIN_ENABLED === 'true';
+// Filet anti-lockout : si le SSO n'est pas configuré (vars Keycloak absentes),
+// le login local reste actif pour ne jamais verrouiller totalement l'app.
+const keycloakConfigured = Boolean(
+  process.env.KEYCLOAK_ISSUER && process.env.KEYCLOAK_ID && process.env.KEYCLOAK_SECRET,
+);
+export const localLoginEnabled =
+  process.env.LOCAL_LOGIN_ENABLED === 'true' || !keycloakConfigured;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
