@@ -29,6 +29,13 @@ export default async function LoginPage(props: {
     });
   }
 
+  async function loginWithSSO() {
+    'use server';
+    await signIn('keycloak', { redirectTo: callbackUrl });
+  }
+
+  const ssoEnabled = Boolean(process.env.KEYCLOAK_ID);
+
   const errorMessage = searchParams.error === 'CredentialsSignin'
     ? 'Identifiants invalides. Verifiez votre email et votre mot de passe.'
     : searchParams.error
@@ -54,6 +61,29 @@ export default async function LoginPage(props: {
           >
             {errorMessage}
           </div>
+        )}
+
+        {ssoEnabled && (
+          <>
+            <form action={loginWithSSO}>
+              <button
+                type="submit"
+                className="w-full rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)] focus:ring-offset-2"
+              >
+                Continuer avec le portail (SSO)
+              </button>
+            </form>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[var(--color-card)] px-2 text-[var(--color-muted-foreground)]">
+                  ou par mot de passe
+                </span>
+              </div>
+            </div>
+          </>
         )}
 
         <form action={loginWithPassword} className="space-y-4">

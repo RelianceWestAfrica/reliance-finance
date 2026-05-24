@@ -5,6 +5,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import EmailProvider from 'next-auth/providers/nodemailer';
+import Keycloak from 'next-auth/providers/keycloak';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import argon2 from 'argon2';
 import { z } from 'zod';
@@ -90,7 +91,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       from: process.env.EMAIL_FROM ?? 'no-reply@reliancewestafrica.com',
       maxAge: 15 * 60, // 15 minutes
     }),
+    ...(process.env.KEYCLOAK_ID && process.env.KEYCLOAK_SECRET && process.env.KEYCLOAK_ISSUER
+      ? [
+          Keycloak({
+            clientId: process.env.KEYCLOAK_ID,
+            clientSecret: process.env.KEYCLOAK_SECRET,
+            issuer: process.env.KEYCLOAK_ISSUER,
+            // Lie la connexion SSO au compte Finances existant (meme email)
+            allowDangerousEmailAccountLinking: true,
+          }),
+        ]
+      : []),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    // Garde d'acces SSO : seuls les comptes Finances existants et actifs
+    // (avec au moins un role actif) peuvent entrer via Keycloak.
+    async signIn({ user, account }) {
+      if (account?.provider === 'keycloak') {
+        const email = user?.email?.toLowerCase().trim();
+        if (!email) return false;
+        const existing = await prisma.user.findUnique({
+          where: { email },
+          select: { id: true, isActive: true },
+        });
+        if (!existing || !existing.isActive) return false;
+        const activeMemberships = await prisma.membership.count({
+          where: { userId: existing.id, isActive: true },
+        });
+        if (activeMemberships === 0) return false;
+      }
+      return true;
+    },
+  },
   events: {
     async signIn({ user, account, isNewUser }) {
       if (!user?.id) return;
