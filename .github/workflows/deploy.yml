@@ -103,7 +103,12 @@ jobs:
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml pull web
             docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml up -d --no-deps web
-            docker compose -f docker-compose.prod.yml exec -T web node -e "require('@reliance-finance/database').prisma.\$queryRaw\`SELECT 1\`.then(() => console.log('DB OK')).catch(e => { console.error(e); process.exit(1) })"
+            ok=0
+            for i in $(seq 1 12); do
+              if curl -fsS https://finances.rwa-core.com/api/health | grep -q '"status":"ok"'; then ok=1; echo "HEALTH OK"; break; fi
+              echo "waiting for app..."; sleep 3
+            done
+            [ "$ok" = "1" ]
             docker image prune -f
         env:
           GITHUB_SHA: ${{ github.sha }}
