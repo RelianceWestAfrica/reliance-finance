@@ -126,7 +126,7 @@ export function InvoicePdf({ data }: { data: InvoicePdfData }) {
         ) : null}
 
         {data.threeWayMatchStatus === 'MISMATCH' ? (
-          <Text style={[styles.italic, { color: '#B23A3A', marginTop: 8 }]}>
+          <Text style={[styles.italic, { color: '#DC2626', marginTop: 8 }]}>
             Ecart 3-way match detecte. Le paiement est bloque jusqu&apos;a
             reconciliation (procedure §M8).
           </Text>
