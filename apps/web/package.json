@@ -22,7 +22,7 @@
     "@react-pdf/renderer": "^4.5.1",
     "@reliance-finance/database": "workspace:*",
     "@reliance-finance/workflow-engine": "workspace:*",
-    "@reliancewestafrica/design-system": "^1.0.0",
+    "@reliancewestafrica/design-system": "^1.1.0",
     "@sentry/nextjs": "^10.53.1",
     "argon2": "^0.41.1",
     "clsx": "^2.1.1",
