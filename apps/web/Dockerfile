@@ -21,7 +21,11 @@ COPY packages/workflow-engine/package.json ./packages/workflow-engine/
 COPY packages/config/eslint/package.json ./packages/config/eslint/
 COPY packages/config/typescript/package.json ./packages/config/typescript/
 
-RUN pnpm install --frozen-lockfile --prod=false
+# NODE_AUTH_TOKEN injected as a BuildKit secret (read access to the private
+# @reliancewestafrica GitHub Packages registry; consumed by .npmrc). Not baked into layers.
+RUN --mount=type=secret,id=node_auth_token \
+    NODE_AUTH_TOKEN="$(cat /run/secrets/node_auth_token 2>/dev/null || true)" \
+    pnpm install --frozen-lockfile --prod=false
 
 
 # ---------- Stage 2 : builder -------------------------------------------------
