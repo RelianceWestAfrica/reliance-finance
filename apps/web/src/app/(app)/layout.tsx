@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth, signOut } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { getUserMemberships } from '@/lib/rbac';
 import { prisma } from '@reliance-finance/database';
 import { AppSidebar, MobileNav } from '@/components/app-nav';
@@ -33,16 +33,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           .join('  /  ')
       : 'Aucun rôle actif';
 
-  async function logoutAction() {
-    'use server';
-    await signOut({ redirectTo: '/login' });
-  }
+  const logoutHref = '/api/auth/sso-logout';
 
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
-      <MobileNav logoutAction={logoutAction} />
+      <MobileNav logoutAction={logoutHref} />
       <div className="md:grid md:grid-cols-[260px_1fr]">
-        <AppSidebar userLabel={userLabel} roleLabel={roleLabel} logoutAction={logoutAction} />
+        <AppSidebar userLabel={userLabel} roleLabel={roleLabel} logoutAction={logoutHref} />
         <div className="min-w-0">
           <main className="mx-auto w-full max-w-[1240px] px-5 py-8 md:px-9 md:py-10">{children}</main>
         </div>
