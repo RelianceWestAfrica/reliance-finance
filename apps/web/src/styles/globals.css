@@ -1,64 +1,66 @@
 @import 'tailwindcss';
 
 /* =============================================================================
-   Reliance Finance - Design system
-   Direction : "private banking" raffine - Outfit (marque RWA), canevas ivoire,
-   primaire emeraude, accent or, sidebar foret profond.
+   Reliance Finance — Palette RWA Design System (imposée)
+   Valeurs miroir de @reliancewestafrica/design-system (tokens). À terme :
+   importer "@reliancewestafrica/design-system/css" comme source unique de vérité
+   (nécessite l'accès read:packages au registre GitHub Packages).
+   Primaire navy RWA, accent or, surfaces cream/blanc, sidebar near-black.
    ============================================================================= */
 
 @theme {
-  /* Surfaces & texte (canevas ivoire chaud) */
-  --color-background: #f6f3ee;
-  --color-foreground: #1c1a16;
+  /* Surfaces & texte (cream RWA) */
+  --color-background: #faf8f4;
+  --color-foreground: #15163a;
   --color-card: #ffffff;
-  --color-card-foreground: #1c1a16;
-  --color-surface-2: #fbf9f5;
-  --color-muted: #efebe3;
-  --color-muted-foreground: #6e665a;
-  --color-faint: #9a9183;
-  --color-border: #e7e1d6;
-  --color-border-soft: #efeae0;
-  --color-input: #e7e1d6;
-  --color-ring: #0e5138;
+  --color-card-foreground: #15163a;
+  --color-surface-2: #f6f6f8;
+  --color-muted: #ececf0;
+  --color-muted-foreground: #3f3f4e;
+  --color-faint: #8b8b98;
+  --color-border: #e5e5ee;
+  --color-border-soft: #ececf0;
+  --color-input: #e5e5ee;
+  --color-ring: #35346b;
 
-  /* Primaire emeraude + accent or */
-  --color-primary: #0e5138;
-  --color-primary-hover: #0a3f2b;
+  /* Primaire navy RWA + accent or */
+  --color-primary: #35346b;
+  --color-primary-hover: #23234d;
   --color-primary-foreground: #ffffff;
-  --color-primary-soft: #e7efe9;
-  --color-accent: #a87b2c;
-  --color-accent-foreground: #ffffff;
-  --color-accent-soft: #f1e8d4;
+  --color-primary-soft: #e5e5ee;
+  --color-accent: #d4ae91;
+  --color-accent-foreground: #15163a;
+  --color-accent-soft: #fbf1e7;
 
-  --color-secondary: #efebe3;
-  --color-secondary-foreground: #1c1a16;
+  --color-secondary: #ececf0;
+  --color-secondary-foreground: #15163a;
 
-  /* Semantiques */
-  --color-success: #157a52;
+  /* Sémantiques (palette institutionnelle RWA) */
+  --color-success: #2f7d5b;
   --color-success-foreground: #ffffff;
   --color-success-soft: #e4efe7;
-  --color-warning: #b5791f;
+  --color-warning: #b97a1f;
   --color-warning-foreground: #ffffff;
   --color-warning-soft: #f6eedc;
-  --color-destructive: #b23a2e;
+  --color-destructive: #b23a3a;
   --color-destructive-foreground: #ffffff;
   --color-destructive-soft: #f6e4e1;
 
-  /* Sidebar (foret profond) */
-  --color-sidebar: #14160f;
-  --color-sidebar-2: #1b1e15;
-  --color-sidebar-foreground: #c8c3b4;
-  --color-sidebar-faint: #7f7b6b;
-  --color-sidebar-active: #f4f1e8;
+  /* Sidebar (near-black navy RWA) */
+  --color-sidebar: #0f1031;
+  --color-sidebar-2: #15163a;
+  --color-sidebar-foreground: #c3c3d6;
+  --color-sidebar-faint: #8a8aae;
+  --color-sidebar-active: #faf8f4;
 
-  /* Typographie - Outfit (police de marque RWA), injectee via next/font */
+  /* Typographie — Outfit (police de marque RWA), injectée via next/font */
   --font-sans: var(--font-outfit), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: var(--font-outfit), ui-monospace, 'SFMono-Regular', monospace;
 
   --radius: 0.75rem;
 
-  --shadow-card: 0 1px 2px rgba(28, 26, 22, 0.04), 0 10px 28px -14px rgba(28, 26, 22, 0.16);
-  --shadow-sm: 0 1px 2px rgba(28, 26, 22, 0.05);
+  --shadow-card: 0 1px 2px rgba(15, 16, 49, 0.06), 0 10px 28px -14px rgba(15, 16, 49, 0.18);
+  --shadow-sm: 0 1px 2px rgba(15, 16, 49, 0.05);
 }
 
 * {
@@ -86,26 +88,26 @@ h4 {
   color: #fff;
 }
 
-/* Chiffres tabulaires (alignement des montants/references) */
+/* Chiffres tabulaires (alignement des montants/références) */
 .tabular-nums,
 .font-mono {
   font-variant-numeric: tabular-nums;
 }
 
-/* Scrollbar discrete */
+/* Scrollbar discrète */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #d9d2c5 transparent;
+  scrollbar-color: #c3c3d6 transparent;
 }
 *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #d9d2c5;
+  background: #c3c3d6;
   border-radius: 999px;
   border: 3px solid var(--color-background);
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: #c7bfae;
+  background: #8a8aae;
 }

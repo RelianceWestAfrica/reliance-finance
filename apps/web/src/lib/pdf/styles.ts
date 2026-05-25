@@ -12,16 +12,16 @@ import { StyleSheet, Font } from '@react-pdf/renderer';
 // si besoin via Font.register().
 
 export const colors = {
-  text: '#0F172A',
-  textMuted: '#475569',
-  textLight: '#94A3B8',
-  accent: '#1E40AF', // bleu officiel
-  accentLight: '#DBEAFE',
-  border: '#E2E8F0',
-  background: '#F8FAFC',
-  success: '#15803D',
-  danger: '#B91C1C',
-  warning: '#B45309',
+  text: '#15163A', // navy near-black RWA
+  textMuted: '#3F3F4E',
+  textLight: '#8B8B98',
+  accent: '#35346B', // navy RWA (officiel / signatures)
+  accentLight: '#E5E5EE',
+  border: '#E5E5EE',
+  background: '#FAF8F4', // cream RWA
+  success: '#2F7D5B',
+  danger: '#B23A3A',
+  warning: '#B97A1F',
 } as const;
 
 export const sizes = {
