@@ -16,6 +16,9 @@ jobs:
   test:
     name: Tests + Lint + Typecheck
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -28,6 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Prisma Client
         run: pnpm db:generate
@@ -81,6 +86,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            node_auth_token=${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Deploy to VPS
