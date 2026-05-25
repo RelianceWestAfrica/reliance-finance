@@ -81,11 +81,11 @@ export function AppSidebar({
   return (
     <aside className="sticky top-0 hidden h-screen flex-col bg-[var(--color-sidebar)] text-[var(--color-sidebar-foreground)] md:flex">
       <div className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-[18px]">
-        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border border-white/15 bg-gradient-to-br from-[#1c6a48] to-[#0c4530] text-[17px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
+        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[10px] border border-white/15 bg-gradient-to-br from-[#35346b] to-[#0f1031] text-[17px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
           R
         </div>
         <div className="leading-tight">
-          <div className="text-[16px] font-bold text-[#f4f1e8]">Reliance</div>
+          <div className="text-[16px] font-bold text-[#f1e9dc]">Reliance</div>
           <div className="mt-[2px] text-[10px] font-medium uppercase tracking-[0.16em] text-[var(--color-sidebar-faint)]">
             Finance
           </div>
@@ -108,10 +108,10 @@ export function AppSidebar({
                     'relative flex items-center gap-3 rounded-[9px] px-3 py-[8.5px] text-[13.5px] font-normal transition-colors ' +
                     (active
                       ? 'bg-white/[0.07] text-white before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r-[3px] before:bg-[var(--color-accent)] before:content-[""]'
-                      : 'text-[var(--color-sidebar-foreground)] hover:bg-white/[0.05] hover:text-[#f4f1e8]')
+                      : 'text-[var(--color-sidebar-foreground)] hover:bg-white/[0.05] hover:text-[#f1e9dc]')
                   }
                 >
-                  <span className={'flex-none ' + (active ? 'text-[#7fd0a6]' : 'opacity-80')}>
+                  <span className={'flex-none ' + (active ? 'text-[#d4ae91]' : 'opacity-80')}>
                     <span className="block h-[17px] w-[17px] [&>svg]:h-full [&>svg]:w-full">{item.icon}</span>
                   </span>
                   {item.label}
@@ -124,11 +124,11 @@ export function AppSidebar({
 
       <div className="border-t border-white/[0.06] p-3">
         <div className="flex items-center gap-3 px-1 py-1">
-          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[9px] bg-[var(--color-accent)] text-[13px] font-semibold text-[#1c1407]">
+          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[9px] bg-[var(--color-accent)] text-[13px] font-semibold text-[#15163a]">
             {initials(userLabel)}
           </div>
           <div className="min-w-0">
-            <div className="truncate text-[12.5px] font-medium text-[#ede9de]">{userLabel}</div>
+            <div className="truncate text-[12.5px] font-medium text-[#f1e9dc]">{userLabel}</div>
             <div className="truncate text-[11px] text-[var(--color-sidebar-faint)]">{roleLabel}</div>
           </div>
         </div>
@@ -153,10 +153,10 @@ export function MobileNav({ logoutAction }: { logoutAction: () => Promise<void> 
     <header className="sticky top-0 z-20 bg-[var(--color-sidebar)] text-[var(--color-sidebar-foreground)] md:hidden">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-white/15 bg-gradient-to-br from-[#1c6a48] to-[#0c4530] text-[15px] font-semibold text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-white/15 bg-gradient-to-br from-[#35346b] to-[#0f1031] text-[15px] font-semibold text-white">
             R
           </div>
-          <span className="text-[15px] font-bold text-[#f4f1e8]">Reliance Finance</span>
+          <span className="text-[15px] font-bold text-[#f1e9dc]">Reliance Finance</span>
         </div>
         <form action={logoutAction}>
           <button

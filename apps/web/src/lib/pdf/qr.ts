@@ -26,6 +26,6 @@ export async function generateVerifyQrDataUrl(payload: VerifyQrPayload): Promise
     errorCorrectionLevel: 'M',
     margin: 1,
     width: 160,
-    color: { dark: '#0F172A', light: '#FFFFFF' },
+    color: { dark: '#0F1031', light: '#FFFFFF' },
   });
 }
