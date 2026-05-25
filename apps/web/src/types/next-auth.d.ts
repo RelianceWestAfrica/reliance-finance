@@ -1,10 +1,11 @@
-// Module augmentation pour ajouter user.id et userId au token NextAuth v5.
+// Module augmentation pour ajouter user.id, userId et idToken au token NextAuth v5.
 
 import 'next-auth';
 import 'next-auth/jwt';
 
 declare module 'next-auth' {
   interface Session {
+    idToken?: string;
     user: {
       id: string;
       email: string;
@@ -26,5 +27,6 @@ declare module 'next-auth/jwt' {
   interface JWT {
     userId?: string;
     email?: string;
+    idToken?: string;
   }
 }

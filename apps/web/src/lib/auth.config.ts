@@ -19,7 +19,7 @@ export const authConfig: NextAuthConfig = {
     maxAge: Number(process.env.AUTH_SESSION_MAX_AGE_SECONDS ?? 900),
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         if (typeof user.id === 'string') {
           token.userId = user.id;
@@ -28,6 +28,7 @@ export const authConfig: NextAuthConfig = {
           token.email = user.email;
         }
       }
+      if (account?.id_token) token.idToken = account.id_token;
       return token;
     },
     async session({ session, token }) {
@@ -39,6 +40,7 @@ export const authConfig: NextAuthConfig = {
           session.user.email = token.email;
         }
       }
+      if (typeof token.idToken === 'string') session.idToken = token.idToken;
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {

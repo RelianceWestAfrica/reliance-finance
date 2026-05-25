@@ -74,7 +74,7 @@ export function AppSidebar({
 }: {
   userLabel: string;
   roleLabel: string;
-  logoutAction: () => Promise<void>;
+  logoutAction: string;
 }) {
   const isActive = useActive();
 
@@ -132,20 +132,18 @@ export function AppSidebar({
             <div className="truncate text-[11px] text-[var(--color-sidebar-faint)]">{roleLabel}</div>
           </div>
         </div>
-        <form action={logoutAction} className="mt-2">
-          <button
-            type="submit"
-            className="w-full rounded-[8px] border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] font-medium text-[var(--color-sidebar-foreground)] transition-colors hover:bg-white/[0.09] hover:text-white"
-          >
-            Déconnexion
-          </button>
-        </form>
+        <a
+          href={logoutAction}
+          className="mt-2 flex w-full items-center justify-center rounded-[8px] border border-white/10 bg-white/[0.04] px-3 py-2 text-[12px] font-medium text-[var(--color-sidebar-foreground)] transition-colors hover:bg-white/[0.09] hover:text-white"
+        >
+          Déconnexion
+        </a>
       </div>
     </aside>
   );
 }
 
-export function MobileNav({ logoutAction }: { logoutAction: () => Promise<void> }) {
+export function MobileNav({ logoutAction }: { logoutAction: string }) {
   const isActive = useActive();
   const flat = GROUPS.flatMap((g) => g.items);
 
@@ -158,14 +156,12 @@ export function MobileNav({ logoutAction }: { logoutAction: () => Promise<void> 
           </div>
           <span className="text-[15px] font-bold text-[#f4f1e8]">Reliance Finance</span>
         </div>
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="rounded-[8px] border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-medium hover:bg-white/[0.09] hover:text-white"
-          >
-            Déconnexion
-          </button>
-        </form>
+        <a
+          href={logoutAction}
+          className="rounded-[8px] border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-medium hover:bg-white/[0.09] hover:text-white"
+        >
+          Déconnexion
+        </a>
       </div>
       <nav className="flex gap-1 overflow-x-auto px-3 pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {flat.map((item) => {
