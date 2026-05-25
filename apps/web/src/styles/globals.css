@@ -23,13 +23,13 @@
   --color-border: var(--color-border-light);
   --color-border-soft: #ececf0;
   --color-input: var(--color-border-light);
-  --color-ring: var(--color-primary-navy);
+  --color-ring: var(--accent-500);
 
-  /* Primaire navy + accent or — depuis le DS */
-  --color-primary: var(--color-primary-navy);
-  --color-primary-hover: var(--color-primary-near-black);
-  --color-primary-foreground: var(--color-text-inverse);
-  --color-primary-soft: #e5e5ee;
+  /* Primaire = cobalt Finances (--accent-500 via data-app="finances"); or en accent secondaire */
+  --color-primary: var(--accent-500);
+  --color-primary-hover: var(--accent-600);
+  --color-primary-foreground: var(--accent-contrast);
+  --color-primary-soft: var(--accent-50);
   --color-accent: var(--color-accent-gold);
   --color-accent-foreground: var(--color-primary-near-black);
   --color-accent-soft: #fbf1e7;
