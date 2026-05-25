@@ -1,59 +1,61 @@
 @import 'tailwindcss';
+/* Tokens RWA — source unique de vérité (package publié). Définit les primitives
+   --color-primary-navy, --color-accent-gold, --color-surface-*, --color-state-*… */
+@import '@reliancewestafrica/design-system/styles/variables.css';
 
 /* =============================================================================
-   Reliance Finance — Palette RWA Design System (imposée)
-   Valeurs miroir de @reliancewestafrica/design-system (tokens). À terme :
-   importer "@reliancewestafrica/design-system/css" comme source unique de vérité
-   (nécessite l'accès read:packages au registre GitHub Packages).
-   Primaire navy RWA, accent or, surfaces cream/blanc, sidebar near-black.
+   Reliance Finance — Palette RWA Design System
+   Les tokens de marque (primary/accent/surfaces/sémantiques) référencent les
+   primitives du package @reliancewestafrica/design-system. Les tokens propres
+   à l'app (muted/faint/soft/sidebar-*) restent définis ici.
    ============================================================================= */
 
 @theme {
-  /* Surfaces & texte (cream RWA) */
-  --color-background: #faf8f4;
-  --color-foreground: #15163a;
-  --color-card: #ffffff;
-  --color-card-foreground: #15163a;
+  /* Surfaces & texte — depuis le DS */
+  --color-background: var(--color-surface-cream);
+  --color-foreground: var(--color-primary-near-black);
+  --color-card: var(--color-surface-white);
+  --color-card-foreground: var(--color-primary-near-black);
   --color-surface-2: #f6f6f8;
   --color-muted: #ececf0;
   --color-muted-foreground: #3f3f4e;
   --color-faint: #8b8b98;
-  --color-border: #e5e5ee;
+  --color-border: var(--color-border-light);
   --color-border-soft: #ececf0;
-  --color-input: #e5e5ee;
-  --color-ring: #35346b;
+  --color-input: var(--color-border-light);
+  --color-ring: var(--color-primary-navy);
 
-  /* Primaire navy RWA + accent or */
-  --color-primary: #35346b;
-  --color-primary-hover: #23234d;
-  --color-primary-foreground: #ffffff;
+  /* Primaire navy + accent or — depuis le DS */
+  --color-primary: var(--color-primary-navy);
+  --color-primary-hover: var(--color-primary-near-black);
+  --color-primary-foreground: var(--color-text-inverse);
   --color-primary-soft: #e5e5ee;
-  --color-accent: #d4ae91;
-  --color-accent-foreground: #15163a;
+  --color-accent: var(--color-accent-gold);
+  --color-accent-foreground: var(--color-primary-near-black);
   --color-accent-soft: #fbf1e7;
 
   --color-secondary: #ececf0;
-  --color-secondary-foreground: #15163a;
+  --color-secondary-foreground: var(--color-primary-near-black);
 
-  /* Sémantiques (palette institutionnelle RWA) */
-  --color-success: #2f7d5b;
+  /* Sémantiques — depuis le DS */
+  --color-success: var(--color-state-success);
   --color-success-foreground: #ffffff;
   --color-success-soft: #e4efe7;
-  --color-warning: #b97a1f;
+  --color-warning: var(--color-state-warning);
   --color-warning-foreground: #ffffff;
   --color-warning-soft: #f6eedc;
-  --color-destructive: #b23a3a;
+  --color-destructive: var(--color-state-danger);
   --color-destructive-foreground: #ffffff;
   --color-destructive-soft: #f6e4e1;
 
-  /* Sidebar (near-black navy RWA) */
-  --color-sidebar: #0f1031;
+  /* Sidebar (near-black navy) */
+  --color-sidebar: var(--color-primary-near-black);
   --color-sidebar-2: #15163a;
   --color-sidebar-foreground: #c3c3d6;
   --color-sidebar-faint: #8a8aae;
-  --color-sidebar-active: #faf8f4;
+  --color-sidebar-active: var(--color-surface-cream);
 
-  /* Typographie — Outfit (police de marque RWA), injectée via next/font */
+  /* Typographie — Outfit via next/font (police de marque RWA) */
   --font-sans: var(--font-outfit), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: var(--font-outfit), ui-monospace, 'SFMono-Regular', monospace;
 
