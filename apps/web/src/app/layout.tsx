@@ -10,8 +10,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: 'Reliance Finance',
-  description: 'Plateforme de gestion financiere Holding/Filiales/SPV - Reliance West Africa',
+  title: { default: 'RWA Finances', template: '%s · RWA Finances' },
+  description: 'Plateforme de gestion financière Holding / Filiales / SPV — Reliance West Africa',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
