@@ -12,7 +12,11 @@ export async function GET(req: NextRequest) {
 
   await signOut({ redirect: false });
 
-  if (idToken && issuer && clientId) {
+  // Always redirect to Keycloak end_session when the client is configured —
+  // even if the legacy session doesn't carry an id_token_hint. Keycloak will
+  // show a brief confirmation in that case, but the SSO session WILL be
+  // terminated (otherwise silent-SSO loops the user right back in).
+  if (issuer && clientId) {
     return NextResponse.redirect(
       buildKeycloakLogoutUrl({ issuer, clientId, postLogoutRedirectUri, idToken }),
     );
