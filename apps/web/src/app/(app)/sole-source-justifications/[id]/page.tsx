@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { prisma } from '@reliance-finance/database';
@@ -16,6 +17,8 @@ export default async function SoleSourceJustificationDetailPage(props: {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const errorMessage = searchParams.error ? decodeURIComponent(searchParams.error) : null;
+
+  const t = await getTranslations('pages.soleSourceJustifications');
 
   const ssj = await prisma.soleSourceJustification.findUnique({
     where: { id },
@@ -45,7 +48,10 @@ export default async function SoleSourceJustificationDetailPage(props: {
   async function handleApprove(formData: FormData) {
     'use server';
     const r = await approveSoleSourceJustification(formData);
-    if (!r.ok) redirect('/sole-source-justifications/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect(
+        '/sole-source-justifications/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'),
+      );
   }
 
   return (
@@ -54,70 +60,106 @@ export default async function SoleSourceJustificationDetailPage(props: {
         <div>
           <h1 className="text-2xl font-semibold">{ssj.reference}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">
-            Justification offre unique - Modele 2 (cadre §6)
+            {t('detail.subtitle')}
             {ssj.expenseRequest && (
               <>
                 {' - '}
-                <Link href={'/expense-requests/' + ssj.expenseRequest.id} className="text-[var(--color-primary)] hover:underline">
+                <Link
+                  href={'/expense-requests/' + ssj.expenseRequest.id}
+                  className="text-[var(--color-primary)] hover:underline"
+                >
                   {ssj.expenseRequest.reference}
                 </Link>
               </>
             )}
           </p>
         </div>
-        <Link href="/expense-requests" className="text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Demandes
+        <Link
+          href="/expense-requests"
+          className="text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {t('detail.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Statut</div>
-          <div className={'mt-1 font-mono text-sm ' + (isApproved ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]')}>
-            {isApproved ? 'APPROVED' : 'PENDING'}
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.statusLabel')}
+          </div>
+          <div
+            className={
+              'mt-1 font-mono text-sm ' +
+              (isApproved ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]')
+            }
+          >
+            {isApproved ? t('detail.statusApproved') : t('detail.statusPending')}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Montant estime</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.estimatedAmount')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(Number(ssj.estimatedAmount.toString()), ssj.currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Mesures de securisation</div>
-          <div className={'mt-1 font-mono text-sm ' + (safeguards >= 2 ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]')}>
-            {safeguards} / 4 (min 2)
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.safeguardsLabel')}
+          </div>
+          <div
+            className={
+              'mt-1 font-mono text-sm ' +
+              (safeguards >= 2 ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]')
+            }
+          >
+            {t('detail.safeguardsCount', { count: safeguards })}
           </div>
         </div>
       </section>
 
       <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h3 className="text-sm font-semibold">Motif</h3>
+        <h3 className="text-sm font-semibold">{t('detail.reason')}</h3>
         <p className="mt-2 font-mono text-xs">{ssj.reason}</p>
-        {ssj.otherReason && (
-          <p className="mt-1 text-xs italic">{ssj.otherReason}</p>
-        )}
-        <h3 className="mt-4 text-sm font-semibold">Justification</h3>
+        {ssj.otherReason && <p className="mt-1 text-xs italic">{ssj.otherReason}</p>}
+        <h3 className="mt-4 text-sm font-semibold">{t('detail.justification')}</h3>
         <p className="mt-2 whitespace-pre-wrap text-sm">{ssj.justification}</p>
 
-        <h3 className="mt-4 text-sm font-semibold">Mesures de securisation cochees</h3>
+        <h3 className="mt-4 text-sm font-semibold">{t('detail.safeguardsChecked')}</h3>
         <ul className="mt-2 space-y-1 text-xs">
-          <li>{ssj.hasNegotiatedPrice ? '✓' : '✗'} Negociation prix / remise</li>
-          <li>{ssj.hasReinforcedPaymentTerms ? '✓' : '✗'} Conditions paiement renforcees</li>
-          <li>{ssj.hasWarrantyOrPenalty ? '✓' : '✗'} Garantie / penalites integrees</li>
-          <li>{ssj.hasReinforcedReception ? '✓' : '✗'} Reception renforcee</li>
+          <li>
+            {ssj.hasNegotiatedPrice ? '✓' : '✗'} {t('detail.safeguardItems.negotiatedPrice')}
+          </li>
+          <li>
+            {ssj.hasReinforcedPaymentTerms ? '✓' : '✗'}{' '}
+            {t('detail.safeguardItems.reinforcedPaymentTerms')}
+          </li>
+          <li>
+            {ssj.hasWarrantyOrPenalty ? '✓' : '✗'} {t('detail.safeguardItems.warrantyOrPenalty')}
+          </li>
+          <li>
+            {ssj.hasReinforcedReception ? '✓' : '✗'}{' '}
+            {t('detail.safeguardItems.reinforcedReception')}
+          </li>
         </ul>
       </section>
 
       {isApproved && approvedAudit && (
-        <section className="rounded-lg border bg-[var(--color-success)]/5 border-[var(--color-success)] p-4 text-sm">
-          Approuvee le {formatDateTime(approvedAudit.createdAt)} par {approvedAudit.actor?.email ?? 'systeme'}.
+        <section className="bg-[var(--color-success)]/5 rounded-lg border border-[var(--color-success)] p-4 text-sm">
+          {t('detail.approvedBy', {
+            date: formatDateTime(approvedAudit.createdAt),
+            actor: approvedAudit.actor?.email ?? t('detail.systemActor'),
+          })}
         </section>
       )}
 
@@ -126,10 +168,10 @@ export default async function SoleSourceJustificationDetailPage(props: {
           <form action={handleApprove}>
             <input type="hidden" name="id" value={ssj.id} />
             <button className="rounded-md bg-[var(--color-success)] px-3 py-2 text-sm font-medium text-[var(--color-success-foreground)] hover:opacity-90">
-              Approuver (DFG / Finance Groupe / AG)
+              {t('detail.approveCta')}
             </button>
             <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
-              Approbation possible si au moins 2 mesures de securisation sont cochees.
+              {t('detail.approveHint')}
             </p>
           </form>
         </section>

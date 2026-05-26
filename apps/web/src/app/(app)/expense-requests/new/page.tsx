@@ -1,13 +1,10 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
-import {
-  ExpenseRequestType,
-  OpexCapex,
-  UrgencyLevel,
-} from '@reliance-finance/database';
+import { ExpenseRequestType, OpexCapex, UrgencyLevel } from '@reliance-finance/database';
 import { createExpenseRequest } from '../actions';
 
 export default async function NewExpenseRequestPage(props: {
@@ -17,6 +14,7 @@ export default async function NewExpenseRequestPage(props: {
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
+  const t = await getTranslations('pages.expenseRequests');
 
   const db = await getTenantedDb();
   const [entities, projects, costCenters, suppliers] = await Promise.all([
@@ -28,7 +26,13 @@ export default async function NewExpenseRequestPage(props: {
     db.project.findMany({
       where: { isActive: true },
       orderBy: [{ entityId: 'asc' }, { code: 'asc' }],
-      select: { id: true, code: true, name: true, entityId: true, entity: { select: { code: true } } },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        entityId: true,
+        entity: { select: { code: true } },
+      },
     }),
     db.costCenter.findMany({
       where: { isActive: true },
@@ -54,47 +58,52 @@ export default async function NewExpenseRequestPage(props: {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Nouvelle demande de depense</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          Brouillon -&gt; Soumission -&gt; Chaine de signatures calculee selon
-          seuils + sensibilite fournisseur.
-        </p>
-        <Link href="/expense-requests" className="mt-2 inline-block text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Retour a la liste
+        <h1 className="text-2xl font-semibold">{t('new.title')}</h1>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t('new.subtitle')}</p>
+        <Link
+          href="/expense-requests"
+          className="mt-2 inline-block text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {t('new.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <form action={handleCreate} className="space-y-6">
         <section className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Identification</h2>
+          <h2 className="text-lg font-semibold">{t('new.sections.identification')}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">
-              Type *
+              {t('new.fields.type')}
               <select
                 name="type"
                 required
                 defaultValue={ExpenseRequestType.FD}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value={ExpenseRequestType.FDA}>FDA - Demande d&apos;achat (amont)</option>
-                <option value={ExpenseRequestType.FD}>FD - Fiche de Depense</option>
-                <option value={ExpenseRequestType.FD_URGENCE}>FD_URGENCE - Procedure urgence (§7)</option>
+                <option value={ExpenseRequestType.FDA}>{t('new.typeOptions.FDA')}</option>
+                <option value={ExpenseRequestType.FD}>{t('new.typeOptions.FD')}</option>
+                <option value={ExpenseRequestType.FD_URGENCE}>
+                  {t('new.typeOptions.FD_URGENCE')}
+                </option>
               </select>
             </label>
             <label className="text-sm sm:col-span-1">
-              Entite *
+              {t('new.fields.entity')}
               <select
                 name="entityId"
                 required
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value="">-- Entite --</option>
+                <option value="">{t('new.fields.entityPlaceholder')}</option>
                 {entities.map((e) => (
                   <option key={e.id} value={e.id}>
                     {e.code} - {e.name}
@@ -103,13 +112,13 @@ export default async function NewExpenseRequestPage(props: {
               </select>
             </label>
             <label className="text-sm">
-              Projet (optionnel)
+              {t('new.fields.project')}
               <select
                 name="projectId"
                 defaultValue=""
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value="">-- Aucun --</option>
+                <option value="">{t('new.fields.projectNone')}</option>
                 {projects.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.entity.code} / {p.code} - {p.name}
@@ -118,13 +127,13 @@ export default async function NewExpenseRequestPage(props: {
               </select>
             </label>
             <label className="text-sm">
-              Centre de cout (optionnel)
+              {t('new.fields.costCenter')}
               <select
                 name="costCenterId"
                 defaultValue=""
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value="">-- Aucun --</option>
+                <option value="">{t('new.fields.costCenterNone')}</option>
                 {costCenters.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.code} - {c.name}
@@ -133,32 +142,33 @@ export default async function NewExpenseRequestPage(props: {
               </select>
             </label>
             <label className="text-sm sm:col-span-2">
-              Fournisseur (optionnel pour FDA)
+              {t('new.fields.supplier')}
               <select
                 name="supplierId"
                 defaultValue=""
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value="">-- Aucun --</option>
+                <option value="">{t('new.fields.supplierNone')}</option>
                 {suppliers.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.code} - {s.name} {s.sensitivity !== 'STANDARD' ? '(' + s.sensitivity + ')' : ''}
+                    {s.code} - {s.name}{' '}
+                    {s.sensitivity !== 'STANDARD' ? '(' + s.sensitivity + ')' : ''}
                   </option>
                 ))}
               </select>
             </label>
             <label className="text-sm sm:col-span-2">
-              Titre / objet *
+              {t('new.fields.title')}
               <input
                 name="title"
                 required
                 minLength={3}
-                placeholder="Ex : achat ciment chantier CIDPE - lot 4"
+                placeholder={t('new.fields.titlePlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm sm:col-span-2">
-              Description
+              {t('new.fields.description')}
               <textarea
                 name="description"
                 rows={3}
@@ -166,7 +176,7 @@ export default async function NewExpenseRequestPage(props: {
               />
             </label>
             <label className="text-sm sm:col-span-2">
-              Justification (objectif / impact)
+              {t('new.fields.justification')}
               <textarea
                 name="justification"
                 rows={2}
@@ -177,10 +187,10 @@ export default async function NewExpenseRequestPage(props: {
         </section>
 
         <section className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Montant &amp; budget</h2>
+          <h2 className="text-lg font-semibold">{t('new.sections.amountBudget')}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <label className="text-sm">
-              Montant *
+              {t('new.fields.amount')}
               <input
                 name="amount"
                 type="number"
@@ -191,7 +201,7 @@ export default async function NewExpenseRequestPage(props: {
               />
             </label>
             <label className="text-sm">
-              Devise
+              {t('new.fields.currency')}
               <input
                 name="currency"
                 defaultValue="XOF"
@@ -200,7 +210,7 @@ export default async function NewExpenseRequestPage(props: {
               />
             </label>
             <label className="text-sm">
-              Nature
+              {t('new.fields.nature')}
               <select
                 name="opexCapex"
                 defaultValue={OpexCapex.OPEX}
@@ -211,24 +221,24 @@ export default async function NewExpenseRequestPage(props: {
               </select>
             </label>
             <label className="text-sm sm:col-span-2">
-              Ligne budgetaire (optionnel)
+              {t('new.fields.budgetLine')}
               <input
                 name="budgetLineRef"
-                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
               />
             </label>
             <label className="mt-4 flex items-center gap-2 text-sm">
               <input type="checkbox" name="isOutOfBudget" />
-              Hors budget (declenche AG)
+              {t('new.fields.outOfBudget')}
             </label>
           </div>
         </section>
 
         <section className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Urgence &amp; livraison</h2>
+          <h2 className="text-lg font-semibold">{t('new.sections.urgencyDelivery')}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">
-              Niveau d&apos;urgence
+              {t('new.fields.urgency')}
               <select
                 name="urgency"
                 defaultValue={UrgencyLevel.LOW}
@@ -242,14 +252,14 @@ export default async function NewExpenseRequestPage(props: {
               </select>
             </label>
             <label className="text-sm">
-              Motif urgence (si Hauteur)
+              {t('new.fields.urgencyReason')}
               <input
                 name="urgencyReason"
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm">
-              Date souhaitee
+              {t('new.fields.desiredDate')}
               <input
                 name="desiredDate"
                 type="date"
@@ -257,7 +267,7 @@ export default async function NewExpenseRequestPage(props: {
               />
             </label>
             <label className="text-sm">
-              Lieu
+              {t('new.fields.location')}
               <input
                 name="location"
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
@@ -271,10 +281,13 @@ export default async function NewExpenseRequestPage(props: {
             type="submit"
             className="rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
           >
-            Creer le brouillon
+            {t('new.submit')}
           </button>
-          <Link href="/expense-requests" className="rounded-md border px-4 py-2 text-sm hover:bg-[var(--color-muted)]">
-            Annuler
+          <Link
+            href="/expense-requests"
+            className="rounded-md border px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+          >
+            {t('new.cancel')}
           </Link>
         </div>
       </form>

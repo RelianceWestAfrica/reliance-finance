@@ -3,22 +3,13 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 
-import {
-  prisma,
-  JournalEntryStatus,
-  PaymentStatus,
-  RoleCode,
-} from '@reliance-finance/database';
+import { prisma, JournalEntryStatus, PaymentStatus, RoleCode } from '@reliance-finance/database';
 
 import { auth } from '@/lib/auth';
 import { getUserMemberships, requireAnyRole, hasAnyRole } from '@/lib/rbac';
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 import { getRequestActorContext } from '@/lib/audit/actor-context';
-import {
-  buildPaymentEntry,
-  buildInvoiceEntry,
-  isBalanced,
-} from '@/lib/accounting/build-entry';
+import { buildPaymentEntry, buildInvoiceEntry, isBalanced } from '@/lib/accounting/build-entry';
 import { isEntryInClosedPeriod } from '@/lib/accounting/period-locking';
 
 // =============================================================================
@@ -57,10 +48,7 @@ export async function generateJournalEntryFromPayment(
     },
   });
   if (!payment) return { ok: false, error: 'Paiement introuvable' };
-  if (
-    payment.status !== PaymentStatus.EXECUTED &&
-    payment.status !== PaymentStatus.RECONCILED
-  ) {
+  if (payment.status !== PaymentStatus.EXECUTED && payment.status !== PaymentStatus.RECONCILED) {
     return {
       ok: false,
       error:
@@ -70,7 +58,7 @@ export async function generateJournalEntryFromPayment(
     };
   }
   if (!payment.executedAt) {
-    return { ok: false, error: 'Paiement sans date d\'execution' };
+    return { ok: false, error: "Paiement sans date d'execution" };
   }
 
   // Check periode non close
@@ -219,7 +207,11 @@ export async function generateJournalEntryFromInvoice(
     include: { supplier: { select: { code: true } } },
   });
   if (!invoice) return { ok: false, error: 'Facture introuvable' };
-  if (invoice.status !== 'APPROVED' && invoice.status !== 'PAID' && invoice.status !== 'PARTIALLY_PAID') {
+  if (
+    invoice.status !== 'APPROVED' &&
+    invoice.status !== 'PAID' &&
+    invoice.status !== 'PARTIALLY_PAID'
+  ) {
     return {
       ok: false,
       error: 'Facture doit etre approuvee (statut : ' + invoice.status + ')',
@@ -388,13 +380,7 @@ export async function openAccountingPeriod(
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
   const memberships = await getUserMemberships(session.user.id);
-  if (
-    !hasAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CHIEF_ACCOUNTANT,
-    ])
-  ) {
+  if (!hasAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CHIEF_ACCOUNTANT])) {
     return { ok: false, error: 'Privilege Comptabilite / DFG requis' };
   }
 
@@ -403,10 +389,17 @@ export async function openAccountingPeriod(
     year: formData.get('year'),
     month: formData.get('month'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const existing = await prisma.accountingPeriod.findUnique({
-    where: { entityId_year_month: { entityId: parsed.data.entityId, year: parsed.data.year, month: parsed.data.month } },
+    where: {
+      entityId_year_month: {
+        entityId: parsed.data.entityId,
+        year: parsed.data.year,
+        month: parsed.data.month,
+      },
+    },
   });
   if (existing && !existing.isClosed) {
     return { ok: false, error: 'Periode deja ouverte' };
@@ -450,13 +443,7 @@ export async function closeAccountingPeriod(
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
   const memberships = await getUserMemberships(session.user.id);
-  if (
-    !hasAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CHIEF_ACCOUNTANT,
-    ])
-  ) {
+  if (!hasAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CHIEF_ACCOUNTANT])) {
     return { ok: false, error: 'Privilege Comptabilite / DFG requis' };
   }
 
@@ -465,12 +452,19 @@ export async function closeAccountingPeriod(
     year: formData.get('year'),
     month: formData.get('month'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const period = await prisma.accountingPeriod.findUnique({
-    where: { entityId_year_month: { entityId: parsed.data.entityId, year: parsed.data.year, month: parsed.data.month } },
+    where: {
+      entityId_year_month: {
+        entityId: parsed.data.entityId,
+        year: parsed.data.year,
+        month: parsed.data.month,
+      },
+    },
   });
-  if (!period) return { ok: false, error: 'Periode introuvable - l\'ouvrir d\'abord' };
+  if (!period) return { ok: false, error: "Periode introuvable - l'ouvrir d'abord" };
   if (period.isClosed) return { ok: false, error: 'Periode deja cloturee' };
 
   // Garde : toutes les ecritures DRAFT doivent etre postees ou supprimees
@@ -481,8 +475,7 @@ export async function closeAccountingPeriod(
     return {
       ok: false,
       error:
-        draftCount +
-        ' ecriture(s) DRAFT non postee(s). Postez-les ou supprimez-les avant cloture.',
+        draftCount + ' ecriture(s) DRAFT non postee(s). Postez-les ou supprimez-les avant cloture.',
     };
   }
 

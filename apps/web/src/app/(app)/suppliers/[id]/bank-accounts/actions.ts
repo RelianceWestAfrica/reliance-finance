@@ -32,11 +32,23 @@ const QUARANTINE_HOURS = Number(process.env.ANTI_FRAUD_RIB_QUARANTINE_HOURS ?? 2
 const requestChangeSchema = z.object({
   supplierId: z.string().cuid(),
   // L'ancien RIB (qui sera remplace) - identifie par son ID, optionnel pour creation
-  oldBankAccountId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  oldBankAccountId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   newBankName: z.string().min(2).max(200).trim(),
   newHolderName: z.string().min(2).max(200).trim(),
-  newIban: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  newRib: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
+  newIban: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  newRib: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   justification: z.string().min(10, 'Justification ecrite obligatoire (cadre §8)').max(2000),
 });
 
@@ -77,7 +89,14 @@ export async function requestBankAccountChange(
 
   const supplier = await prisma.supplier.findUnique({
     where: { id: parsed.data.supplierId },
-    select: { id: true, code: true, name: true, entityId: true, sensitivity: true, isStrategic: true },
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      entityId: true,
+      sensitivity: true,
+      isStrategic: true,
+    },
   });
   if (!supplier) return { ok: false, error: 'Fournisseur introuvable' };
 
@@ -152,7 +171,10 @@ export async function approveChangeLevel1(
 
   const memberships = await getUserMemberships(session.user.id);
   if (!hasAnyRole(memberships, N1_ROLES)) {
-    return { ok: false, error: 'Privilege insuffisant pour validation N1 (DAF Pays ou Finance Filiale)' };
+    return {
+      ok: false,
+      error: 'Privilege insuffisant pour validation N1 (DAF Pays ou Finance Filiale)',
+    };
   }
 
   const parsed = approveSchema.safeParse({ changeId: formData.get('changeId') });
@@ -197,10 +219,7 @@ export async function approveChangeLevel1(
 
   await notifyHoldingRole(RoleCode.DFG, {
     title: 'Validation N2 RIB requise',
-    body:
-      'Le RIB du fournisseur ' +
-      change.supplier.code +
-      ' attend votre validation finale.',
+    body: 'Le RIB du fournisseur ' + change.supplier.code + ' attend votre validation finale.',
     linkUrl: '/suppliers/' + change.supplierId + '/bank-accounts',
     entityType: 'BankAccountChangeRequest',
     entityId: updated.id,
@@ -346,7 +365,11 @@ export async function approveChangeLevel2(
       createdAt: change.supplier.createdAt,
       sensitivity: change.supplier.sensitivity,
     },
-    allChanges.map((c) => ({ id: c.id, status: c.status === 'ACTIVE' ? 'ACTIVE' : 'PENDING', createdAt: c.createdAt })),
+    allChanges.map((c) => ({
+      id: c.id,
+      status: c.status === 'ACTIVE' ? 'ACTIVE' : 'PENDING',
+      createdAt: c.createdAt,
+    })),
     now,
     ANOMALY_CONFIG,
   );
@@ -355,7 +378,12 @@ export async function approveChangeLevel2(
     const anomaly = await prisma.anomaly.create({
       data: {
         reference:
-          'ANO-' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + crypto.randomUUID().slice(0, 8).toUpperCase(),
+          'ANO-' +
+          now.getFullYear() +
+          '-' +
+          String(now.getMonth() + 1).padStart(2, '0') +
+          '-' +
+          crypto.randomUUID().slice(0, 8).toUpperCase(),
         type: AnomalyType.SUSPICIOUS_RIB_CHANGE,
         severity: verdict2.severity as AnomalySeverity,
         entityId: change.supplier.entityId,
@@ -402,9 +430,7 @@ const rejectSchema = z.object({
   reason: z.string().min(5).max(500),
 });
 
-export async function rejectChange(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function rejectChange(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 

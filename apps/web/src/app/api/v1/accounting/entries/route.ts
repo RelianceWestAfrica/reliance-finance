@@ -75,11 +75,7 @@ export async function GET(req: Request) {
   const entries = await prisma.journalEntry.findMany({
     where: {
       entityId,
-      ...(year && month
-        ? { period: { year, month } }
-        : year
-          ? { period: { year } }
-          : {}),
+      ...(year && month ? { period: { year, month } } : year ? { period: { year } } : {}),
       ...(includeAllStatuses
         ? {}
         : { status: { in: [JournalEntryStatus.POSTED, JournalEntryStatus.REVERSED] } }),
@@ -101,7 +97,14 @@ export async function GET(req: Request) {
       for (const l of e.lines) {
         fecLines.push({
           journalCode: e.journalCode,
-          journalLib: e.journalCode === 'BNQ' ? 'Banque' : e.journalCode === 'ACH' ? 'Achats' : e.journalCode === 'CAI' ? 'Caisse' : e.journalCode,
+          journalLib:
+            e.journalCode === 'BNQ'
+              ? 'Banque'
+              : e.journalCode === 'ACH'
+                ? 'Achats'
+                : e.journalCode === 'CAI'
+                  ? 'Caisse'
+                  : e.journalCode,
           ecritureNum: e.reference,
           ecritureDate: e.entryDate,
           compteNum: l.accountCode,

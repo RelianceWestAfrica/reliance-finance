@@ -19,7 +19,10 @@ export const ALLOWED_TIMEZONES = [
   'Africa/Brazzaville',
   'Africa/Kinshasa',
   'Europe/Paris',
+  'Asia/Hong_Kong',
   'UTC',
 ] as const;
 
-export const ALLOWED_LOCALES = ['fr-FR', 'en-US', 'fr-CI'] as const;
+// fr-CI conservé pour compat des comptes existants en base; les locales
+// activables côté UI sont définies dans src/i18n/locales.ts.
+export const ALLOWED_LOCALES = ['fr-FR', 'en-US', 'fr-CI', 'zh-CN'] as const;

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { getUserMemberships, requireAnyRole } from '@/lib/rbac';
 import { formatDateTime } from '@/lib/format';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 interface SearchParams {
   entityType?: string;
@@ -24,6 +25,7 @@ export default async function AuditPage(props: { searchParams: Promise<SearchPar
   ]);
 
   const params = await props.searchParams;
+  const t = await getTranslations('pages.audit');
 
   const logs = await prisma.auditLog.findMany({
     where: {
@@ -41,16 +43,19 @@ export default async function AuditPage(props: { searchParams: Promise<SearchPar
   // Groupes uniques pour offrir un bouton "verifier la chaine"
   const uniqueChains = Array.from(
     new Map(
-      logs.map((l) => [l.entityType + '|' + l.entityId, { entityType: l.entityType, entityId: l.entityId }]),
+      logs.map((l) => [
+        l.entityType + '|' + l.entityId,
+        { entityType: l.entityType, entityId: l.entityId },
+      ]),
     ).values(),
   ).slice(0, 5);
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Journal d&apos;audit</h1>
+        <h1 className="text-2xl font-semibold">{t('headerTitle')}</h1>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Append-only avec chainage SHA-256. Verifiable via{' '}
+          {t('headerSubtitle')}{' '}
           <code className="font-mono text-xs">/api/audit/verify/[entityType]/[entityId]</code>.
         </p>
       </header>
@@ -59,19 +64,19 @@ export default async function AuditPage(props: { searchParams: Promise<SearchPar
         <form className="grid grid-cols-1 gap-3 sm:grid-cols-4">
           <input
             name="entityType"
-            placeholder="entityType (ex: User)"
+            placeholder={t('filterPlaceholders.entityType')}
             defaultValue={params.entityType ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm shadow-sm"
           />
           <input
             name="entityId"
-            placeholder="entityId (cuid)"
+            placeholder={t('filterPlaceholders.entityId')}
             defaultValue={params.entityId ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm shadow-sm"
           />
           <input
             name="action"
-            placeholder="action contient..."
+            placeholder={t('filterPlaceholders.action')}
             defaultValue={params.action ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm shadow-sm"
           />
@@ -79,21 +84,21 @@ export default async function AuditPage(props: { searchParams: Promise<SearchPar
             type="submit"
             className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
           >
-            Filtrer
+            {t('filterSubmit')}
           </button>
         </form>
       </section>
 
       {uniqueChains.length > 0 && (
         <section className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <h2 className="text-sm font-semibold">Verifier l&apos;integrite d&apos;une chaine</h2>
+          <h2 className="text-sm font-semibold">{t('chains.title')}</h2>
           <ul className="mt-2 flex flex-wrap gap-2">
             {uniqueChains.map((c) => (
               <li key={c.entityType + '|' + c.entityId}>
                 <Link
                   href={'/api/audit/verify/' + c.entityType + '/' + c.entityId}
                   target="_blank"
-                  className="rounded-full border px-3 py-1 text-xs font-mono text-[var(--color-primary)] hover:bg-[var(--color-muted)]"
+                  className="rounded-full border px-3 py-1 font-mono text-xs text-[var(--color-primary)] hover:bg-[var(--color-muted)]"
                 >
                   {c.entityType}/{c.entityId.slice(0, 12)}...
                 </Link>
@@ -107,29 +112,32 @@ export default async function AuditPage(props: { searchParams: Promise<SearchPar
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-3 font-medium">Date</th>
-              <th className="px-3 py-3 font-medium">Action</th>
-              <th className="px-3 py-3 font-medium">Acteur</th>
-              <th className="px-3 py-3 font-medium">Cible</th>
-              <th className="px-3 py-3 font-medium">Hash</th>
+              <th className="px-3 py-3 font-medium">{t('table.date')}</th>
+              <th className="px-3 py-3 font-medium">{t('table.action')}</th>
+              <th className="px-3 py-3 font-medium">{t('table.actor')}</th>
+              <th className="px-3 py-3 font-medium">{t('table.target')}</th>
+              <th className="px-3 py-3 font-medium">{t('table.hash')}</th>
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucune entree.
+                <td
+                  colSpan={5}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('table.empty')}
                 </td>
               </tr>
             ) : (
               logs.map((log) => (
-                <tr key={log.id} className="border-b last:border-0 align-top">
+                <tr key={log.id} className="border-b align-top last:border-0">
                   <td className="whitespace-nowrap px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
                     {formatDateTime(log.createdAt)}
                   </td>
                   <td className="px-3 py-2 font-mono text-xs">{log.action}</td>
                   <td className="px-3 py-2 text-xs">
-                    {log.actor?.email ?? <span className="italic">systeme</span>}
+                    {log.actor?.email ?? <span className="italic">{t('table.systemActor')}</span>}
                   </td>
                   <td className="px-3 py-2 text-xs">
                     <div className="font-mono">{log.entityType}</div>
@@ -147,10 +155,7 @@ export default async function AuditPage(props: { searchParams: Promise<SearchPar
         </table>
       </section>
 
-      <p className="text-xs text-[var(--color-muted-foreground)]">
-        Affichage limite aux 100 entrees les plus recentes. Pagination + export CSV : session 9
-        (M13).
-      </p>
+      <p className="text-xs text-[var(--color-muted-foreground)]">{t('footer')}</p>
     </div>
   );
 }

@@ -3,12 +3,7 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 
-import {
-  prisma,
-  DocumentType,
-  RoleCode,
-  SoleSourceReason,
-} from '@reliance-finance/database';
+import { prisma, DocumentType, RoleCode, SoleSourceReason } from '@reliance-finance/database';
 
 import { auth } from '@/lib/auth';
 import { getUserMemberships, requireAnyRole } from '@/lib/rbac';
@@ -19,10 +14,17 @@ import { allocateReference } from '@/lib/document-sequence/allocate';
 const createSchema = z.object({
   expenseRequestId: z.string().cuid(),
   reason: z.nativeEnum(SoleSourceReason),
-  otherReason: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  otherReason: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   estimatedAmount: z.coerce.number().positive(),
   currency: z.string().length(3).toUpperCase().default('XOF'),
-  justification: z.string().min(50, 'Justification detaillee obligatoire (>= 50 caracteres)').max(5000),
+  justification: z
+    .string()
+    .min(50, 'Justification detaillee obligatoire (>= 50 caracteres)')
+    .max(5000),
   hasNegotiatedPrice: z.coerce.boolean().default(false),
   hasReinforcedPaymentTerms: z.coerce.boolean().default(false),
   hasWarrantyOrPenalty: z.coerce.boolean().default(false),
@@ -61,7 +63,8 @@ export async function createSoleSourceJustification(
     hasWarrantyOrPenalty: formData.get('hasWarrantyOrPenalty') === 'on',
     hasReinforcedReception: formData.get('hasReinforcedReception') === 'on',
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   // Si reason = OTHER, otherReason est requis
   if (parsed.data.reason === SoleSourceReason.OTHER && !parsed.data.otherReason) {
@@ -76,13 +79,20 @@ export async function createSoleSourceJustification(
   if (existing) {
     return {
       ok: false,
-      error: 'Une justification offre unique existe deja sur cette demande (id ' + existing.id + ')',
+      error:
+        'Une justification offre unique existe deja sur cette demande (id ' + existing.id + ')',
     };
   }
 
   const er = await prisma.expenseRequest.findUnique({
     where: { id: parsed.data.expenseRequestId },
-    select: { id: true, entityId: true, projectId: true, entity: { select: { code: true } }, project: { select: { code: true } } },
+    select: {
+      id: true,
+      entityId: true,
+      projectId: true,
+      entity: { select: { code: true } },
+      project: { select: { code: true } },
+    },
   });
   if (!er) return { ok: false, error: 'Demande introuvable' };
 

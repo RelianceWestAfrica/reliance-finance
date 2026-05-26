@@ -19,12 +19,33 @@ const createSchema = z.object({
     .trim(),
   name: z.string().min(2).max(200).trim(),
   kind: z.nativeEnum(EntityKind),
-  country: z.string().length(2).toUpperCase().optional().or(z.literal('').transform(() => undefined)),
+  country: z
+    .string()
+    .length(2)
+    .toUpperCase()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   defaultCurrency: z.string().min(3).max(3).toUpperCase().default('XOF'),
-  parentEntityId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  rccm: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  ifu: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  address: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  parentEntityId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  rccm: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  ifu: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  address: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createEntity(formData: FormData): Promise<{ ok: boolean; error?: string }> {
@@ -56,7 +77,7 @@ export async function createEntity(formData: FormData): Promise<{ ok: boolean; e
 
   // Cas particulier : Holding ne peut pas avoir de parent
   if (parsed.data.kind === EntityKind.HOLDING && parsed.data.parentEntityId) {
-    return { ok: false, error: 'Une Holding ne peut pas avoir d\'entite parente' };
+    return { ok: false, error: "Une Holding ne peut pas avoir d'entite parente" };
   }
   // Subsidiary et SPV doivent avoir un parent
   if (parsed.data.kind !== EntityKind.HOLDING && !parsed.data.parentEntityId) {
@@ -74,14 +95,18 @@ export async function createEntity(formData: FormData): Promise<{ ok: boolean; e
     if (existing) {
       return {
         ok: false,
-        error: 'Une Holding active existe deja (' + existing.code + '). Un seul Groupe est supporte.',
+        error:
+          'Une Holding active existe deja (' + existing.code + '). Un seul Groupe est supporte.',
       };
     }
   }
 
   const exists = await prisma.entity.findUnique({ where: { code: parsed.data.code } });
   if (exists) {
-    return { ok: false, error: 'Code deja utilise par une autre entite (' + parsed.data.code + ')' };
+    return {
+      ok: false,
+      error: 'Code deja utilise par une autre entite (' + parsed.data.code + ')',
+    };
   }
 
   const created = await prisma.entity.create({
@@ -122,11 +147,28 @@ export async function createEntity(formData: FormData): Promise<{ ok: boolean; e
 const updateSchema = z.object({
   id: z.string().cuid(),
   name: z.string().min(2).max(200).trim(),
-  country: z.string().length(2).toUpperCase().optional().or(z.literal('').transform(() => undefined)),
+  country: z
+    .string()
+    .length(2)
+    .toUpperCase()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   defaultCurrency: z.string().min(3).max(3).toUpperCase(),
-  rccm: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  ifu: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  address: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  rccm: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  ifu: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  address: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function updateEntity(formData: FormData): Promise<{ ok: boolean; error?: string }> {
@@ -224,9 +266,9 @@ export async function archiveEntity(formData: FormData): Promise<{ ok: boolean; 
     return {
       ok: false,
       error:
-        'Impossible d\'archiver : ' +
+        "Impossible d'archiver : " +
         children +
-        ' entite(s) enfant(s) active(s). Archivez-les d\'abord.',
+        " entite(s) enfant(s) active(s). Archivez-les d'abord.",
     };
   }
 

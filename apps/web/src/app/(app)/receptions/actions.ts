@@ -36,8 +36,15 @@ const STAGE_TO_AUDIT: Record<'OPS' | 'TECH' | 'FINANCE', string> = {
 const createSchema = z.object({
   purchaseOrderId: z.string().cuid(),
   type: z.nativeEnum(ReceptionType).default(ReceptionType.GOODS),
-  location: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
-  receptionDate: z.string().optional().or(z.literal('').transform(() => undefined)),
+  location: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  receptionDate: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   requiresTechnical: z.coerce.boolean().default(true),
 });
 
@@ -54,7 +61,8 @@ export async function createReception(
     receptionDate: formData.get('receptionDate') ?? undefined,
     requiresTechnical: formData.get('requiresTechnical') === 'on',
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const po = await prisma.purchaseOrder.findUnique({
     where: { id: parsed.data.purchaseOrderId },
@@ -74,8 +82,7 @@ export async function createReception(
   ) {
     return {
       ok: false,
-      error:
-        'BC doit etre signe avant reception (statut courant : ' + po.status + ')',
+      error: 'BC doit etre signe avant reception (statut courant : ' + po.status + ')',
     };
   }
 
@@ -98,9 +105,7 @@ export async function createReception(
       purchaseOrderId: po.id,
       createdById: session.user.id,
       location: parsed.data.location,
-      receptionDate: parsed.data.receptionDate
-        ? new Date(parsed.data.receptionDate)
-        : new Date(),
+      receptionDate: parsed.data.receptionDate ? new Date(parsed.data.receptionDate) : new Date(),
       // Note : on stocke `requiresTechnical` dans `decision` faute de champ
       // dedie - une refactorisation propre serait d'ajouter un flag, mais
       // pour M7 on utilise `decision` qui n'est pas encore exploite ailleurs.
@@ -147,7 +152,11 @@ const updateItemSchema = z.object({
   itemId: z.string().cuid(),
   quantityReceived: z.coerce.number().min(0),
   isCompliant: z.coerce.boolean().default(true),
-  observations: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  observations: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function updateReceptionItem(
@@ -162,7 +171,8 @@ export async function updateReceptionItem(
     isCompliant: formData.get('isCompliant') === 'on',
     observations: formData.get('observations') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const item = await prisma.receptionItem.findUnique({
     where: { id: parsed.data.itemId },
@@ -195,9 +205,7 @@ const signSchema = z.object({
   comment: z.string().max(500).optional(),
 });
 
-export async function signReception(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function signReception(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -329,9 +337,7 @@ export async function signReception(
       payload: {
         reference: reception.reference,
         hasReserves: hasNonCompliant,
-        finalStatus: hasNonCompliant
-          ? ReceptionStatus.PROVISIONAL
-          : ReceptionStatus.DEFINITIVE,
+        finalStatus: hasNonCompliant ? ReceptionStatus.PROVISIONAL : ReceptionStatus.DEFINITIVE,
       },
       ip,
       userAgent,
@@ -373,7 +379,8 @@ export async function rejectReception(
     id: formData.get('id'),
     reason: formData.get('reason'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const reception = await prisma.reception.update({
     where: { id: parsed.data.id },

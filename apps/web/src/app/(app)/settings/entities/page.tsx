@@ -1,42 +1,54 @@
 import { prisma, EntityKind } from '@reliance-finance/database';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { createEntity, archiveEntity, updateEntity } from './actions';
 import { formatDateTime } from '@/lib/format';
 
-const KIND_LABELS: Record<EntityKind, string> = {
-  HOLDING: 'Holding',
-  SUBSIDIARY: 'Filiale',
-  SPV: 'SPV / Projet vehicule',
-};
-
 export default async function EntitiesSettingsPage(props: {
   searchParams: Promise<{ error?: string; edit?: string }>;
 }) {
+  const t = await getTranslations('pages.settings.entities');
+
+  const kindLabels: Record<EntityKind, string> = {
+    HOLDING: t('kind.HOLDING'),
+    SUBSIDIARY: t('kind.SUBSIDIARY'),
+    SPV: t('kind.SPV'),
+  };
+
   const params = await props.searchParams;
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
 
   async function handleCreate(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.entities');
     const result = await createEntity(formData);
     if (!result.ok) {
-      redirect('/settings/entities?error=' + encodeURIComponent(result.error ?? 'Echec'));
+      redirect(
+        '/settings/entities?error=' + encodeURIComponent(result.error ?? tServer('errors.failure')),
+      );
     }
   }
 
   async function handleArchive(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.entities');
     const result = await archiveEntity(formData);
     if (!result.ok) {
-      redirect('/settings/entities?error=' + encodeURIComponent(result.error ?? 'Echec'));
+      redirect(
+        '/settings/entities?error=' + encodeURIComponent(result.error ?? tServer('errors.failure')),
+      );
     }
   }
 
   async function handleUpdate(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.entities');
     const result = await updateEntity(formData);
     if (!result.ok) {
-      redirect('/settings/entities?error=' + encodeURIComponent(result.error ?? 'Echec'));
+      redirect(
+        '/settings/entities?error=' + encodeURIComponent(result.error ?? tServer('errors.failure')),
+      );
     }
     redirect('/settings/entities');
   }
@@ -55,26 +67,26 @@ export default async function EntitiesSettingsPage(props: {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold">Entites du Groupe</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          Hierarchie Holding -&gt; Filiales -&gt; SPV. Toute creation est journalisee
-          (cadre §2.2 + §12).
-        </p>
+        <h1 className="text-2xl font-semibold">{t('title')}</h1>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       {editing ? (
         <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Modifier {editing.code}</h2>
+          <h2 className="text-lg font-semibold">{t('edit.heading', { code: editing.code })}</h2>
           <form action={handleUpdate} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <input type="hidden" name="id" value={editing.id} />
             <label className="text-sm">
-              Nom
+              {t('edit.name')}
               <input
                 name="name"
                 required
@@ -83,17 +95,17 @@ export default async function EntitiesSettingsPage(props: {
               />
             </label>
             <label className="text-sm">
-              Pays (ISO 3166-1 alpha-2)
+              {t('edit.country')}
               <input
                 name="country"
                 defaultValue={editing.country ?? ''}
                 maxLength={2}
-                placeholder="TG"
+                placeholder={t('edit.countryPlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm uppercase"
               />
             </label>
             <label className="text-sm">
-              Devise par defaut
+              {t('edit.defaultCurrency')}
               <input
                 name="defaultCurrency"
                 required
@@ -103,7 +115,7 @@ export default async function EntitiesSettingsPage(props: {
               />
             </label>
             <label className="text-sm">
-              RCCM
+              {t('edit.rccm')}
               <input
                 name="rccm"
                 defaultValue={editing.rccm ?? ''}
@@ -111,7 +123,7 @@ export default async function EntitiesSettingsPage(props: {
               />
             </label>
             <label className="text-sm">
-              IFU / NIF
+              {t('edit.ifu')}
               <input
                 name="ifu"
                 defaultValue={editing.ifu ?? ''}
@@ -119,7 +131,7 @@ export default async function EntitiesSettingsPage(props: {
               />
             </label>
             <label className="text-sm sm:col-span-2">
-              Adresse
+              {t('edit.address')}
               <input
                 name="address"
                 defaultValue={editing.address ?? ''}
@@ -131,41 +143,44 @@ export default async function EntitiesSettingsPage(props: {
                 type="submit"
                 className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
               >
-                Enregistrer
+                {t('edit.save')}
               </button>
               <a
                 href="/settings/entities"
                 className="rounded-md border px-3 py-2 text-sm hover:bg-[var(--color-muted)]"
               >
-                Annuler
+                {t('edit.cancel')}
               </a>
             </div>
           </form>
         </section>
       ) : (
         <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Creer une entite</h2>
-          <form action={handleCreate} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <h2 className="text-lg font-semibold">{t('create.heading')}</h2>
+          <form
+            action={handleCreate}
+            className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
             <label className="text-sm">
-              Code (unique, MAJUSCULES)
+              {t('create.code')}
               <input
                 name="code"
                 required
-                placeholder="BENIN, CIV1, SPV-LOME-2"
+                placeholder={t('create.codePlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm uppercase"
               />
             </label>
             <label className="text-sm">
-              Nom complet
+              {t('create.name')}
               <input
                 name="name"
                 required
-                placeholder="Reliance Benin SARL"
+                placeholder={t('create.namePlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm">
-              Type
+              {t('create.kind')}
               <select
                 name="kind"
                 required
@@ -174,37 +189,37 @@ export default async function EntitiesSettingsPage(props: {
               >
                 {Object.values(EntityKind).map((k) => (
                   <option key={k} value={k}>
-                    {KIND_LABELS[k]}
+                    {kindLabels[k]}
                   </option>
                 ))}
               </select>
             </label>
             <label className="text-sm">
-              Entite parente (sauf Holding)
+              {t('create.parent')}
               <select
                 name="parentEntityId"
                 defaultValue=""
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value="">-- Aucune (Holding) --</option>
+                <option value="">{t('create.parentPlaceholder')}</option>
                 {possibleParents.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.code} ({KIND_LABELS[p.kind]})
+                    {p.code} ({kindLabels[p.kind]})
                   </option>
                 ))}
               </select>
             </label>
             <label className="text-sm">
-              Pays (ISO 2 lettres)
+              {t('create.country')}
               <input
                 name="country"
                 maxLength={2}
-                placeholder="TG"
+                placeholder={t('create.countryPlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm uppercase"
               />
             </label>
             <label className="text-sm">
-              Devise par defaut
+              {t('create.defaultCurrency')}
               <input
                 name="defaultCurrency"
                 defaultValue="XOF"
@@ -214,9 +229,9 @@ export default async function EntitiesSettingsPage(props: {
             </label>
             <button
               type="submit"
-              className="sm:col-span-2 lg:col-span-3 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
+              className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-2 lg:col-span-3"
             >
-              Creer l&apos;entite
+              {t('create.submit')}
             </button>
           </form>
         </section>
@@ -226,21 +241,24 @@ export default async function EntitiesSettingsPage(props: {
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-4 py-3 font-medium">Code</th>
-              <th className="px-4 py-3 font-medium">Type</th>
-              <th className="px-4 py-3 font-medium">Nom</th>
-              <th className="px-4 py-3 font-medium">Parent</th>
-              <th className="px-4 py-3 font-medium">Pays / Devise</th>
-              <th className="px-4 py-3 font-medium">Enfants / Projets / Fourn.</th>
-              <th className="px-4 py-3 font-medium">Cree</th>
+              <th className="px-4 py-3 font-medium">{t('columns.code')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.kind')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.name')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.parent')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.countryCurrency')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.relations')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.createdAt')}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {entities.map((e) => (
-              <tr key={e.id} className={'border-b last:border-0 ' + (e.isActive ? '' : 'opacity-50')}>
+              <tr
+                key={e.id}
+                className={'border-b last:border-0 ' + (e.isActive ? '' : 'opacity-50')}
+              >
                 <td className="px-4 py-3 font-mono text-xs font-semibold">{e.code}</td>
-                <td className="px-4 py-3 text-xs">{KIND_LABELS[e.kind]}</td>
+                <td className="px-4 py-3 text-xs">{kindLabels[e.kind]}</td>
                 <td className="px-4 py-3">{e.name}</td>
                 <td className="px-4 py-3 font-mono text-xs">{e.parentEntity?.code ?? '-'}</td>
                 <td className="px-4 py-3 text-xs">
@@ -259,25 +277,23 @@ export default async function EntitiesSettingsPage(props: {
                         href={'/settings/entities?edit=' + e.id}
                         className="text-xs text-[var(--color-primary)] hover:underline"
                       >
-                        Modifier
+                        {t('actions.edit')}
                       </a>
                       <form action={handleArchive}>
                         <input type="hidden" name="id" value={e.id} />
-                        <input
-                          type="hidden"
-                          name="reason"
-                          value="Archive manuel via /settings/entities"
-                        />
+                        <input type="hidden" name="reason" value={t('actions.archiveReason')} />
                         <button
                           type="submit"
                           className="text-xs text-[var(--color-destructive)] hover:underline"
                         >
-                          Archiver
+                          {t('actions.archive')}
                         </button>
                       </form>
                     </div>
                   ) : (
-                    <span className="text-xs text-[var(--color-muted-foreground)]">Archive</span>
+                    <span className="text-xs text-[var(--color-muted-foreground)]">
+                      {t('actions.archived')}
+                    </span>
                   )}
                 </td>
               </tr>

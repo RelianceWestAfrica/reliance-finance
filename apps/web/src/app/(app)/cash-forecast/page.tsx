@@ -1,19 +1,18 @@
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
-import { prisma, PaymentStatus, CashFlowDirection, CashFlowCategory } from '@reliance-finance/database';
+import {
+  prisma,
+  PaymentStatus,
+  CashFlowDirection,
+  CashFlowCategory,
+} from '@reliance-finance/database';
 import { formatCurrency } from '@/lib/format';
-import {
-  buildProjection,
-  daysUntilFirstRupture,
-} from '@/lib/cash-forecast/projection';
+import { buildProjection, daysUntilFirstRupture } from '@/lib/cash-forecast/projection';
 import { getWeekStart, weekLabel } from '@/lib/cash-forecast/week-math';
-import {
-  addManualInflow,
-  setOpeningCash,
-  runRuptureDetection,
-} from './actions';
+import { addManualInflow, setOpeningCash, runRuptureDetection } from './actions';
 
 export default async function CashForecastPage(props: {
   searchParams: Promise<{ entityId?: string; error?: string }>;
@@ -22,6 +21,7 @@ export default async function CashForecastPage(props: {
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
+  const t = await getTranslations('pages.cashForecast');
 
   const db = await getTenantedDb();
   const entities = await db.entity.findMany({
@@ -34,7 +34,7 @@ export default async function CashForecastPage(props: {
   if (!selectedEntityId) {
     return (
       <div className="rounded-lg border bg-[var(--color-card)] p-6 text-center text-sm">
-        Aucune entite accessible.
+        {t('noEntityAccessible')}
       </div>
     );
   }
@@ -119,18 +119,36 @@ export default async function CashForecastPage(props: {
 
   const horizon = daysUntilFirstRupture(projection, now);
   const ruptureCount = projection.filter((w) => w.isRupture).length;
-  const minCash = projection.reduce((min, w) => (w.closingCash < min ? w.closingCash : min), Infinity);
-  const maxCash = projection.reduce((max, w) => (w.closingCash > max ? w.closingCash : max), -Infinity);
+  const minCash = projection.reduce(
+    (min, w) => (w.closingCash < min ? w.closingCash : min),
+    Infinity,
+  );
+  const maxCash = projection.reduce(
+    (max, w) => (w.closingCash > max ? w.closingCash : max),
+    -Infinity,
+  );
 
   async function handleAddInflow(formData: FormData) {
     'use server';
     const r = await addManualInflow(formData);
-    if (!r.ok) redirect('/cash-forecast?entityId=' + selectedEntityId + '&error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect(
+        '/cash-forecast?entityId=' +
+          selectedEntityId +
+          '&error=' +
+          encodeURIComponent(r.error ?? 'Echec'),
+      );
   }
   async function handleSetOpening(formData: FormData) {
     'use server';
     const r = await setOpeningCash(formData);
-    if (!r.ok) redirect('/cash-forecast?entityId=' + selectedEntityId + '&error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect(
+        '/cash-forecast?entityId=' +
+          selectedEntityId +
+          '&error=' +
+          encodeURIComponent(r.error ?? 'Echec'),
+      );
   }
   async function handleDetect(formData: FormData) {
     'use server';
@@ -141,11 +159,8 @@ export default async function CashForecastPage(props: {
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Cash forecast 13 semaines</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            Projection roulante : opening + entrees - sorties = closing par semaine (cadre §3.5).
-            Notification DFG sur rupture projetee.
-          </p>
+          <h1 className="text-2xl font-semibold">{t('title')}</h1>
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
         </div>
         <form>
           <select
@@ -155,55 +170,90 @@ export default async function CashForecastPage(props: {
             className="rounded-md border bg-white px-3 py-2 text-sm"
           >
             {entities.map((e) => (
-              <option key={e.id} value={e.id}>{e.code} - {e.name}</option>
+              <option key={e.id} value={e.id}>
+                {e.code} - {e.name}
+              </option>
             ))}
           </select>
-          <button type="submit" className="ml-2 rounded-md border px-3 py-2 text-xs hover:bg-[var(--color-muted)]">
-            Charger
+          <button
+            type="submit"
+            className="ml-2 rounded-md border px-3 py-2 text-xs hover:bg-[var(--color-muted)]"
+          >
+            {t('loadButton')}
           </button>
         </form>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Opening cash</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.openingCash')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(openingCash, currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Closing min S0-S12</div>
-          <div className={'mt-1 text-xl font-semibold tabular-nums ' + (minCash < 0 ? 'text-[var(--color-destructive)]' : 'text-[var(--color-foreground)]')}>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.closingMin')}
+          </div>
+          <div
+            className={
+              'mt-1 text-xl font-semibold tabular-nums ' +
+              (minCash < 0 ? 'text-[var(--color-destructive)]' : 'text-[var(--color-foreground)]')
+            }
+          >
             {formatCurrency(minCash === Infinity ? 0 : minCash, currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Semaines en rupture</div>
-          <div className={'mt-1 text-xl font-semibold tabular-nums ' + (ruptureCount > 0 ? 'text-[var(--color-destructive)]' : 'text-[var(--color-success)]')}>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.weeksInRupture')}
+          </div>
+          <div
+            className={
+              'mt-1 text-xl font-semibold tabular-nums ' +
+              (ruptureCount > 0 ? 'text-[var(--color-destructive)]' : 'text-[var(--color-success)]')
+            }
+          >
             {ruptureCount} / 13
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Horizon rupture</div>
-          <div className={'mt-1 text-xl font-semibold tabular-nums ' + (horizon !== null && horizon <= 14 ? 'text-[var(--color-destructive)]' : 'text-[var(--color-success)]')}>
-            {horizon === null ? 'OK' : 'J+' + horizon}
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.ruptureHorizon')}
+          </div>
+          <div
+            className={
+              'mt-1 text-xl font-semibold tabular-nums ' +
+              (horizon !== null && horizon <= 14
+                ? 'text-[var(--color-destructive)]'
+                : 'text-[var(--color-success)]')
+            }
+          >
+            {horizon === null ? t('kpi.ruptureOk') : t('kpi.ruptureDay', { days: horizon })}
           </div>
         </div>
       </section>
 
       <section className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-        <h2 className="text-sm font-semibold">Heatmap 13 semaines</h2>
+        <h2 className="text-sm font-semibold">{t('heatmap.title')}</h2>
         <div className="mt-3 overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr>
-                <th className="border-b px-2 py-1 text-left text-[10px] uppercase text-[var(--color-muted-foreground)]">Semaine</th>
+                <th className="border-b px-2 py-1 text-left text-[10px] uppercase text-[var(--color-muted-foreground)]">
+                  {t('heatmap.weekHeader')}
+                </th>
                 {projection.map((w) => (
                   <th key={w.index} className="border-b px-1 py-1 text-center text-[10px]">
                     {weekLabel(w.weekStart)}
@@ -213,31 +263,46 @@ export default async function CashForecastPage(props: {
             </thead>
             <tbody>
               <tr>
-                <td className="border-b px-2 py-2 text-[var(--color-muted-foreground)]">Opening</td>
+                <td className="border-b px-2 py-2 text-[var(--color-muted-foreground)]">
+                  {t('heatmap.opening')}
+                </td>
                 {projection.map((w) => (
-                  <td key={w.index} className="border-b px-1 py-2 text-right tabular-nums text-[10px]">
+                  <td
+                    key={w.index}
+                    className="border-b px-1 py-2 text-right text-[10px] tabular-nums"
+                  >
                     {w.openingCash.toFixed(0)}
                   </td>
                 ))}
               </tr>
               <tr>
-                <td className="border-b px-2 py-2 text-[var(--color-success)]">+ Entrees</td>
+                <td className="border-b px-2 py-2 text-[var(--color-success)]">
+                  {t('heatmap.inflows')}
+                </td>
                 {projection.map((w) => (
-                  <td key={w.index} className="border-b px-1 py-2 text-right tabular-nums text-[10px] text-[var(--color-success)]">
+                  <td
+                    key={w.index}
+                    className="border-b px-1 py-2 text-right text-[10px] tabular-nums text-[var(--color-success)]"
+                  >
                     {w.inflow > 0 ? '+' + w.inflow.toFixed(0) : '-'}
                   </td>
                 ))}
               </tr>
               <tr>
-                <td className="border-b px-2 py-2 text-[var(--color-destructive)]">- Sorties</td>
+                <td className="border-b px-2 py-2 text-[var(--color-destructive)]">
+                  {t('heatmap.outflows')}
+                </td>
                 {projection.map((w) => (
-                  <td key={w.index} className="border-b px-1 py-2 text-right tabular-nums text-[10px] text-[var(--color-destructive)]">
+                  <td
+                    key={w.index}
+                    className="border-b px-1 py-2 text-right text-[10px] tabular-nums text-[var(--color-destructive)]"
+                  >
                     {w.outflow > 0 ? '-' + w.outflow.toFixed(0) : '-'}
                   </td>
                 ))}
               </tr>
               <tr className="bg-[var(--color-muted)]/30">
-                <td className="px-2 py-2 font-semibold">= Closing</td>
+                <td className="px-2 py-2 font-semibold">{t('heatmap.closing')}</td>
                 {projection.map((w) => {
                   // Heatmap color : green if positive et large, red if negative
                   const cls = w.isRupture
@@ -246,7 +311,12 @@ export default async function CashForecastPage(props: {
                       ? 'bg-[var(--color-success)]/20'
                       : '';
                   return (
-                    <td key={w.index} className={'px-1 py-2 text-right tabular-nums font-mono text-xs font-semibold ' + cls}>
+                    <td
+                      key={w.index}
+                      className={
+                        'px-1 py-2 text-right font-mono text-xs font-semibold tabular-nums ' + cls
+                      }
+                    >
                       {w.closingCash.toFixed(0)}
                     </td>
                   );
@@ -258,8 +328,11 @@ export default async function CashForecastPage(props: {
       </section>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <form action={handleSetOpening} className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <h3 className="text-sm font-semibold">Definir opening cash</h3>
+        <form
+          action={handleSetOpening}
+          className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm"
+        >
+          <h3 className="text-sm font-semibold">{t('forms.setOpening.title')}</h3>
           <input type="hidden" name="entityId" value={selectedEntityId} />
           <div className="mt-3 flex gap-2">
             <input
@@ -267,7 +340,7 @@ export default async function CashForecastPage(props: {
               type="number"
               step="0.01"
               required
-              placeholder="Montant"
+              placeholder={t('forms.setOpening.amountPlaceholder')}
               className="flex-1 rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
             />
             <input
@@ -278,19 +351,22 @@ export default async function CashForecastPage(props: {
             />
           </div>
           <button className="mt-2 w-full rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-            Mettre a jour
+            {t('forms.setOpening.submit')}
           </button>
         </form>
 
-        <form action={handleAddInflow} className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <h3 className="text-sm font-semibold">Ajouter une entree projetee</h3>
+        <form
+          action={handleAddInflow}
+          className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm"
+        >
+          <h3 className="text-sm font-semibold">{t('forms.addInflow.title')}</h3>
           <input type="hidden" name="entityId" value={selectedEntityId} />
           <input type="hidden" name="currency" value={currency} />
           <div className="mt-3 space-y-2">
             <input
               name="label"
               required
-              placeholder="Libelle (ex: Reglement client X)"
+              placeholder={t('forms.addInflow.labelPlaceholder')}
               className="block w-full rounded-md border bg-white px-3 py-2 text-sm"
             />
             <div className="flex gap-2">
@@ -300,7 +376,7 @@ export default async function CashForecastPage(props: {
                 step="0.01"
                 min="1"
                 required
-                placeholder="Montant"
+                placeholder={t('forms.addInflow.amountPlaceholder')}
                 className="flex-1 rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
               />
               <input
@@ -321,24 +397,28 @@ export default async function CashForecastPage(props: {
               className="block w-full rounded-md border bg-white px-3 py-2 text-sm"
             >
               {Object.values(CashFlowCategory).map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
           </div>
           <button className="mt-2 w-full rounded-md bg-[var(--color-success)] px-3 py-2 text-sm font-medium text-[var(--color-success-foreground)] hover:opacity-90">
-            + Ajouter entree
+            {t('forms.addInflow.submit')}
           </button>
         </form>
 
-        <form action={handleDetect} className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <h3 className="text-sm font-semibold">Detection rupture</h3>
+        <form
+          action={handleDetect}
+          className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm"
+        >
+          <h3 className="text-sm font-semibold">{t('forms.detect.title')}</h3>
           <input type="hidden" name="entityId" value={selectedEntityId} />
           <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
-            Lance l\'analyse + cree une Anomaly + notifie DFG/Tresorier si rupture
-            projetee a J+15 ou moins. Severite CRITICAL si rupture &lt;= 14 jours.
+            {t('forms.detect.description')}
           </p>
-          <button className="mt-2 w-full rounded-md border border-[var(--color-warning)] bg-white px-3 py-2 text-sm font-medium text-[var(--color-warning)] hover:bg-[var(--color-warning)]/10">
-            Lancer la detection
+          <button className="hover:bg-[var(--color-warning)]/10 mt-2 w-full rounded-md border border-[var(--color-warning)] bg-white px-3 py-2 text-sm font-medium text-[var(--color-warning)]">
+            {t('forms.detect.submit')}
           </button>
         </form>
       </section>

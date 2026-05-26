@@ -51,8 +51,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   if (denied) return denied;
 
   // RIB snapshot
-  let ribSnapshot: { iban?: string | null; rib?: string | null; holderName?: string | null } | null =
-    null;
+  let ribSnapshot: {
+    iban?: string | null;
+    rib?: string | null;
+    holderName?: string | null;
+  } | null = null;
   if (po.bankAccountSnapshotId) {
     const ba = await prisma.bankAccount.findUnique({
       where: { id: po.bankAccountSnapshotId },
@@ -68,13 +71,14 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   });
 
   const signedAt = po.workflowInstance?.signatures.at(-1)?.signedAt ?? null;
-  const vatRate = po.totalTtc.toString() !== po.subtotalHt.toString()
-    ? (
-        ((Number(po.totalTtc.toString()) - Number(po.subtotalHt.toString())) /
-          Number(po.subtotalHt.toString())) *
-        100
-      ).toFixed(2)
-    : '0';
+  const vatRate =
+    po.totalTtc.toString() !== po.subtotalHt.toString()
+      ? (
+          ((Number(po.totalTtc.toString()) - Number(po.subtotalHt.toString())) /
+            Number(po.subtotalHt.toString())) *
+          100
+        ).toFixed(2)
+      : '0';
 
   const data: PurchaseOrderPdfData = {
     reference: po.reference,
@@ -89,7 +93,9 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     deliveryAddress: po.deliveryLocation,
     paymentTerms: po.paymentTerms,
     warrantyMonths: po.warrantyMonths,
-    penaltyClause: po.penaltyPerDay ? `${formatAmount(po.penaltyPerDay.toString(), 0)} ${po.currency}/jour` : null,
+    penaltyClause: po.penaltyPerDay
+      ? `${formatAmount(po.penaltyPerDay.toString(), 0)} ${po.currency}/jour`
+      : null,
     entity: po.entity,
     supplier: {
       code: po.supplier.code,

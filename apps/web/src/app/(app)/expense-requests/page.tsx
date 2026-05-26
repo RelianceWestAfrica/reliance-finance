@@ -1,34 +1,12 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
 import { formatCurrency, formatDateTime } from '@/lib/format';
-import {
-  ExpenseRequestStatus,
-  ExpenseRequestType,
-  UrgencyLevel,
-} from '@reliance-finance/database';
+import { ExpenseRequestStatus, ExpenseRequestType, UrgencyLevel } from '@reliance-finance/database';
 import { detectStaleRegularizations } from './actions';
-
-const STATUS_LABEL: Record<ExpenseRequestStatus, string> = {
-  DRAFT: 'Brouillon',
-  SUBMITTED: 'Soumis',
-  CONTROL_DOC_OK: 'Doc OK',
-  CONTROL_DOC_KO: 'Doc KO',
-  BUDGET_OK: 'Budget OK',
-  BUDGET_KO: 'Budget KO',
-  FINANCE_FIL_VISA_PENDING: 'Attente visa Filiale',
-  FINANCE_FIL_VISA_OK: 'Visa Filiale OK',
-  FINANCE_GROUPE_VISA_PENDING: 'Attente visa Groupe',
-  FINANCE_GROUPE_VISA_OK: 'Visa Groupe OK',
-  AG_APPROVAL_PENDING: 'Attente AG',
-  AG_APPROVED: 'AG approuve',
-  APPROVED: 'Approuve',
-  REJECTED: 'Rejete',
-  ARCHIVED: 'Archive',
-  CANCELLED: 'Annule',
-};
 
 const STATUS_COLOR: Record<ExpenseRequestStatus, string> = {
   DRAFT: 'text-[var(--color-muted-foreground)]',
@@ -55,6 +33,7 @@ export default async function ExpenseRequestsListPage(props: {
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
+  const t = await getTranslations('pages.expenseRequests');
 
   const db = await getTenantedDb();
   const requests = await db.expenseRequest.findMany({
@@ -81,22 +60,20 @@ export default async function ExpenseRequestsListPage(props: {
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Demandes de depense</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            FDA / FD / FD_URGENCE avec workflow d&apos;approbation par seuils (cadre §5 + §7).
-          </p>
+          <h1 className="text-2xl font-semibold">{t('title')}</h1>
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <form action={handleStaleCheck}>
             <button className="rounded-md border px-3 py-1.5 text-xs hover:bg-[var(--color-muted)]">
-              Verifier urgences echues
+              {t('checkStaleCta')}
             </button>
           </form>
           <Link
             href="/expense-requests/new"
             className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
           >
-            + Nouvelle demande
+            {t('newCta')}
           </Link>
         </div>
       </header>
@@ -108,10 +85,10 @@ export default async function ExpenseRequestsListPage(props: {
             defaultValue={params.status ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm"
           >
-            <option value="">-- Tous statuts --</option>
+            <option value="">{t('filtersAllStatus')}</option>
             {Object.values(ExpenseRequestStatus).map((s) => (
               <option key={s} value={s}>
-                {STATUS_LABEL[s]}
+                {t(`statusLabels.${s}` as 'statusLabels.DRAFT')}
               </option>
             ))}
           </select>
@@ -120,10 +97,10 @@ export default async function ExpenseRequestsListPage(props: {
             defaultValue={params.type ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm"
           >
-            <option value="">-- Tous types --</option>
-            {Object.values(ExpenseRequestType).map((t) => (
-              <option key={t} value={t}>
-                {t}
+            <option value="">{t('filtersAllTypes')}</option>
+            {Object.values(ExpenseRequestType).map((tp) => (
+              <option key={tp} value={tp}>
+                {tp}
               </option>
             ))}
           </select>
@@ -131,7 +108,7 @@ export default async function ExpenseRequestsListPage(props: {
             type="submit"
             className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90"
           >
-            Filtrer
+            {t('filterCta')}
           </button>
         </div>
       </form>
@@ -140,22 +117,25 @@ export default async function ExpenseRequestsListPage(props: {
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-3 font-medium">Reference</th>
-              <th className="px-3 py-3 font-medium">Type</th>
-              <th className="px-3 py-3 font-medium">Titre</th>
-              <th className="px-3 py-3 font-medium">Entite / Projet</th>
-              <th className="px-3 py-3 font-medium">Fournisseur</th>
-              <th className="px-3 py-3 font-medium">Montant</th>
-              <th className="px-3 py-3 font-medium">Urgence</th>
-              <th className="px-3 py-3 font-medium">Statut</th>
-              <th className="px-3 py-3 font-medium">Cree</th>
+              <th className="px-3 py-3 font-medium">{t('columns.ref')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.type')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.title')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.entityProject')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.supplier')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.amount')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.urgency')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.status')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.created')}</th>
             </tr>
           </thead>
           <tbody>
             {requests.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucune demande.
+                <td
+                  colSpan={9}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('empty')}
                 </td>
               </tr>
             )}
@@ -193,7 +173,7 @@ export default async function ExpenseRequestsListPage(props: {
                   )}
                 </td>
                 <td className={'px-3 py-2 text-xs font-medium ' + STATUS_COLOR[er.status]}>
-                  {STATUS_LABEL[er.status]}
+                  {t(`statusLabels.${er.status}` as 'statusLabels.DRAFT')}
                 </td>
                 <td className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
                   {formatDateTime(er.createdAt)}
@@ -204,9 +184,7 @@ export default async function ExpenseRequestsListPage(props: {
         </table>
       </section>
 
-      <p className="text-xs text-[var(--color-muted-foreground)]">
-        100 derniers resultats max. Pagination + tri par colonne : session de polish.
-      </p>
+      <p className="text-xs text-[var(--color-muted-foreground)]">{t('pagination')}</p>
     </div>
   );
 }

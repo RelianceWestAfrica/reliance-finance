@@ -9,10 +9,7 @@ import { createElement } from 'react';
 
 import { prisma } from '@reliance-finance/database';
 
-import {
-  PaymentReceiptPdf,
-  type PaymentReceiptPdfData,
-} from '@/lib/pdf/templates/payment-receipt';
+import { PaymentReceiptPdf, type PaymentReceiptPdfData } from '@/lib/pdf/templates/payment-receipt';
 import {
   buildVerifyEnvelope,
   pdfResponse,
@@ -78,7 +75,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     supplier,
     invoiceRef: p.invoice?.reference ?? null,
     purchaseOrderRef: p.invoice?.purchaseOrder?.reference ?? null,
-    beneficiaryRib: p.beneficiaryIban ?? p.beneficiaryRib ?? p.bankAccount.iban ?? p.bankAccount.rib ?? '-',
+    beneficiaryRib:
+      p.beneficiaryIban ?? p.beneficiaryRib ?? p.bankAccount.iban ?? p.bankAccount.rib ?? '-',
     beneficiaryHolderName: p.beneficiaryName ?? p.bankAccount.holderName,
     bankName: p.bankAccount.bankName,
     signatures: (p.workflowInstance?.signatures ?? []).map((s) => ({

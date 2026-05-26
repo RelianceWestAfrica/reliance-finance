@@ -32,7 +32,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     include: {
       entity: { select: { code: true, name: true } },
       purchaseOrder: {
-        select: { reference: true, supplierId: true, supplier: { select: { code: true, name: true } } },
+        select: {
+          reference: true,
+          supplierId: true,
+          supplier: { select: { code: true, name: true } },
+        },
       },
       items: { orderBy: { position: 'asc' } },
       workflowInstance: {
@@ -56,11 +60,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     entityId: r.id,
   });
 
-  const conformity = r.isFullyCompliant
-    ? 'FULL'
-    : r.hasReserves
-      ? 'PARTIAL'
-      : 'NON_CONFORM';
+  const conformity = r.isFullyCompliant ? 'FULL' : r.hasReserves ? 'PARTIAL' : 'NON_CONFORM';
 
   const data: ReceptionPdfData = {
     reference: r.reference,

@@ -1,5 +1,8 @@
 import type { NextConfig } from 'next';
 import { withSentryConfig } from '@sentry/nextjs';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -13,12 +16,12 @@ const nextConfig: NextConfig = {
   experimental: {
     typedRoutes: false,
   },
-    webpack: (config) => {
-        config.resolve.extensionAlias = {
-            '.js': ['.ts', '.tsx', '.js'],
-        };
-      return config;
-    },
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.tsx', '.js'],
+    };
+    return config;
+  },
   async headers() {
     return [
       {
@@ -37,7 +40,8 @@ const nextConfig: NextConfig = {
 // Sentry wrapper - active uniquement si les env vars sont definies. Sans
 // SENTRY_AUTH_TOKEN les sourcemaps ne sont pas uploadees mais le SDK runtime
 // continue de fonctionner si SENTRY_DSN est present.
-const withSentry = withSentryConfig(nextConfig, {
+const baseConfig = withNextIntl(nextConfig);
+const withSentry = withSentryConfig(baseConfig, {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   silent: !process.env.SENTRY_DEBUG,
@@ -54,4 +58,4 @@ const withSentry = withSentryConfig(nextConfig, {
 // totalement (le wrapper accepte org/project undefined).
 export default process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN
   ? withSentry
-  : nextConfig;
+  : baseConfig;

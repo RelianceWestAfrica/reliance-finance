@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -13,6 +14,7 @@ export default async function NewReceptionPage(props: {
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
+  const t = await getTranslations('pages.receptions');
 
   const db = await getTenantedDb();
   const purchaseOrders = await db.purchaseOrder.findMany({
@@ -42,23 +44,37 @@ export default async function NewReceptionPage(props: {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Nouveau PV de reception</h1>
-        <Link href="/receptions" className="mt-2 inline-block text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Retour
+        <h1 className="text-2xl font-semibold">{t('new.title')}</h1>
+        <Link
+          href="/receptions"
+          className="mt-2 inline-block text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {t('new.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
-      <form action={handleCreate} className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
+      <form
+        action={handleCreate}
+        className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm"
+      >
         <label className="block text-sm">
-          BC associe *
-          <select name="purchaseOrderId" required defaultValue={params.purchaseOrderId ?? ''} className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- BC signe / envoye --</option>
+          {t('new.fields.po')}
+          <select
+            name="purchaseOrderId"
+            required
+            defaultValue={params.purchaseOrderId ?? ''}
+            className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('new.fields.poPlaceholder')}</option>
             {purchaseOrders.map((po) => (
               <option key={po.id} value={po.id}>
                 {po.reference} - {po.supplier.code} {po.supplier.name} ({po.status})
@@ -69,38 +85,57 @@ export default async function NewReceptionPage(props: {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="text-sm">
-            Type de PV *
-            <select name="type" required defaultValue={ReceptionType.GOODS} className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm">
-              <option value={ReceptionType.GOODS}>Reception de biens</option>
-              <option value={ReceptionType.SERVICE_DONE}>Service fait (prestation)</option>
-              <option value={ReceptionType.WORK_ATTACHMENT}>Attachement travaux</option>
+            {t('new.fields.type')}
+            <select
+              name="type"
+              required
+              defaultValue={ReceptionType.GOODS}
+              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
+            >
+              <option value={ReceptionType.GOODS}>{t('new.typeOptions.GOODS')}</option>
+              <option value={ReceptionType.SERVICE_DONE}>
+                {t('new.typeOptions.SERVICE_DONE')}
+              </option>
+              <option value={ReceptionType.WORK_ATTACHMENT}>
+                {t('new.typeOptions.WORK_ATTACHMENT')}
+              </option>
             </select>
           </label>
           <label className="text-sm">
-            Date de reception
-            <input name="receptionDate" type="date" className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm" />
+            {t('new.fields.receptionDate')}
+            <input
+              name="receptionDate"
+              type="date"
+              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
+            />
           </label>
           <label className="text-sm sm:col-span-2">
-            Lieu
-            <input name="location" className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm" />
+            {t('new.fields.location')}
+            <input
+              name="location"
+              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
+            />
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="requiresTechnical" defaultChecked />
-            Verification technique requise (recommande pour biens techniques)
+            {t('new.fields.requiresTechnical')}
           </label>
         </div>
 
-        <p className="text-xs text-[var(--color-muted-foreground)]">
-          Les lignes seront pre-remplies depuis le BC. Vous pourrez ajuster les
-          quantites recues et marquer les non-conformites avant signature.
-        </p>
+        <p className="text-xs text-[var(--color-muted-foreground)]">{t('new.help')}</p>
 
         <div className="flex gap-2">
-          <button type="submit" className="rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-            Creer le PV (brouillon)
+          <button
+            type="submit"
+            className="rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
+          >
+            {t('new.submit')}
           </button>
-          <Link href="/receptions" className="rounded-md border px-4 py-2 text-sm hover:bg-[var(--color-muted)]">
-            Annuler
+          <Link
+            href="/receptions"
+            className="rounded-md border px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
+          >
+            {t('new.cancel')}
           </Link>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -28,6 +29,7 @@ export default async function AnomaliesListPage(props: {
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
+  const t = await getTranslations('pages.anomalies');
 
   const db = await getTenantedDb();
   const anomalies = await db.anomaly.findMany({
@@ -53,41 +55,59 @@ export default async function AnomaliesListPage(props: {
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Anomalies</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            Detection automatique : doublons facture, fractionnement paiements, PV manquants,
-            DRAFT &gt; 30j, urgences repetees, RIB suspects (cadre §13).
-          </p>
+          <h1 className="text-2xl font-semibold">{t('title')}</h1>
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
         </div>
         <form action={handleRun}>
           <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-            Lancer les controles
+            {t('runChecks')}
           </button>
         </form>
       </header>
 
       <form className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
-          <select name="status" defaultValue={params.status ?? ''} className="rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- Tous statuts --</option>
+          <select
+            name="status"
+            defaultValue={params.status ?? ''}
+            className="rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('filters.allStatuses')}</option>
             {Object.values(AnomalyStatus).map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
-          <select name="severity" defaultValue={params.severity ?? ''} className="rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- Toutes severites --</option>
+          <select
+            name="severity"
+            defaultValue={params.severity ?? ''}
+            className="rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('filters.allSeverities')}</option>
             {Object.values(AnomalySeverity).map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
-          <select name="type" defaultValue={params.type ?? ''} className="rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- Tous types --</option>
-            {Object.values(AnomalyType).map((t) => (
-              <option key={t} value={t}>{t}</option>
+          <select
+            name="type"
+            defaultValue={params.type ?? ''}
+            className="rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('filters.allTypes')}</option>
+            {Object.values(AnomalyType).map((typeValue) => (
+              <option key={typeValue} value={typeValue}>
+                {typeValue}
+              </option>
             ))}
           </select>
-          <button type="submit" className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90">
-            Filtrer
+          <button
+            type="submit"
+            className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90"
+          >
+            {t('filters.submit')}
           </button>
         </div>
       </form>
@@ -96,33 +116,44 @@ export default async function AnomaliesListPage(props: {
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-3 font-medium">Reference</th>
-              <th className="px-3 py-3 font-medium">Severite</th>
-              <th className="px-3 py-3 font-medium">Type</th>
-              <th className="px-3 py-3 font-medium">Titre</th>
-              <th className="px-3 py-3 font-medium">Entite</th>
-              <th className="px-3 py-3 font-medium">Statut</th>
-              <th className="px-3 py-3 font-medium">Assigne</th>
-              <th className="px-3 py-3 font-medium">Detecte</th>
+              <th className="px-3 py-3 font-medium">{t('columns.ref')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.severity')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.type')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.title')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.entity')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.status')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.assignee')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.detectedAt')}</th>
             </tr>
           </thead>
           <tbody>
             {anomalies.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucune anomalie. Lancez les controles pour scanner.
+                <td
+                  colSpan={8}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('empty')}
                 </td>
               </tr>
             )}
             {anomalies.map((a) => (
               <tr key={a.id} className="border-b last:border-0">
                 <td className="px-3 py-2 font-mono text-xs">
-                  <Link href={'/anomalies/' + a.id} className="text-[var(--color-primary)] hover:underline">
+                  <Link
+                    href={'/anomalies/' + a.id}
+                    className="text-[var(--color-primary)] hover:underline"
+                  >
                     {a.reference}
                   </Link>
                 </td>
                 <td className="px-3 py-2">
-                  <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + SEVERITY_COLOR[a.severity]}>
+                  <span
+                    className={
+                      'rounded-full px-2 py-0.5 text-[10px] font-medium ' +
+                      SEVERITY_COLOR[a.severity]
+                    }
+                  >
                     {a.severity}
                   </span>
                 </td>

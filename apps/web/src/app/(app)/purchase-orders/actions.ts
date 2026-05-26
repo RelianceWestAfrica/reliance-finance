@@ -76,22 +76,63 @@ function rolesForStage(s: SignatureStage): RoleCode[] {
 const createSchema = z.object({
   type: z.nativeEnum(PurchaseOrderType).default(PurchaseOrderType.BC),
   entityId: z.string().cuid(),
-  projectId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  projectId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   supplierId: z.string().cuid(),
-  expenseRequestId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  expenseRequestId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   objet: z.string().min(3).max(500),
-  description: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
-  deliveryLocation: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
-  deliveryDeadline: z.string().optional().or(z.literal('').transform(() => undefined)),
-  incoterm: z.string().max(20).optional().or(z.literal('').transform(() => undefined)),
+  description: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  deliveryLocation: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  deliveryDeadline: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  incoterm: z
+    .string()
+    .max(20)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   currency: z.string().length(3).toUpperCase().default('XOF'),
-  paymentTerms: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
-  depositPercent: z.coerce.number().min(0).max(100).optional().or(z.literal('').transform(() => undefined)),
+  paymentTerms: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  depositPercent: z.coerce
+    .number()
+    .min(0)
+    .max(100)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   requiresReceptionPv: z.coerce.boolean().default(true),
   requiresServiceDone: z.coerce.boolean().default(false),
   requiresWorkAttachment: z.coerce.boolean().default(false),
-  warrantyMonths: z.coerce.number().int().min(0).optional().or(z.literal('').transform(() => undefined)),
-  penaltyPerDay: z.coerce.number().min(0).optional().or(z.literal('').transform(() => undefined)),
+  warrantyMonths: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  penaltyPerDay: z.coerce
+    .number()
+    .min(0)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createPurchaseOrder(
@@ -133,7 +174,8 @@ export async function createPurchaseOrder(
     warrantyMonths: formData.get('warrantyMonths') ?? undefined,
     penaltyPerDay: formData.get('penaltyPerDay') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const [entity, project, supplier] = await Promise.all([
     prisma.entity.findUnique({
@@ -169,10 +211,7 @@ export async function createPurchaseOrder(
   const bankAccountSnapshotId = primaryBankAccount?.id;
 
   const reference = await allocateReference({
-    type:
-      parsed.data.type === PurchaseOrderType.CONTRACT
-        ? DocumentType.CONTRACT
-        : DocumentType.BC,
+    type: parsed.data.type === PurchaseOrderType.CONTRACT ? DocumentType.CONTRACT : DocumentType.BC,
     entityId: entity.id,
     entityCode: entity.code,
     projectId: project?.id ?? null,
@@ -192,7 +231,9 @@ export async function createPurchaseOrder(
       objet: parsed.data.objet,
       description: parsed.data.description,
       deliveryLocation: parsed.data.deliveryLocation,
-      deliveryDeadline: parsed.data.deliveryDeadline ? new Date(parsed.data.deliveryDeadline) : undefined,
+      deliveryDeadline: parsed.data.deliveryDeadline
+        ? new Date(parsed.data.deliveryDeadline)
+        : undefined,
       incoterm: parsed.data.incoterm,
       // Totaux a 0 initialement - calcules quand on ajoute les items
       subtotalHt: 0,
@@ -201,12 +242,15 @@ export async function createPurchaseOrder(
       totalTtc: 0,
       currency: parsed.data.currency,
       paymentTerms: parsed.data.paymentTerms,
-      depositPercent: typeof parsed.data.depositPercent === 'number' ? parsed.data.depositPercent : undefined,
+      depositPercent:
+        typeof parsed.data.depositPercent === 'number' ? parsed.data.depositPercent : undefined,
       requiresReceptionPv: parsed.data.requiresReceptionPv,
       requiresServiceDone: parsed.data.requiresServiceDone,
       requiresWorkAttachment: parsed.data.requiresWorkAttachment,
-      warrantyMonths: typeof parsed.data.warrantyMonths === 'number' ? parsed.data.warrantyMonths : undefined,
-      penaltyPerDay: typeof parsed.data.penaltyPerDay === 'number' ? parsed.data.penaltyPerDay : undefined,
+      warrantyMonths:
+        typeof parsed.data.warrantyMonths === 'number' ? parsed.data.warrantyMonths : undefined,
+      penaltyPerDay:
+        typeof parsed.data.penaltyPerDay === 'number' ? parsed.data.penaltyPerDay : undefined,
       bankAccountSnapshotId,
     },
   });
@@ -249,7 +293,11 @@ const addItemSchema = z.object({
   position: z.coerce.number().int().positive(),
   description: z.string().min(2).max(500),
   quantity: z.coerce.number().positive(),
-  unit: z.string().max(20).optional().or(z.literal('').transform(() => undefined)),
+  unit: z
+    .string()
+    .max(20)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   unitPrice: z.coerce.number().positive(),
 });
 
@@ -267,7 +315,8 @@ export async function addPurchaseOrderItem(
     unit: formData.get('unit') ?? undefined,
     unitPrice: formData.get('unitPrice'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const po = await prisma.purchaseOrder.findUnique({
     where: { id: parsed.data.purchaseOrderId },
@@ -300,9 +349,7 @@ export async function addPurchaseOrderItem(
     });
     const subtotalHt = items.reduce((sum, i) => sum + Number(i.totalHt.toString()), 0);
     const totalTtc =
-      subtotalHt +
-      Number(po.taxAmount.toString()) -
-      Number(po.retentionAmount.toString());
+      subtotalHt + Number(po.taxAmount.toString()) - Number(po.retentionAmount.toString());
 
     await tx.purchaseOrder.update({
       where: { id: parsed.data.purchaseOrderId },
@@ -336,7 +383,11 @@ export async function removePurchaseOrderItem(
 
   const item = await prisma.purchaseOrderItem.findUnique({
     where: { id },
-    select: { id: true, purchaseOrderId: true, purchaseOrder: { select: { status: true, taxAmount: true, retentionAmount: true } } },
+    select: {
+      id: true,
+      purchaseOrderId: true,
+      purchaseOrder: { select: { status: true, taxAmount: true, retentionAmount: true } },
+    },
   });
   if (!item) return { ok: false, error: 'Item introuvable' };
   if (item.purchaseOrder.status !== PurchaseOrderStatus.DRAFT) {
@@ -433,7 +484,8 @@ export async function submitPurchaseOrder(
   ]);
 
   // Conversion en devise Groupe (XOF) - si autre devise, M11 fera la conversion
-  const amountInGroupCurrency = po.currency === 'XOF' ? Number(po.totalTtc.toString()) : Number(po.totalTtc.toString());
+  const amountInGroupCurrency =
+    po.currency === 'XOF' ? Number(po.totalTtc.toString()) : Number(po.totalTtc.toString());
 
   // Garde sourcing : si lie a une ER et > seuil 3 offres, exige OC ou SSJ approuves
   if (po.expenseRequestId) {
@@ -729,7 +781,8 @@ export async function sendPurchaseOrderToSupplier(
   if (po.status !== PurchaseOrderStatus.SIGNED) {
     return {
       ok: false,
-      error: 'Envoi possible seulement apres signature complete (statut courant : ' + po.status + ')',
+      error:
+        'Envoi possible seulement apres signature complete (statut courant : ' + po.status + ')',
     };
   }
 
@@ -744,7 +797,10 @@ export async function sendPurchaseOrderToSupplier(
       const usability = isBankAccountUsable(account);
       if (!usability.usable) {
         console.warn(
-          'WARN: BC ' + po.reference + ' envoye au fournisseur alors que RIB snapshot est ' + usability.reason,
+          'WARN: BC ' +
+            po.reference +
+            ' envoye au fournisseur alors que RIB snapshot est ' +
+            usability.reason,
         );
       }
     }
@@ -801,7 +857,8 @@ export async function cancelPurchaseOrder(
     id: formData.get('id'),
     reason: formData.get('reason'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const po = await prisma.purchaseOrder.findUnique({
     where: { id: parsed.data.id },
@@ -814,7 +871,10 @@ export async function cancelPurchaseOrder(
   ) {
     return {
       ok: false,
-      error: 'Annulation impossible apres signature complete - utiliser une procedure d\'avenant (statut : ' + po.status + ')',
+      error:
+        "Annulation impossible apres signature complete - utiliser une procedure d'avenant (statut : " +
+        po.status +
+        ')',
     };
   }
 

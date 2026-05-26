@@ -1,0 +1,1807 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveChanges": "Save changes",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "create": "Create",
+    "back": "Back",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "filters": "Filters",
+    "all": "All",
+    "loading": "Loading…",
+    "empty": "Nothing to display.",
+    "yes": "Yes",
+    "no": "No",
+    "actions": "Actions",
+    "details": "Details",
+    "status": "Status",
+    "date": "Date",
+    "amount": "Amount",
+    "currency": "Currency",
+    "description": "Description",
+    "notes": "Notes",
+    "createdAt": "Created on",
+    "updatedAt": "Updated on",
+    "createdBy": "Created by",
+    "validate": "Validate",
+    "reject": "Reject",
+    "approve": "Approve",
+    "submit": "Submit",
+    "send": "Send",
+    "view": "View",
+    "open": "Open",
+    "download": "Download",
+    "export": "Export",
+    "import": "Import",
+    "active": "Active",
+    "inactive": "Inactive",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "type": "Type",
+    "reference": "Reference",
+    "next": "Next",
+    "previous": "Previous",
+    "previousAlt": "Previous",
+    "addLine": "Add a line",
+    "remove": "Remove",
+    "yesPlural": "Yes",
+    "noPlural": "No",
+    "subtotal": "Subtotal",
+    "tax": "VAT",
+    "total": "Total",
+    "errorGeneric": "An error occurred.",
+    "saving": "Saving…",
+    "submitting": "Submitting…",
+    "required": "Required field",
+    "comment": "Comment",
+    "reason": "Reason",
+    "expectedDate": "Expected date",
+    "issueDate": "Issue date",
+    "dueDate": "Due date",
+    "paymentDate": "Payment date"
+  },
+  "nav": {
+    "groups": {
+      "pilotage": "Steering",
+      "purchase": "Purchase cycle",
+      "treasury": "Treasury & accounting",
+      "control": "Control",
+      "admin": "Administration"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "reporting": "Reporting & KPIs",
+      "suppliers": "Suppliers",
+      "expenseRequests": "Requests",
+      "purchaseOrders": "Purchase orders",
+      "receptions": "Goods receipts",
+      "invoices": "Invoices",
+      "payments": "Payments",
+      "cashForecast": "13-week cash forecast",
+      "accounting": "Accounting",
+      "anomalies": "Anomalies",
+      "audit": "Audit",
+      "settings": "Settings",
+      "profile": "Profile",
+      "offerComparisons": "Offer comparisons",
+      "soleSourceJustifications": "Sole-source justifications"
+    },
+    "backToPortal": "Back to RWA HQ",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "selectLanguage": "Select language",
+    "notifications": "Notifications",
+    "appName": "RWA Finance"
+  },
+  "breadcrumb": {
+    "root": "RWA",
+    "app": "Finance",
+    "label": "Breadcrumb"
+  },
+  "accountMenu": {
+    "title": "Account",
+    "profile": "My profile",
+    "profileSub": "Name, email, picture…",
+    "password": "Password",
+    "passwordSub": "Reset password",
+    "preferences": "Preferences",
+    "preferencesSub": "Language, display",
+    "logout": "Sign out"
+  },
+  "login": {
+    "appName": "Reliance Finance",
+    "ssoIntro": "Access is managed by the RWA Core authentication portal.",
+    "ssoButton": "Sign in with RWA Core",
+    "ssoRedirecting": "Redirecting to RWA Core portal…",
+    "localIntro": "Fallback access (administrator) — local mode",
+    "emailLabel": "Work email",
+    "emailPlaceholder": "first.last@reliancewestafrica.com",
+    "passwordLabel": "Password",
+    "signIn": "Sign in",
+    "orSeparator": "or",
+    "magicLinkLabel": "Receive a magic link",
+    "magicLinkSubmit": "Send the link",
+    "footer": "Restricted to authorized Reliance West Africa staff. All sign-ins are logged (compliance framework §10).",
+    "errors": {
+      "credentials": "Invalid credentials. Check your email and password.",
+      "generic": "Authentication error: {code}",
+      "accountDisabled": "Your account is disabled. Contact an administrator."
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Manage your personal information, password and preferences.",
+    "card": {
+      "lastLogin": "Last sign-in",
+      "lastLoginNever": "Never",
+      "status": "Status",
+      "active": "ACTIVE",
+      "inactive": "INACTIVE",
+      "noRole": "No active role"
+    },
+    "tabs": {
+      "infos": "Information",
+      "security": "Security",
+      "preferences": "Preferences"
+    },
+    "infos": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "emailHelp": "This email identifies you on the platform."
+    },
+    "security": {
+      "passwordLabel": "Password",
+      "resetPassword": "Reset password",
+      "lastLoginAt": "Last sign-in: {date}."
+    },
+    "preferences": {
+      "languageLabel": "Interface language",
+      "languageHelp": "The selected language is remembered for future sign-ins.",
+      "timezoneLabel": "Display timezone"
+    },
+    "session": {
+      "title": "Session",
+      "help": "If you have any doubt about your session security, sign out and sign in again.",
+      "logout": "Sign out"
+    }
+  },
+  "verifyRequest": {
+    "title": "Link sent",
+    "body": "If the address is recognized, an email with a sign-in link has just been sent. The link expires in 10 minutes."
+  },
+  "setPassword": {
+    "title": "Set a password",
+    "subtitle": "Choose a strong password to finalize access to your account.",
+    "passwordLabel": "New password",
+    "confirmLabel": "Confirmation",
+    "submit": "Set password",
+    "constraints": "At least 12 characters mixing uppercase, lowercase, digits and symbols."
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Operational summary of your scope.",
+      "welcome": "Welcome, {name}",
+      "greeting": "Hello",
+      "greetingWithName": "Hello, {name}",
+      "intro": "Consolidated view of the financial cycle — suppliers, expense requests, offer comparisons, purchase orders, goods receipts, invoices (3-way match), treasury and SYSCOHADA accounting.",
+      "noEntity": "You are not attached to any entity yet.",
+      "stats": {
+        "entities": "Entities",
+        "entitiesNote": "Holding + subsidiaries + SPV",
+        "suppliers": "Suppliers",
+        "suppliersNote": "Active · ACTIVE status",
+        "projects": "Projects",
+        "projectsNote": "Periods in progress",
+        "thresholds": "Thresholds",
+        "thresholdsNote": "Configured · framework §5"
+      },
+      "roles": {
+        "title": "Your roles",
+        "docRef": "docs/rbac-matrix.md",
+        "empty": "No active role. Contact your administrator to obtain your permissions."
+      },
+      "systemStatus": "System operational · all sign-ins are logged (compliance framework §10).",
+      "kpi": {
+        "openRequests": "Open requests",
+        "invoicesToPay": "Invoices to pay",
+        "cashPosition": "Cash position",
+        "anomaliesOpen": "Open anomalies"
+      },
+      "shortcuts": {
+        "title": "Shortcuts",
+        "newRequest": "New request",
+        "newSupplier": "New supplier",
+        "registerInvoice": "Register an invoice",
+        "schedulePayment": "Schedule a payment"
+      }
+    },
+    "reporting": {
+      "title": "Reporting & KPIs",
+      "subtitle": "Consolidated financial indicators by entity, period and category.",
+      "introConsolidated": "Consolidated view: compliance, lead time, emergencies, budget vs actual, top anomalies (framework §10).",
+      "filters": {
+        "entity": "Entity",
+        "period": "Period",
+        "category": "Category",
+        "currency": "Currency",
+        "allEntities": "-- All entities --",
+        "allProjects": "-- All projects --",
+        "apply": "Filter"
+      },
+      "kpis": {
+        "compliantPaymentsPercent": "% compliant payments",
+        "compliantPaymentsHelp": "{compliant} / {total} (3-way OK + final GR)",
+        "avgLeadTime": "Avg lead time request → payment",
+        "avgLeadTimeUnit": "{days} d",
+        "notAvailable": "N/A",
+        "emergencyOverdue": "Emergencies overdue",
+        "emergencyOverdueRatio": "{count} / {total}",
+        "emergencyOverdueHelp": "{rate}% not regularized",
+        "weeklyAnomalies": "Anomalies this week",
+        "viewAll": "View all"
+      },
+      "topAnomalies": {
+        "title": "Top 5 anomalies this week",
+        "empty": "No anomaly this week. Excellent!"
+      },
+      "budgetVsActual": {
+        "title": "Budget vs actual by project",
+        "columns": {
+          "project": "Project",
+          "budget": "Budget",
+          "actual": "Actual",
+          "variance": "Variance"
+        },
+        "empty": "No project with budget."
+      },
+      "sections": {
+        "spendByCategory": "Spend by category",
+        "spendByEntity": "Spend by entity",
+        "supplierTop": "Top suppliers",
+        "monthlyTrend": "Monthly trend"
+      }
+    },
+    "suppliers": {
+      "title": "Suppliers",
+      "subtitle": "Supplier lifecycle + bank account anti-fraud (framework §8). Last 100 results max.",
+      "newCta": "New supplier",
+      "filters": {
+        "searchPlaceholder": "Search: name, code, RCCM, IFU",
+        "allStatuses": "-- All statuses --",
+        "allSensitivities": "-- All sensitivities --",
+        "submit": "Filter"
+      },
+      "columns": {
+        "code": "Code",
+        "name": "Legal name",
+        "kind": "Category",
+        "country": "Country",
+        "status": "Status",
+        "createdAt": "Created on",
+        "entity": "Entity",
+        "rccmIfu": "RCCM / IFU",
+        "sensitivity": "Sensitivity",
+        "rib": "Bank account"
+      },
+      "empty": "No supplier.",
+      "list": {
+        "ribsCount": "Bank accounts ({count})",
+        "strategic": "STRATEGIC",
+        "ribOk": "OK",
+        "ribNone": "None"
+      },
+      "new": {
+        "title": "New supplier",
+        "subtitle": "Light KYC onboarding: RCCM/IFU + initial bank account (later verified via dual approval — framework §8).",
+        "back": "← Back to list",
+        "section": {
+          "identity": "Identification",
+          "contact": "Contact",
+          "fiscal": "Tax",
+          "bank": "Initial bank account (optional)",
+          "sensitivity": "Sensitivity (framework §6.3)"
+        },
+        "bankHelp": "The bank account will initially be marked UNVERIFIED. It must be verified through the dual approval workflow (Country CFO + Group CFO) before it can be used for payments.",
+        "fields": {
+          "name": "Legal name *",
+          "namePlaceholder": "ACME LTD",
+          "code": "Supplier code * (UPPERCASE)",
+          "codePlaceholder": "RWA-SUP-TOGO-0099",
+          "kind": "Category",
+          "country": "Country (ISO 2)",
+          "countryPlaceholder": "TG",
+          "taxId": "Tax ID",
+          "address": "Address",
+          "phone": "Phone",
+          "email": "Email",
+          "entity": "Entity *",
+          "entityPlaceholder": "-- Entity --",
+          "rccm": "RCCM",
+          "rccmPlaceholder": "TG-LFW-2025-A-1234",
+          "ifu": "IFU / Tax ID",
+          "sensitivity": "Sensitivity",
+          "isStrategic": "Strategic supplier (enhanced control)",
+          "notes": "Notes",
+          "bankName": "Bank",
+          "bankNamePlaceholder": "Ecobank Togo",
+          "holderName": "Account holder (must match legal name)",
+          "iban": "IBAN",
+          "rib": "Bank account number",
+          "swift": "SWIFT / BIC",
+          "currency": "Currency"
+        },
+        "submit": "Create supplier",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "Back to suppliers",
+        "tabs": {
+          "details": "Details",
+          "banks": "Bank details",
+          "history": "Bank account history"
+        },
+        "header": {
+          "entity": "Entity {code}",
+          "ribsCount": "Bank accounts ({count})",
+          "historyLink": "Bank account history"
+        },
+        "section": {
+          "identity": "Identification & sensitivity",
+          "dangerZone": "Danger zone",
+          "footer": "Created on {date} - Status {status}"
+        },
+        "dangerZoneHelp": "Archiving is logged and reversible only via admin SQL query. Existing POs and invoices remain viewable.",
+        "fields": {
+          "name": "Legal name *",
+          "rccm": "RCCM",
+          "ifu": "IFU / Tax ID",
+          "email": "Email",
+          "phone": "Phone",
+          "address": "Address",
+          "country": "Country",
+          "sensitivity": "Sensitivity (framework §6.3)",
+          "isStrategic": "Strategic supplier (enhanced control)",
+          "notes": "Notes",
+          "archiveReason": "Archive reason (required, min 5 chars)"
+        },
+        "actions": {
+          "save": "Save",
+          "archive": "Archive"
+        }
+      },
+      "bankAccounts": {
+        "title": "Bank accounts - {supplierName}",
+        "subtitle": "Anti-fraud bank account cycle: request → L1 → L2 → 24h quarantine → active (framework §8).",
+        "back": "← Back to supplier record",
+        "addCta": "Add an account",
+        "activateMatured": "Activate matured quarantines",
+        "registeredTitle": "Registered bank accounts",
+        "empty": "No bank account.",
+        "columns": {
+          "label": "Label",
+          "iban": "IBAN",
+          "bic": "BIC",
+          "bank": "Bank",
+          "status": "Status",
+          "bankHolder": "Bank / Holder",
+          "ibanRib": "IBAN / Account",
+          "usable": "Usable",
+          "verified": "Verified",
+          "quarantine": "Quarantine"
+        },
+        "values": {
+          "usable": "OK",
+          "notVerified": "No"
+        },
+        "verifyCta": "Verify (callback)",
+        "changeForm": {
+          "title": "Bank account change request",
+          "help": "Dual approval required (L1 + L2) followed by a 24h quarantine before use.",
+          "replaces": "Replaces existing bank account (optional)",
+          "noReplacement": "-- None (new account) --",
+          "newBankNamePlaceholder": "New bank",
+          "newHolderNamePlaceholder": "Holder (= legal name)",
+          "newIbanPlaceholder": "IBAN",
+          "newRibPlaceholder": "Bank account number",
+          "justificationPlaceholder": "Written justification required (framework §8) — e.g., new account opened, bank change, etc.",
+          "submit": "Submit request"
+        },
+        "changesTitle": "Change request history",
+        "changesEmpty": "No request.",
+        "changesColumns": {
+          "date": "Date",
+          "requester": "Requester",
+          "oldNew": "Old → New",
+          "status": "Status",
+          "validations": "Approvals"
+        },
+        "changeStatus": {
+          "REQUESTED": "Pending L1",
+          "DUAL_VALIDATION_PENDING": "Pending L2",
+          "QUARANTINE": "24h quarantine",
+          "ACTIVE": "Active",
+          "REJECTED": "Rejected"
+        },
+        "changeRow": {
+          "creation": "creation",
+          "quarantineUntil": "until {date}",
+          "n1Done": "L1: {email}",
+          "n1Pending": "L1 pending",
+          "n2Done": "L2: {email}",
+          "n2Pending": "L2 pending",
+          "approveN1": "Approve L1",
+          "approveN2": "Approve L2 (Group CFO)",
+          "reject": "Reject",
+          "rejectReasonN1": "Rejected from UI (reason to document)",
+          "rejectReasonN2": "Rejected L2"
+        }
+      },
+      "history": {
+        "title": "Bank account history - {supplierName}",
+        "subtitle": "Tamper-proof via SHA-256 chaining. Last 200 entries.",
+        "back": "← Back to record",
+        "empty": "No entry.",
+        "exportCsv": "Export CSV",
+        "verifyChain": "Verify chain",
+        "chainStatusLabel": "Supplier audit chain:",
+        "chainOk": "OK",
+        "chainEntries": "({count} entry/entries)",
+        "system": "system",
+        "columns": {
+          "date": "Date",
+          "actor": "Author",
+          "before": "Before",
+          "after": "After",
+          "action": "Action",
+          "target": "Target",
+          "hash": "Hash"
+        }
+      }
+    },
+    "expenseRequests": {
+      "title": "Expense requests",
+      "subtitle": "FDA / FD / FD_URGENCE with threshold-based approval workflow (framework §5 + §7).",
+      "newCta": "+ New request",
+      "checkStaleCta": "Check overdue emergencies",
+      "filtersAllStatus": "-- All statuses --",
+      "filtersAllTypes": "-- All types --",
+      "filterCta": "Filter",
+      "columns": {
+        "ref": "Reference",
+        "subject": "Subject",
+        "requester": "Requester",
+        "entity": "Entity",
+        "amount": "Amount incl. VAT",
+        "status": "Status",
+        "createdAt": "Created on",
+        "type": "Type",
+        "title": "Title",
+        "entityProject": "Entity / Project",
+        "supplier": "Supplier",
+        "urgency": "Urgency",
+        "created": "Created"
+      },
+      "empty": "No request.",
+      "pagination": "Last 100 results max. Column sort + pagination: polish session.",
+      "statusLabels": {
+        "DRAFT": "Draft",
+        "SUBMITTED": "Submitted",
+        "CONTROL_DOC_OK": "Doc OK",
+        "CONTROL_DOC_KO": "Doc KO",
+        "BUDGET_OK": "Budget OK",
+        "BUDGET_KO": "Budget KO",
+        "FINANCE_FIL_VISA_PENDING": "Awaiting subsidiary visa",
+        "FINANCE_FIL_VISA_OK": "Subsidiary visa OK",
+        "FINANCE_GROUPE_VISA_PENDING": "Awaiting group visa",
+        "FINANCE_GROUPE_VISA_OK": "Group visa OK",
+        "AG_APPROVAL_PENDING": "Awaiting GA",
+        "AG_APPROVED": "GA approved",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "ARCHIVED": "Archived",
+        "CANCELLED": "Cancelled"
+      },
+      "new": {
+        "title": "New expense request",
+        "subtitle": "Draft → Submission → Signature chain computed from thresholds + supplier sensitivity.",
+        "back": "← Back to list",
+        "sections": {
+          "identification": "Identification",
+          "amountBudget": "Amount & budget",
+          "urgencyDelivery": "Urgency & delivery"
+        },
+        "fields": {
+          "type": "Type *",
+          "entity": "Entity *",
+          "entityPlaceholder": "-- Entity --",
+          "project": "Project (optional)",
+          "projectNone": "-- None --",
+          "costCenter": "Cost center (optional)",
+          "costCenterNone": "-- None --",
+          "supplier": "Supplier (optional for FDA)",
+          "supplierNone": "-- None --",
+          "title": "Title / subject *",
+          "titlePlaceholder": "e.g. cement purchase CIDPE site - lot 4",
+          "description": "Description",
+          "justification": "Justification (objective / impact)",
+          "amount": "Amount *",
+          "currency": "Currency",
+          "nature": "Nature",
+          "budgetLine": "Budget line (optional)",
+          "outOfBudget": "Out of budget (triggers GA)",
+          "urgency": "Urgency level",
+          "urgencyReason": "Urgency reason (if High)",
+          "desiredDate": "Desired date",
+          "location": "Location"
+        },
+        "typeOptions": {
+          "FDA": "FDA - Purchase request (upstream)",
+          "FD": "FD - Expense form",
+          "FD_URGENCE": "FD_URGENCE - Emergency procedure (§7)"
+        },
+        "submit": "Create draft",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "← List",
+        "requesterLine": "Requester: {email} - Created on {date}",
+        "tiles": {
+          "status": "Status",
+          "type": "Type",
+          "amount": "Amount",
+          "urgency": "Urgency"
+        },
+        "emergency": {
+          "title": "FD_URGENCE - regularization required",
+          "deadline": "Deadline: {date}",
+          "regularizedOn": "Regularized on {date}",
+          "notRegularized": "Not regularized"
+        },
+        "sections": {
+          "context": "Context",
+          "justification": "Justification",
+          "description": "Description",
+          "workflow": "Workflow and signatures",
+          "actions": "Actions"
+        },
+        "context": {
+          "entity": "Entity",
+          "project": "Project",
+          "costCenter": "Cost center",
+          "supplier": "Supplier",
+          "sensitivity": "Sensitivity",
+          "strategic": "(strategic)",
+          "nature": "Nature",
+          "outOfBudget": "Out of budget",
+          "budgetLine": "Budget line"
+        },
+        "justificationNone": "(none)",
+        "chain": {
+          "label": "Signature chain",
+          "ok": "OK ({count})",
+          "signedBy": "Signed by {actor} on {date}",
+          "pending": "Pending",
+          "ok2": "OK",
+          "waiting": "waiting"
+        },
+        "actions": {
+          "submit": "Submit for approval",
+          "cancelDraft": "Cancel draft",
+          "signStage": "Sign {stage}",
+          "signComment": "Comment (optional, stored in hash)",
+          "rejectReason": "Rejection reason",
+          "reject": "Reject",
+          "regularize": "Mark regularized (close emergency)"
+        }
+      }
+    },
+    "purchaseOrders": {
+      "title": "Purchase orders & Contracts",
+      "subtitle": "Cascaded signature workflow + supplier bank account snapshot (framework §6 + §8).",
+      "newCta": "+ New PO",
+      "filtersAllStatus": "-- All statuses --",
+      "filtersAllTypes": "-- All types --",
+      "filterCta": "Filter",
+      "columns": {
+        "ref": "Reference",
+        "supplier": "Supplier",
+        "entity": "Entity",
+        "amount": "Amount",
+        "status": "Status",
+        "issuedAt": "Issued on",
+        "type": "Type",
+        "objet": "Subject",
+        "totalTtc": "Total incl. VAT",
+        "linkedExpense": "Linked FD",
+        "created": "Created"
+      },
+      "empty": "No PO.",
+      "new": {
+        "title": "New PO / Contract",
+        "back": "← Back",
+        "sections": {
+          "identification": "Identification",
+          "deliveryConditions": "Delivery & terms",
+          "receptionRequired": "Reception required (framework §6.4)"
+        },
+        "fields": {
+          "type": "Type *",
+          "entity": "Entity *",
+          "entityPlaceholder": "-- Entity --",
+          "project": "Project (optional)",
+          "projectNone": "-- None --",
+          "linkedRequest": "Linked request (approved FD)",
+          "linkedRequestNone": "-- None --",
+          "supplier": "Supplier *",
+          "supplierPlaceholder": "-- Supplier --",
+          "objet": "Subject *",
+          "description": "Description",
+          "deliveryLocation": "Delivery location",
+          "deliveryDeadline": "Deadline",
+          "currency": "Currency",
+          "incoterm": "Incoterm (if import)",
+          "paymentTerms": "Payment terms",
+          "paymentTermsPlaceholder": "e.g. 100% after reception + receipt + conformant invoice",
+          "depositPercent": "Down payment (%)",
+          "warrantyMonths": "Warranty (months)",
+          "penaltyPerDay": "Late penalty/day",
+          "requiresReceptionPv": "Reception receipt",
+          "requiresServiceDone": "Service-done receipt",
+          "requiresWorkAttachment": "Work attachment"
+        },
+        "typeOptions": {
+          "BC": "BC - Purchase order",
+          "CONTRACT": "CONTRACT - Contract / service"
+        },
+        "submit": "Create PO (draft)",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "← List",
+        "fdPrefix": "FD:",
+        "tiles": {
+          "status": "Status",
+          "totalTtc": "Total incl. VAT",
+          "supplier": "Supplier",
+          "ribSnapshot": "Bank snapshot",
+          "ribOk": "OK",
+          "ribMissing": "No bank snapshot - payment blocked"
+        },
+        "items": {
+          "title": "PO lines",
+          "count": "{count} item(s)",
+          "columns": {
+            "position": "#",
+            "description": "Designation",
+            "quantity": "Qty",
+            "unit": "Unit",
+            "unitPriceHt": "Unit price excl. VAT",
+            "totalHt": "Total excl. VAT"
+          },
+          "empty": "No item.",
+          "remove": "Remove",
+          "addLineHeader": "+ Add a line",
+          "placeholders": {
+            "position": "#",
+            "description": "Designation",
+            "quantity": "Qty",
+            "unit": "Unit",
+            "unitPrice": "Unit price excl. VAT"
+          }
+        },
+        "workflow": {
+          "title": "Signature workflow",
+          "chainLabel": "Chain",
+          "chainOk": "OK ({count})",
+          "signedBy": "Signed by {actor} on {date}",
+          "pending": "Pending",
+          "ok2": "OK",
+          "waiting": "waiting"
+        },
+        "actions": {
+          "title": "Actions",
+          "submit": "Submit for signatures",
+          "signStage": "Sign {stage}",
+          "signComment": "Comment (optional, stored in hash)",
+          "send": "Send to supplier",
+          "cancelReason": "Cancellation reason",
+          "cancel": "Cancel PO",
+          "lockedHelp": "PO locked after submission. Post-signature edits: amendment procedure (to ship in polish session)."
+        }
+      }
+    },
+    "receptions": {
+      "title": "Goods receipts (Model 4)",
+      "subtitle": "OPS → TECH → FINANCE workflow. \"No receipt = no final payment\" (framework §4.1).",
+      "newCta": "New receipt",
+      "columns": {
+        "ref": "Reference",
+        "po": "Linked PO",
+        "supplier": "Supplier",
+        "receivedAt": "Receipt date",
+        "status": "Status",
+        "type": "Type"
+      },
+      "empty": "No receipt. Create one from a signed PO record.",
+      "new": {
+        "title": "New goods receipt",
+        "back": "← Back",
+        "fields": {
+          "po": "Linked PO *",
+          "poPlaceholder": "-- Signed / sent PO --",
+          "type": "Receipt type *",
+          "receptionDate": "Receipt date",
+          "location": "Location",
+          "requiresTechnical": "Technical check required (recommended for technical goods)"
+        },
+        "typeOptions": {
+          "GOODS": "Goods reception",
+          "SERVICE_DONE": "Service done",
+          "WORK_ATTACHMENT": "Work attachment"
+        },
+        "help": "Lines will be pre-filled from the PO. You can adjust received quantities and mark non-conformities before signature.",
+        "submit": "Create receipt (draft)",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "← List",
+        "headerLine": "{entity} - PO: {ref} ({supplier})",
+        "tiles": {
+          "status": "Status",
+          "type": "Type",
+          "reserves": "Reserves",
+          "yes": "YES",
+          "no": "NO"
+        },
+        "items": {
+          "title": "Received items",
+          "columns": {
+            "position": "#",
+            "description": "Designation",
+            "quantityExpected": "Expected qty",
+            "quantityReceived": "Received qty",
+            "compliant": "Compliant",
+            "observations": "Observations"
+          },
+          "compliantYes": "Yes",
+          "compliantNo": "No",
+          "compliantLabel": "Compliant",
+          "observationsPlaceholder": "Observations",
+          "saveCta": "OK"
+        },
+        "workflow": {
+          "title": "Signatures",
+          "chainLabel": "Chain",
+          "chainOk": "OK ({count})",
+          "chainKo": "KO",
+          "waiting": "waiting",
+          "signedLine": "{actor} - {date}"
+        },
+        "actions": {
+          "title": "Actions",
+          "signStage": "Sign {stage}",
+          "signComment": "Comment (optional)",
+          "rejectReason": "Rejection reason",
+          "reject": "Reject"
+        }
+      }
+    },
+    "invoices": {
+      "title": "Invoices",
+      "subtitle": "Supplier invoices received and their payment lifecycle.",
+      "listTitle": "Invoices & credit notes",
+      "listSubtitle": "3-way match (PO vs GR vs Invoice) + \"No GR = no payment\" safeguard (framework §4.1, §5).",
+      "newCta": "New invoice",
+      "newCtaWithPlus": "+ New invoice",
+      "filters": {
+        "allStatuses": "-- All statuses --",
+        "allTypes": "-- All types --",
+        "apply": "Filter"
+      },
+      "columns": {
+        "ref": "Invoice #",
+        "reference": "Reference",
+        "type": "Type",
+        "supplier": "Supplier",
+        "entity": "Entity",
+        "poPv": "PO / GR",
+        "amount": "Amount incl. VAT",
+        "totalTtc": "Total incl. VAT",
+        "dueDate": "Due date",
+        "status": "Status",
+        "date": "Date"
+      },
+      "empty": "No invoice recorded.",
+      "emptyShort": "No invoice.",
+      "poLabel": "PO:",
+      "pvLabel": "GR:",
+      "new": {
+        "title": "New invoice",
+        "titleFull": "New invoice / credit note",
+        "back": "Back to invoices",
+        "backShort": "Back",
+        "sections": {
+          "identification": "Identification",
+          "invoice": "Invoice"
+        },
+        "options": {
+          "none": "-- None --",
+          "noneMasc": "-- None --",
+          "entityPlaceholder": "-- Entity --",
+          "supplierPlaceholder": "-- Supplier --",
+          "standard": "STANDARD (invoice)",
+          "creditNote": "CREDIT_NOTE (credit note)",
+          "deposit": "DEPOSIT (deposit)",
+          "advance": "ADVANCE (advance)"
+        },
+        "fields": {
+          "type": "Type *",
+          "originalInvoice": "Original invoice (if credit note)",
+          "entity": "Entity *",
+          "supplier": "Supplier *",
+          "po": "Linked PO (3-way match)",
+          "reception": "Goods receipt",
+          "number": "Invoice #",
+          "numberRequired": "Invoice # *",
+          "issueDate": "Issue date",
+          "invoiceDate": "Invoice date *",
+          "dueDate": "Due date",
+          "dueDateShort": "Due date",
+          "amount": "Amount incl. VAT",
+          "subtotalHt": "Subtotal excl. VAT *",
+          "taxAmount": "VAT / Taxes",
+          "retentionAmount": "Retention",
+          "totalTtc": "Total incl. VAT *",
+          "currency": "Currency",
+          "taxRate": "VAT rate (%)",
+          "taxLabel": "VAT label"
+        },
+        "taxLabelPlaceholder": "E.g.: VAT 18% Togo",
+        "submit": "Save invoice",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "Back to invoices",
+        "backShort": "List",
+        "creditBadge": "CREDIT NOTE",
+        "section": {
+          "summary": "Summary",
+          "lines": "Lines",
+          "linesTitle": "Invoice lines",
+          "history": "History",
+          "links": "3-way links",
+          "threeWay": "3-way match",
+          "discrepancies": "Discrepancies detected",
+          "creditNotes": "Linked credit notes ({count})",
+          "actions": "Actions"
+        },
+        "kpi": {
+          "status": "Status",
+          "totalTtc": "Total incl. VAT",
+          "amountDue": "Amount due",
+          "paymentEligible": "Payment eligible",
+          "yes": "YES",
+          "no": "NO"
+        },
+        "linksInfo": {
+          "po": "PO",
+          "reception": "Goods receipt",
+          "missing": "missing",
+          "missingBlocked": "missing — payment blocked"
+        },
+        "threeWay": {
+          "notRun": "Not run yet.",
+          "quantities": "Quantities",
+          "prices": "Prices",
+          "total": "Total",
+          "ok": "✓ OK",
+          "ko": "✗ KO",
+          "checkedAt": "Checked on {date}"
+        },
+        "lines": {
+          "empty": "No line. 3-way match requires lines.",
+          "columns": {
+            "position": "#",
+            "description": "Description",
+            "quantity": "Qty",
+            "unitPrice": "Unit price",
+            "totalHt": "Total excl. VAT"
+          },
+          "placeholders": {
+            "position": "#",
+            "description": "Description",
+            "quantity": "Qty",
+            "unitPrice": "Unit price"
+          },
+          "addCta": "+ Add line"
+        },
+        "creditNotes": {
+          "columns": {
+            "reference": "Reference",
+            "date": "Date",
+            "amount": "Amount",
+            "status": "Status"
+          }
+        },
+        "actions": {
+          "validate": "Validate invoice",
+          "schedulePayment": "Schedule a payment",
+          "downloadPdf": "Download PDF",
+          "runMatch": "Run 3-way match",
+          "approveForPayment": "Approve for payment",
+          "disputePlaceholder": "Dispute reason",
+          "markDisputed": "Mark DISPUTED"
+        }
+      }
+    },
+    "payments": {
+      "title": "Payments",
+      "subtitle": "Issued and scheduled payments across the scope.",
+      "listTitle": "Payments & treasury",
+      "listSubtitle": "IBAN anti-fraud + dual validation + mandatory bank proof (framework §5 step 7 + §8).",
+      "newCta": "New payment",
+      "newCtaWithPlus": "+ New payment",
+      "filters": {
+        "allStatuses": "-- All statuses --",
+        "apply": "Filter"
+      },
+      "kpi": {
+        "executed": "Executed",
+        "scheduled": "Scheduled",
+        "futureCommitments": "Future commitments",
+        "totalCommitted": "Total committed"
+      },
+      "columns": {
+        "ref": "Reference",
+        "reference": "Reference",
+        "supplier": "Supplier",
+        "invoice": "Invoice",
+        "beneficiary": "Beneficiary",
+        "amount": "Amount",
+        "scheduledAt": "Scheduled on",
+        "scheduledOrExecuted": "Scheduled / executed",
+        "status": "Status"
+      },
+      "empty": "No scheduled payment.",
+      "emptyShort": "No payment.",
+      "scheduledPrefix": "Scheduled",
+      "executedPrefix": "Executed",
+      "new": {
+        "title": "New payment",
+        "back": "Back to payments",
+        "backShort": "Back",
+        "fields": {
+          "invoice": "Invoice",
+          "invoiceToPay": "Invoice to pay *",
+          "supplier": "Supplier",
+          "beneficiaryBank": "Beneficiary IBAN *",
+          "amount": "Amount",
+          "amountRequired": "Amount *",
+          "currency": "Currency",
+          "method": "Payment method",
+          "methodRequired": "Method *",
+          "scheduledAt": "Scheduled date",
+          "scheduledDate": "Planned date",
+          "bankAccount": "Issuing bank account"
+        },
+        "options": {
+          "invoicePlaceholder": "-- Approved invoice --",
+          "bankPlaceholder": "-- IBAN --",
+          "pvNotDefinitive": "(GR not DEF!)",
+          "notVerified": "(not verified)",
+          "quarantine": "(quarantine)",
+          "remaining": "remaining"
+        },
+        "submit": "Schedule payment",
+        "submitDraft": "Create payment (draft)",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "back": "Back to payments",
+        "backShort": "List",
+        "beneficiaryLabel": "Beneficiary:",
+        "invoiceLabel": "Invoice:",
+        "section": {
+          "summary": "Summary",
+          "history": "History",
+          "ribSnapshot": "Beneficiary IBAN (snapshot)",
+          "bankProof": "Bank proof",
+          "workflow": "Signature workflow",
+          "actions": "Actions"
+        },
+        "kpi": {
+          "status": "Status",
+          "amount": "Amount",
+          "ribUsable": "IBAN usable",
+          "reception": "Goods receipt",
+          "yes": "YES",
+          "no": "NO",
+          "none": "NONE"
+        },
+        "rib": {
+          "bank": "Bank",
+          "holder": "Holder",
+          "ibanRib": "IBAN / RIB",
+          "verifiedAt": "Verified on"
+        },
+        "proof": {
+          "swift": "SWIFT",
+          "transaction": "Transaction #",
+          "executedAt": "Executed on",
+          "proof": "Proof",
+          "download": "Download"
+        },
+        "workflow": {
+          "chainOk": "Chain: OK ({count})",
+          "chainKo": "Chain: KO",
+          "signedBy": "Signed by {actor} on {date}",
+          "pending": "Pending"
+        },
+        "actions": {
+          "execute": "Mark as executed",
+          "downloadPdf": "Download PDF",
+          "submit": "Submit anti-fraud + signatures",
+          "sign": "Sign",
+          "commentPlaceholder": "Comment",
+          "executePayment": "Execute payment (rate-limited 5/min)",
+          "swiftPlaceholder": "SWIFT reference *",
+          "transactionPlaceholder": "Transaction # *",
+          "proofUrlPlaceholder": "Bank proof URL (optional)",
+          "reconcile": "Mark reconciled",
+          "cancelReasonPlaceholder": "Cancellation reason",
+          "cancelPayment": "Cancel payment"
+        }
+      }
+    },
+    "cashForecast": {
+      "title": "13-week cash forecast",
+      "subtitle": "Rolling projection: opening + inflows - outflows = closing per week (framework §3.5). CFO notification on projected shortfall.",
+      "noEntityAccessible": "No accessible entity.",
+      "errorFallback": "Failed",
+      "loadButton": "Load",
+      "filters": {
+        "entity": "Entity",
+        "scenario": "Scenario",
+        "currency": "Currency"
+      },
+      "columns": {
+        "week": "Week",
+        "inflow": "Inflows",
+        "outflow": "Outflows",
+        "net": "Net",
+        "cumulative": "Cumulative position"
+      },
+      "empty": "No projection available.",
+      "actions": {
+        "refresh": "Recompute",
+        "export": "Export"
+      },
+      "kpi": {
+        "openingCash": "Opening cash",
+        "closingMin": "Min closing W0-W12",
+        "weeksInRupture": "Weeks in shortfall",
+        "ruptureHorizon": "Shortfall horizon",
+        "ruptureOk": "OK",
+        "ruptureDay": "D+{days}"
+      },
+      "heatmap": {
+        "title": "13-week heatmap",
+        "weekHeader": "Week",
+        "opening": "Opening",
+        "inflows": "+ Inflows",
+        "outflows": "- Outflows",
+        "closing": "= Closing"
+      },
+      "forms": {
+        "setOpening": {
+          "title": "Set opening cash",
+          "amountPlaceholder": "Amount",
+          "submit": "Update"
+        },
+        "addInflow": {
+          "title": "Add projected inflow",
+          "labelPlaceholder": "Label (e.g. Customer X payment)",
+          "amountPlaceholder": "Amount",
+          "submit": "+ Add inflow"
+        },
+        "detect": {
+          "title": "Shortfall detection",
+          "description": "Runs analysis + creates an Anomaly + notifies CFO/Treasurer if shortfall projected at D+15 or less. Severity CRITICAL if shortfall in 14 days or less.",
+          "submit": "Run detection"
+        }
+      }
+    },
+    "accounting": {
+      "title": "Accounting",
+      "subtitle": "Monthly periods + entries auto-generated from payments/invoices (framework §5 step 8). Closing = retroactive lock.",
+      "errorFallback": "Failed",
+      "filters": {
+        "entity": "Entity",
+        "period": "Period",
+        "journal": "Journal"
+      },
+      "columns": {
+        "date": "Date",
+        "journal": "Journal",
+        "ref": "Voucher",
+        "label": "Label",
+        "debit": "Debit",
+        "credit": "Credit",
+        "status": "Status"
+      },
+      "empty": "No entry on this period.",
+      "periods": {
+        "sectionTitle": "Open / close a period",
+        "open": {
+          "title": "Open",
+          "entityPlaceholder": "-- Entity --",
+          "submit": "Open"
+        },
+        "close": {
+          "title": "Close",
+          "entityPlaceholder": "-- Entity --",
+          "submit": "Close",
+          "warning": "Requires all DRAFT entries to be posted or deleted."
+        },
+        "list": {
+          "title": "Periods ({count})",
+          "columns": {
+            "entity": "Entity",
+            "year": "Year",
+            "month": "Month",
+            "status": "Status",
+            "entries": "Entries",
+            "export": "Export"
+          },
+          "empty": "No period. Create one via the form above.",
+          "statusClosed": "CLOSED on {date}",
+          "statusOpen": "OPEN"
+        }
+      },
+      "recent": {
+        "title": "Last 10 entries",
+        "viewAll": "View all",
+        "columns": {
+          "reference": "Reference",
+          "entity": "Entity",
+          "journal": "Journal",
+          "date": "Date",
+          "amount": "Amount",
+          "status": "Status"
+        },
+        "empty": "No entry."
+      },
+      "entry": {
+        "back": "Back to entries",
+        "title": "Entry {ref}",
+        "headerDescription": "{description} - Journal {journal}",
+        "backShort": "Accounting",
+        "periodClosed": "CLOSED",
+        "periodOpen": "OPEN",
+        "kpi": {
+          "status": "Status",
+          "period": "Period",
+          "totalDebit": "Total debit",
+          "balance": "Balance",
+          "balanceOk": "OK",
+          "balanceKo": "KO"
+        },
+        "lines": {
+          "title": "Lines ({count})",
+          "columns": {
+            "position": "#",
+            "account": "Account",
+            "label": "Label",
+            "debit": "Debit",
+            "credit": "Credit"
+          },
+          "total": "Total"
+        },
+        "actionsTitle": "Actions",
+        "postButton": "Post (irreversible)",
+        "generatedFromPayment": "Generated from payment",
+        "section": {
+          "summary": "Summary",
+          "lines": "Lines",
+          "audit": "Audit"
+        }
+      }
+    },
+    "anomalies": {
+      "title": "Anomalies",
+      "subtitle": "Automated detection: duplicate invoices, split payments, missing GRNs, DRAFT > 30d, repeated urgencies, suspicious bank accounts (framework §13).",
+      "errorFallback": "Failed",
+      "runChecks": "Run controls",
+      "filters": {
+        "severity": "Severity",
+        "type": "Type",
+        "status": "Status",
+        "allStatuses": "-- All statuses --",
+        "allSeverities": "-- All severities --",
+        "allTypes": "-- All types --",
+        "submit": "Filter"
+      },
+      "columns": {
+        "ref": "Reference",
+        "type": "Type",
+        "severity": "Severity",
+        "title": "Title",
+        "entity": "Entity",
+        "status": "Status",
+        "assignee": "Assignee",
+        "detectedAt": "Detected on"
+      },
+      "empty": "No anomaly. Run controls to scan.",
+      "severity": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "detail": {
+        "back": "Back to anomalies",
+        "backShort": "List",
+        "kpi": {
+          "severity": "Severity",
+          "type": "Type",
+          "status": "Status",
+          "detected": "Detected"
+        },
+        "description": {
+          "title": "Description",
+          "rule": "Rule",
+          "evidence": "Evidence (JSON)"
+        },
+        "linkedResources": {
+          "title": "Linked resources",
+          "expenseRequest": "ER",
+          "invoice": "Invoice",
+          "payment": "Payment",
+          "supplier": "Supplier"
+        },
+        "assignedTo": "Assigned to",
+        "resolution": {
+          "title": "Resolution",
+          "resolvedAt": "Resolved on {date}"
+        },
+        "assign": {
+          "title": "Assign",
+          "placeholder": "-- Assignee (Internal Control / CFO / Admin) --",
+          "submit": "Assign"
+        },
+        "resolve": {
+          "title": "Resolve",
+          "placeholder": "Investigation description and conclusion",
+          "submit": "Resolve",
+          "falsePositive": "False positive",
+          "sanction": "Request sanction"
+        },
+        "section": {
+          "summary": "Summary",
+          "context": "Context",
+          "remediation": "Remediation plan"
+        },
+        "actions": {
+          "resolve": "Resolve",
+          "escalate": "Escalate",
+          "ignore": "Ignore"
+        }
+      }
+    },
+    "audit": {
+      "title": "Audit",
+      "subtitle": "Consolidated audit log — user and system actions.",
+      "headerTitle": "Audit log",
+      "headerSubtitle": "Append-only with SHA-256 chaining. Verifiable via",
+      "filterPlaceholders": {
+        "entityType": "entityType (e.g. User)",
+        "entityId": "entityId (cuid)",
+        "action": "action contains..."
+      },
+      "filterSubmit": "Filter",
+      "chains": {
+        "title": "Verify the integrity of a chain"
+      },
+      "table": {
+        "date": "Date",
+        "action": "Action",
+        "actor": "Actor",
+        "target": "Target",
+        "hash": "Hash",
+        "empty": "No entry.",
+        "systemActor": "system"
+      },
+      "footer": "Display limited to the 100 most recent entries. Pagination + CSV export: session 9 (M13).",
+      "filters": {
+        "actor": "Actor",
+        "action": "Action",
+        "entityType": "Object type",
+        "period": "Period"
+      },
+      "columns": {
+        "timestamp": "Timestamp",
+        "actor": "Actor",
+        "action": "Action",
+        "entity": "Object",
+        "ip": "IP"
+      },
+      "empty": "No event on this period."
+    },
+    "offerComparisons": {
+      "title": "Offer comparisons (Template 1)",
+      "subtitle": "2-3 offers compared with a justified recommendation (framework §6).",
+      "newCta": "+ New comparison",
+      "columns": {
+        "ref": "Reference",
+        "entity": "Entity",
+        "request": "Linked request",
+        "offers": "Offers",
+        "status": "Status",
+        "createdAt": "Created on"
+      },
+      "empty": "No comparisons yet.",
+      "new": {
+        "title": "New offer comparison",
+        "back": "Back",
+        "fields": {
+          "entity": "Entity *",
+          "entityPlaceholder": "-- Entity --",
+          "project": "Project (optional)",
+          "projectPlaceholder": "-- None --",
+          "request": "Linked request (optional)",
+          "requestPlaceholder": "-- None --",
+          "technicalSpecs": "Technical specifications",
+          "desiredDelay": "Desired lead time",
+          "paymentTerms": "Payment terms",
+          "warrantyRequired": "Warranty required",
+          "warrantyMonths": "Warranty (months)",
+          "penaltyClause": "Penalty clause",
+          "criteria": "Evaluation criteria"
+        },
+        "submit": "Create comparison"
+      },
+      "detail": {
+        "headerTitle": "Comparison {reference}",
+        "back": "← List",
+        "status": "Status",
+        "createdAt": "Created {date}",
+        "offersTitle": "Received offers ({count})",
+        "offersColumns": {
+          "supplier": "Supplier",
+          "priceHt": "Price excl. tax",
+          "priceTtc": "Price incl. tax",
+          "delay": "Lead time",
+          "techOk": "Tech OK",
+          "autoScore": "Auto score"
+        },
+        "offersEmpty": "No offers. Add at least 2.",
+        "techOkYes": "Yes",
+        "techOkNo": "No",
+        "recommendedBadge": "RECOMMENDED",
+        "addOffer": {
+          "title": "Add an offer",
+          "supplierPlaceholder": "-- Supplier --",
+          "referencePlaceholder": "Quote ref",
+          "priceHtPlaceholder": "Price excl. tax",
+          "priceTtcPlaceholder": "Price incl. tax",
+          "taxAmountPlaceholder": "Tax",
+          "deliveryDelayPlaceholder": "Lead time",
+          "warrantyPlaceholder": "Warranty",
+          "technicallyCompliant": "Technically compliant",
+          "immediatelyAvailable": "Immediately available",
+          "observationsPlaceholder": "Observations",
+          "submit": "Add offer"
+        },
+        "recommendation": {
+          "title": "Recommendation",
+          "offerPlaceholder": "-- Recommended offer --",
+          "justificationPlaceholder": "Justification (>= 30 characters): why this offer vs. the others?",
+          "submit": "Set recommendation"
+        },
+        "actions": {
+          "title": "Actions",
+          "submit": "Submit for approval",
+          "approve": "Approve",
+          "reject": "Reject",
+          "selectOffer": "Select this offer",
+          "validate": "Validate choice"
+        },
+        "section": {
+          "summary": "Summary",
+          "offers": "Offers",
+          "scoring": "Scoring",
+          "recommendation": "Recommendation"
+        }
+      },
+      "errors": {
+        "fallback": "Failed"
+      }
+    },
+    "soleSourceJustifications": {
+      "title": "Sole-source justifications",
+      "subtitle": "Justifications for purchases outside competition.",
+      "newCta": "New justification",
+      "columns": {
+        "ref": "Reference",
+        "request": "Request",
+        "supplier": "Supplier",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "empty": "No justification recorded.",
+      "new": {
+        "title": "Sole-source justification (Template 2)",
+        "subtitle": "Waiver from the 3-offer rule (framework §6). Written justification required.",
+        "back": "Back to justifications",
+        "fields": {
+          "request": "Linked expense request *",
+          "requestPlaceholder": "-- Request --",
+          "reason": "Reason *",
+          "reasonPlaceholder": "-- Reason --",
+          "otherReason": "If \"Other\": please specify",
+          "estimatedAmount": "Estimated amount *",
+          "currency": "Currency",
+          "justification": "Detailed justification * (>= 50 characters)",
+          "supplier": "Supplier"
+        },
+        "reasons": {
+          "monopoly": "Monopoly / technical exclusivity",
+          "urgencyCritical": "Critical urgency (shutdown / HSE / legal)",
+          "technicalCompatibility": "Technical compatibility / continuity",
+          "contractualRequirement": "Supplier imposed by contract / warranty",
+          "other": "Other"
+        },
+        "safeguards": {
+          "legend": "Safeguard measures (at least 2 of 4 required for approval)",
+          "negotiatedPrice": "Price negotiation / discount obtained",
+          "reinforcedPaymentTerms": "Reinforced payment terms (balance after acceptance)",
+          "warrantyOrPenalty": "Warranty / penalties included in the PO",
+          "reinforcedReception": "Reinforced receipt control"
+        },
+        "submit": "Create justification",
+        "cancel": "Cancel"
+      },
+      "detail": {
+        "subtitle": "Sole-source justification - Template 2 (framework §6)",
+        "back": "← Requests",
+        "statusLabel": "Status",
+        "statusApproved": "APPROVED",
+        "statusPending": "PENDING",
+        "estimatedAmount": "Estimated amount",
+        "safeguardsLabel": "Safeguard measures",
+        "safeguardsCount": "{count} / 4 (min 2)",
+        "reason": "Reason",
+        "justification": "Justification",
+        "safeguardsChecked": "Safeguard measures ticked",
+        "safeguardItems": {
+          "negotiatedPrice": "Price negotiation / discount",
+          "reinforcedPaymentTerms": "Reinforced payment terms",
+          "warrantyOrPenalty": "Warranty / penalties included",
+          "reinforcedReception": "Reinforced receipt control"
+        },
+        "approvedBy": "Approved on {date} by {actor}.",
+        "systemActor": "system",
+        "approveCta": "Approve (DFG / Group Finance / GM)",
+        "approveHint": "Approval available if at least 2 safeguard measures are ticked.",
+        "section": {
+          "summary": "Summary",
+          "justification": "Justification",
+          "history": "History"
+        },
+        "actions": {
+          "approve": "Approve",
+          "reject": "Reject"
+        }
+      },
+      "errors": {
+        "fallback": "Failed"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Scope, access and master-data configuration.",
+      "tabs": {
+        "users": "Users",
+        "memberships": "Memberships",
+        "entities": "Entities",
+        "projects": "Projects",
+        "chartAccounts": "Chart of accounts",
+        "thresholds": "Thresholds & controls"
+      },
+      "users": {
+        "title": "Users",
+        "addCta": "Invite a user",
+        "columns": {
+          "name": "Name",
+          "email": "Email",
+          "status": "Status",
+          "lastLogin": "Last sign-in",
+          "actions": "Actions",
+          "nameEmail": "Name / Email",
+          "activeRoles": "Active roles"
+        },
+        "empty": "No user registered.",
+        "actions": {
+          "deactivate": "Deactivate",
+          "reactivate": "Reactivate",
+          "resetPassword": "Reset password"
+        },
+        "subtitle": "Invite, list, deactivate. Every action is recorded in the audit log.",
+        "invite": {
+          "title": "Invite a user",
+          "description": "A magic-link email will be sent. The user will set their password on first sign-in.",
+          "fullNamePlaceholder": "Full name",
+          "emailPlaceholder": "email@reliancewestafrica.com",
+          "entityPlaceholder": "-- Entity --",
+          "submit": "Invite"
+        },
+        "info": {
+          "invited": "Invitation sent to the user (check Mailhog in dev).",
+          "createdNoEmail": "User created but the email could not be sent."
+        },
+        "status": {
+          "deactivated": "Deactivated",
+          "invitedNoPassword": "Invited (password not set)",
+          "emailNotVerified": "Email not verified",
+          "active": "Active"
+        },
+        "rolesNone": "None",
+        "lastLoginNever": "Never",
+        "unnamed": "(unnamed)",
+        "errors": {
+          "failure": "Failed"
+        }
+      },
+      "memberships": {
+        "title": "Roles and entities",
+        "addCta": "Add a membership",
+        "columns": {
+          "user": "User",
+          "entity": "Entity",
+          "role": "Role",
+          "status": "Status"
+        },
+        "empty": "No active role.",
+        "subtitle": "A user can hold several roles across different entities (e.g. Group Auditor + Togo CFO).",
+        "addSection": "Add a role",
+        "form": {
+          "userPlaceholder": "-- User --",
+          "entityPlaceholder": "-- Entity --",
+          "rolePlaceholder": "-- Role --",
+          "submit": "Add"
+        },
+        "actions": {
+          "revoke": "Revoke"
+        },
+        "errors": {
+          "failure": "Failed"
+        }
+      },
+      "entities": {
+        "title": "Group entities",
+        "addCta": "New entity",
+        "columns": {
+          "code": "Code",
+          "name": "Name",
+          "kind": "Type",
+          "country": "Country",
+          "status": "Status",
+          "parent": "Parent",
+          "countryCurrency": "Country / Currency",
+          "relations": "Children / Projects / Suppliers",
+          "createdAt": "Created"
+        },
+        "empty": "No entity registered.",
+        "subtitle": "Holding → Subsidiaries → SPV hierarchy. Every creation is logged (framework §2.2 + §12).",
+        "kind": {
+          "HOLDING": "Holding",
+          "SUBSIDIARY": "Subsidiary",
+          "SPV": "SPV / Project vehicle"
+        },
+        "edit": {
+          "heading": "Edit {code}",
+          "name": "Name",
+          "country": "Country (ISO 3166-1 alpha-2)",
+          "countryPlaceholder": "TG",
+          "defaultCurrency": "Default currency",
+          "rccm": "RCCM",
+          "ifu": "TIN / IFU",
+          "address": "Address",
+          "save": "Save",
+          "cancel": "Cancel"
+        },
+        "create": {
+          "heading": "Create an entity",
+          "code": "Code (unique, UPPERCASE)",
+          "codePlaceholder": "BENIN, CIV1, SPV-LOME-2",
+          "name": "Full name",
+          "namePlaceholder": "Reliance Benin SARL",
+          "kind": "Type",
+          "parent": "Parent entity (except Holding)",
+          "parentPlaceholder": "-- None (Holding) --",
+          "country": "Country (ISO 2 letters)",
+          "countryPlaceholder": "TG",
+          "defaultCurrency": "Default currency",
+          "submit": "Create entity"
+        },
+        "actions": {
+          "edit": "Edit",
+          "archive": "Archive",
+          "archived": "Archived",
+          "archiveReason": "Manual archive via /settings/entities"
+        },
+        "errors": {
+          "failure": "Failed"
+        }
+      },
+      "projects": {
+        "title": "Projects & cost centers",
+        "addCta": "New project",
+        "columns": {
+          "code": "Code",
+          "name": "Name",
+          "entity": "Entity",
+          "status": "Status"
+        },
+        "empty": "No project registered.",
+        "subtitle": "Budget allocation of expenses (framework §2.1).",
+        "sections": {
+          "projects": "Projects",
+          "costCenters": "Cost centers"
+        },
+        "projectForm": {
+          "entityPlaceholder": "-- Entity --",
+          "codePlaceholder": "Code (e.g. CIDPE)",
+          "namePlaceholder": "Full project name",
+          "budgetPlaceholder": "Budget",
+          "descriptionPlaceholder": "Description (optional)",
+          "submit": "Create project"
+        },
+        "projectColumns": {
+          "entity": "Entity",
+          "code": "Code",
+          "name": "Name",
+          "budget": "Budget",
+          "relations": "CC / Requests"
+        },
+        "projectEmpty": "No project.",
+        "costCenterForm": {
+          "entityPlaceholder": "-- Entity --",
+          "projectPlaceholder": "-- Project (optional) --",
+          "codePlaceholder": "Code (CC-ADMIN)",
+          "namePlaceholder": "Label",
+          "submit": "Add"
+        },
+        "costCenterColumns": {
+          "entity": "Entity",
+          "project": "Project",
+          "code": "Code",
+          "label": "Label"
+        },
+        "costCenterEmpty": "No cost center.",
+        "actions": {
+          "archive": "Archive",
+          "archived": "Archived"
+        },
+        "errors": {
+          "failure": "Failed"
+        }
+      },
+      "chartAccounts": {
+        "title": "SYSCOHADA chart of accounts",
+        "addCta": "New account",
+        "columns": {
+          "code": "Code",
+          "label": "Label",
+          "type": "Type",
+          "status": "Status",
+          "class": "Class"
+        },
+        "empty": "No account. Run `pnpm db:seed` to load the initial SYSCOHADA chart.",
+        "subtitle": "Extensible without code changes. Classes 1-7 follow the revised SYSCOHADA framework (§12, OHADA compliance).",
+        "typeLabels": {
+          "ASSET": "Asset",
+          "LIABILITY": "Liability",
+          "EQUITY": "Equity",
+          "INCOME": "Income",
+          "EXPENSE": "Expense"
+        },
+        "form": {
+          "heading": "Add an account",
+          "codePlaceholder": "Code (e.g. 605100)",
+          "labelPlaceholder": "Label",
+          "classCodePlaceholder": "Class",
+          "typePlaceholder": "-- Type --",
+          "classNamePlaceholder": "Class name",
+          "submit": "Add"
+        },
+        "filters": {
+          "all": "All",
+          "class": "Class {code} — {name}"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "actions": {
+          "deactivate": "Deactivate",
+          "reactivate": "Reactivate"
+        },
+        "errors": {
+          "failure": "Failed"
+        }
+      },
+      "thresholds": {
+        "title": "Validation thresholds",
+        "addCta": "New threshold",
+        "columns": {
+          "name": "Label",
+          "scope": "Scope",
+          "value": "Value",
+          "status": "Status"
+        },
+        "empty": "No threshold configured.",
+        "subtitle": "Versioned by effectiveFrom. Every change creates a new entry and closes the previous one. In-flight cases keep their original threshold; new cases use the active threshold (framework §5).",
+        "typeLabels": {
+          "FILIALE_N2_REQUIRED_ABOVE": "Subsidiary N2 sign-off required above",
+          "GROUPE_REQUIRED_ABOVE": "Group Finance sign-off required above",
+          "AG_REQUIRED_ABOVE": "Shareholders’ Meeting approval required above",
+          "CASH_PAYMENT_MAX": "Cash payment ceiling",
+          "ADVANCE_MAX_PERCENT": "Maximum advance (%)",
+          "URGENCY_MAX_AMOUNT": "Emergency procedure ceiling",
+          "URGENCY_REGULARIZATION_HOURS": "Max emergency regularization delay (hours)",
+          "THREE_OFFERS_REQUIRED_ABOVE": "Three-bid comparison required above",
+          "PROVIDER_ONBOARDING_REQUIRED_ABOVE": "Full supplier onboarding required above"
+        },
+        "form": {
+          "heading": "New threshold or replacement",
+          "hint": "If an active threshold already exists for (type, entity), it is automatically closed (effectiveTo = now).",
+          "typePlaceholder": "-- Threshold type --",
+          "entityGlobal": "Global (all entities)",
+          "amountPlaceholder": "Amount (XOF)",
+          "valuePlaceholder": "Or value (hours, %)",
+          "descriptionPlaceholder": "Description (optional)",
+          "submit": "Create / replace threshold"
+        },
+        "list": {
+          "heading": "Active thresholds and history",
+          "empty": "No threshold. Run `pnpm db:seed` to load the default values.",
+          "scopeGlobal": "GLOBAL",
+          "activeSince": "Active since {date}",
+          "historyToggleOne": "History ({count} version)",
+          "historyToggleOther": "History ({count} versions)",
+          "historyRangeOpen": "{value} — from {from}",
+          "historyRangeClosed": "{value} — from {from} to {to}"
+        },
+        "actions": {
+          "deactivate": "Deactivate"
+        },
+        "units": {
+          "percent": "%",
+          "hours": "h"
+        },
+        "errors": {
+          "failure": "Failed"
+        }
+      },
+      "sidebar": {
+        "heading": "Settings",
+        "users": "Users",
+        "memberships": "Roles",
+        "entities": "Entities",
+        "projects": "Projects & cost centers",
+        "thresholds": "Thresholds",
+        "chartAccounts": "SYSCOHADA chart"
+      }
+    }
+  }
+}

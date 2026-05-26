@@ -25,9 +25,7 @@ const schema = z
     path: ['confirm'],
   });
 
-type SetPasswordResult =
-  | { ok: false; error: string }
-  | { ok: true };
+type SetPasswordResult = { ok: false; error: string } | { ok: true };
 
 export async function setPasswordAction(formData: FormData): Promise<SetPasswordResult> {
   const session = await auth();

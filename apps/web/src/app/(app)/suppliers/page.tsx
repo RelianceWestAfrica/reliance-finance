@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -26,6 +27,8 @@ export default async function SuppliersListPage(props: {
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
+
+  const t = await getTranslations('pages.suppliers');
 
   const db = await getTenantedDb();
   const suppliers = await db.supplier.findMany({
@@ -59,16 +62,14 @@ export default async function SuppliersListPage(props: {
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Fournisseurs</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            Cycle fournisseur + anti-fraude RIB (cadre §8). 100 derniers resultats max.
-          </p>
+          <h1 className="text-2xl font-semibold">{t('title')}</h1>
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
         </div>
         <Link
           href="/suppliers/new"
           className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
         >
-          + Nouveau fournisseur
+          + {t('newCta')}
         </Link>
       </header>
 
@@ -76,7 +77,7 @@ export default async function SuppliersListPage(props: {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
           <input
             name="q"
-            placeholder="Recherche : nom, code, RCCM, IFU"
+            placeholder={t('filters.searchPlaceholder')}
             defaultValue={params.q ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2"
           />
@@ -85,7 +86,7 @@ export default async function SuppliersListPage(props: {
             defaultValue={params.status ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm"
           >
-            <option value="">-- Tous statuts --</option>
+            <option value="">{t('filters.allStatuses')}</option>
             {Object.values(SupplierStatus).map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -97,7 +98,7 @@ export default async function SuppliersListPage(props: {
             defaultValue={params.sensitivity ?? ''}
             className="rounded-md border bg-white px-3 py-2 text-sm"
           >
-            <option value="">-- Toutes sensibilites --</option>
+            <option value="">{t('filters.allSensitivities')}</option>
             {Object.values(SupplierSensitivity).map((s) => (
               <option key={s} value={s}>
                 {s}
@@ -109,7 +110,7 @@ export default async function SuppliersListPage(props: {
           type="submit"
           className="mt-3 rounded-md bg-[var(--color-foreground)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
         >
-          Filtrer
+          {t('filters.submit')}
         </button>
       </form>
 
@@ -117,21 +118,24 @@ export default async function SuppliersListPage(props: {
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-4 py-3 font-medium">Entite</th>
-              <th className="px-4 py-3 font-medium">Code</th>
-              <th className="px-4 py-3 font-medium">Nom</th>
-              <th className="px-4 py-3 font-medium">RCCM / IFU</th>
-              <th className="px-4 py-3 font-medium">Sensibilite</th>
-              <th className="px-4 py-3 font-medium">Statut</th>
-              <th className="px-4 py-3 font-medium">RIB</th>
+              <th className="px-4 py-3 font-medium">{t('columns.entity')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.code')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.name')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.rccmIfu')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.sensitivity')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.status')}</th>
+              <th className="px-4 py-3 font-medium">{t('columns.rib')}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {suppliers.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucun fournisseur.
+                <td
+                  colSpan={8}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('empty')}
                 </td>
               </tr>
             )}
@@ -157,12 +161,12 @@ export default async function SuppliersListPage(props: {
                       {s.name}
                     </Link>
                     {s.isStrategic && (
-                      <span className="ml-2 rounded bg-[var(--color-destructive)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[var(--color-destructive)]">
-                        STRATEGIQUE
+                      <span className="bg-[var(--color-destructive)]/10 ml-2 rounded px-1.5 py-0.5 text-[10px] font-medium text-[var(--color-destructive)]">
+                        {t('list.strategic')}
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-xs font-mono text-[var(--color-muted-foreground)]">
+                  <td className="px-4 py-3 font-mono text-xs text-[var(--color-muted-foreground)]">
                     {s.rccm ?? '-'}
                     <br />
                     {s.ifu ?? '-'}
@@ -182,11 +186,16 @@ export default async function SuppliersListPage(props: {
                   </td>
                   <td className="px-4 py-3 text-xs">
                     {!primary ? (
-                      <span className="text-[var(--color-muted-foreground)]">Aucun</span>
+                      <span className="text-[var(--color-muted-foreground)]">
+                        {t('list.ribNone')}
+                      </span>
                     ) : usability?.usable ? (
-                      <span className="text-[var(--color-success)]">OK</span>
+                      <span className="text-[var(--color-success)]">{t('list.ribOk')}</span>
                     ) : (
-                      <span className="text-[var(--color-warning)]" title={usability?.usable === false ? usability.message : ''}>
+                      <span
+                        className="text-[var(--color-warning)]"
+                        title={usability?.usable === false ? usability.message : ''}
+                      >
                         {usability?.usable === false ? usability.reason : '-'}
                       </span>
                     )}
@@ -196,7 +205,7 @@ export default async function SuppliersListPage(props: {
                       href={'/suppliers/' + s.id + '/bank-accounts'}
                       className="text-[var(--color-primary)] hover:underline"
                     >
-                      RIBs ({s.bankAccounts.length})
+                      {t('list.ribsCount', { count: s.bankAccounts.length })}
                     </Link>
                   </td>
                 </tr>

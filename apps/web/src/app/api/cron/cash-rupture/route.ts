@@ -20,7 +20,11 @@ import {
 import { checkCronAuth } from '@/lib/cron/auth';
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 import { notifyHoldingRole } from '@/lib/notifications/send';
-import { buildProjection, detectRuptures, daysUntilFirstRupture } from '@/lib/cash-forecast/projection';
+import {
+  buildProjection,
+  detectRuptures,
+  daysUntilFirstRupture,
+} from '@/lib/cash-forecast/projection';
 import { getWeekStart } from '@/lib/cash-forecast/week-math';
 
 export async function POST(req: Request) {
@@ -136,9 +140,7 @@ export async function POST(req: Request) {
                 crypto.randomUUID().slice(0, 8).toUpperCase(),
               type: AnomalyType.OTHER,
               severity:
-                horizon !== null && horizon <= 14
-                  ? AnomalySeverity.CRITICAL
-                  : AnomalySeverity.HIGH,
+                horizon !== null && horizon <= 14 ? AnomalySeverity.CRITICAL : AnomalySeverity.HIGH,
               entityId: entity.id,
               title:
                 'Rupture cash projetee J+' +
