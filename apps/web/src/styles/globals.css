@@ -12,7 +12,7 @@
 
 @theme {
   /* Surfaces & texte — depuis le DS */
-  --color-background: var(--color-surface-cream);
+  --color-background: var(--bg-canvas); /* gris DS #FAFAF9 (canvas canonique) */
   --color-foreground: var(--color-primary-near-black);
   --color-card: var(--color-surface-white);
   --color-card-foreground: var(--color-primary-near-black);

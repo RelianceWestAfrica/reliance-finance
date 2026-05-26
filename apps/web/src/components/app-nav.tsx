@@ -80,15 +80,38 @@ export function AppSidebar({
 
   return (
     <aside className="sticky top-0 hidden h-screen flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-white)] text-[var(--color-foreground)] md:flex">
-      <div className="flex items-center gap-3 border-b border-[var(--color-border)] px-5 py-[18px]">
-        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[10px] bg-[var(--color-primary)] text-[17px] font-semibold text-[var(--color-primary-foreground)]">
-          R
-        </div>
-        <div className="leading-tight">
-          <div className="text-[16px] font-bold text-[var(--color-foreground)]">Reliance</div>
-          <div className="mt-[2px] text-[10px] font-medium uppercase tracking-[0.16em] text-[var(--color-faint)]">
-            Finance
+      <div className="border-b border-[var(--color-border)] px-5 py-[16px]">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[10px] bg-[var(--color-primary)] p-[7px]">
+            <img src="/rwa-icon.svg" alt="RWA" className="h-full w-full" />
           </div>
+          <div className="leading-tight">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-faint)]">RWA</div>
+            <div className="text-[15px] font-bold text-[var(--color-foreground)]">Finances</div>
+          </div>
+        </div>
+        <div className="mt-3 flex items-center gap-1.5">
+          <button
+            type="button"
+            className="flex items-center gap-1 rounded-[7px] border border-[var(--color-border)] px-2 py-[5px] text-[11px] font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
+          >
+            FR
+            <svg viewBox="0 0 24 24" className="h-3 w-3" {...s}><polyline points="6 9 12 15 18 9" /></svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Notifications"
+            className="rounded-[7px] border border-[var(--color-border)] p-[6px] text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
+          >
+            <svg viewBox="0 0 24 24" className="h-[15px] w-[15px]" {...s}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Préférences"
+            className="rounded-[7px] border border-[var(--color-border)] p-[6px] text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
+          >
+            <svg viewBox="0 0 24 24" className="h-[15px] w-[15px]" {...s}><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" /></svg>
+          </button>
         </div>
       </div>
 
@@ -140,6 +163,13 @@ export function AppSidebar({
             Déconnexion
           </button>
         </form>
+        <a
+          href="https://portal.rwa-core.com"
+          className="mt-2 flex items-center gap-2 rounded-[8px] px-2 py-1.5 text-[11.5px] font-medium text-[var(--color-faint)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
+        >
+          <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" {...s}><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+          Back to RWA HQ
+        </a>
       </div>
     </aside>
   );
@@ -153,10 +183,10 @@ export function MobileNav({ logoutAction }: { logoutAction: () => Promise<void> 
     <header className="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-surface-white)] text-[var(--color-foreground)] md:hidden">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-[var(--color-primary)] text-[15px] font-semibold text-[var(--color-primary-foreground)]">
-            R
+          <div className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-[var(--color-primary)] p-1.5">
+            <img src="/rwa-icon.svg" alt="RWA" className="h-full w-full" />
           </div>
-          <span className="text-[15px] font-bold text-[var(--color-foreground)]">Reliance Finance</span>
+          <span className="text-[15px] font-bold text-[var(--color-foreground)]">RWA Finances</span>
         </div>
         <form action={logoutAction}>
           <button
