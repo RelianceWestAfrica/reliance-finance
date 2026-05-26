@@ -205,7 +205,7 @@ export function AppSidebar({
           className="mt-2 flex items-center gap-2 rounded-[8px] px-2 py-1.5 text-[11.5px] font-medium text-[var(--color-faint)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
         >
           <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" {...s}><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
-          Back to RWA HQ
+          Retour au QG RWA
         </a>
       </div>
     </aside>
