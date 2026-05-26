@@ -3,6 +3,7 @@ import { auth, signOut } from '@/lib/auth';
 import { getUserMemberships } from '@/lib/rbac';
 import { prisma } from '@reliance-finance/database';
 import { AppSidebar, MobileNav } from '@/components/app-nav';
+import { AppHeader } from '@/components/app-header';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -44,6 +45,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="md:grid md:grid-cols-[260px_1fr]">
         <AppSidebar userLabel={userLabel} roleLabel={roleLabel} logoutAction={logoutAction} />
         <div className="min-w-0">
+          <AppHeader />
           <main className="mx-auto w-full max-w-[1240px] px-5 py-8 md:px-9 md:py-10">{children}</main>
         </div>
       </div>
