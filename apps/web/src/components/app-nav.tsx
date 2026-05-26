@@ -233,10 +233,12 @@ function AccountMenuItem({
 
 export function AppSidebar({
   userLabel,
+  userImage,
   roleLabel,
   logoutAction,
 }: {
   userLabel: string;
+  userImage?: string | null;
   roleLabel: string;
   logoutAction: () => Promise<void>;
 }) {
@@ -409,9 +411,18 @@ export function AppSidebar({
           aria-label={tNav('openMenu')}
           className="flex w-full items-center gap-3 rounded-[9px] px-1 py-1.5 transition-colors hover:bg-[var(--color-surface-2)]"
         >
-          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[9px] bg-[var(--color-primary-soft)] text-[13px] font-semibold text-[var(--color-primary)]">
-            {initials(userLabel)}
-          </div>
+          {userImage ? (
+            <img
+              src={userImage}
+              alt=""
+              aria-hidden
+              className="h-9 w-9 flex-none rounded-[9px] object-cover"
+            />
+          ) : (
+            <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[9px] bg-[var(--color-primary-soft)] text-[13px] font-semibold text-[var(--color-primary)]">
+              {initials(userLabel)}
+            </div>
+          )}
           <div className="min-w-0 text-left">
             <div className="truncate text-[12.5px] font-medium text-[var(--color-foreground)]">
               {userLabel}
