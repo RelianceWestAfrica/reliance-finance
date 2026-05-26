@@ -142,9 +142,7 @@ const openingSchema = z.object({
   currency: z.string().length(3).toUpperCase().default('XOF'),
 });
 
-export async function setOpeningCash(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function setOpeningCash(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -165,7 +163,8 @@ export async function setOpeningCash(
     amount: formData.get('amount'),
     currency: formData.get('currency') ?? 'XOF',
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const weekStart = getWeekStart(new Date());
   const weekEnd = new Date(weekStart);
@@ -271,7 +270,12 @@ export async function runRuptureDetection(
         direction: CashFlowDirection.INFLOW,
         expectedDate: { gte: now, lte: horizonEnd } as never,
       },
-      select: { amount: true, label: true, expectedDate: true, cashForecast: { select: { currency: true } } },
+      select: {
+        amount: true,
+        label: true,
+        expectedDate: true,
+        cashForecast: { select: { currency: true } },
+      },
     }),
   ]);
 

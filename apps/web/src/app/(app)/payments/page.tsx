@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -23,6 +24,7 @@ export default async function PaymentsListPage(props: {
   const session = await auth();
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
+  const t = await getTranslations('pages.payments');
 
   const db = await getTenantedDb();
   const [payments, futureInvoices] = await Promise.all([
@@ -61,40 +63,46 @@ export default async function PaymentsListPage(props: {
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Paiements &amp; tresorerie</h1>
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            Anti-fraude RIB + double validation + preuve bancaire obligatoire (cadre §5 etape 7 + §8).
-          </p>
+          <h1 className="text-2xl font-semibold">{t('listTitle')}</h1>
+          <p className="text-sm text-[var(--color-muted-foreground)]">{t('listSubtitle')}</p>
         </div>
         <Link
           href="/payments/new"
           className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
         >
-          + Nouveau paiement
+          {t('newCtaWithPlus')}
         </Link>
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Execute</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.executed')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(position.executed, position.currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Planifie</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.scheduled')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums text-[var(--color-warning)]">
             {formatCurrency(position.scheduled, position.currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Engage futur</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpi.futureCommitments')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(position.futureCommitments, position.currency)}
           </div>
         </div>
         <div className="rounded-lg border-2 border-[var(--color-primary)] bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-primary)]">Total engage</div>
+          <div className="text-xs uppercase text-[var(--color-primary)]">
+            {t('kpi.totalCommitted')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(position.totalCommitted, position.currency)}
           </div>
@@ -103,14 +111,23 @@ export default async function PaymentsListPage(props: {
 
       <form className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
         <div className="flex gap-3">
-          <select name="status" defaultValue={params.status ?? ''} className="rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- Tous statuts --</option>
+          <select
+            name="status"
+            defaultValue={params.status ?? ''}
+            className="rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('filters.allStatuses')}</option>
             {Object.values(PaymentStatus).map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
-          <button type="submit" className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90">
-            Filtrer
+          <button
+            type="submit"
+            className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90"
+          >
+            {t('filters.apply')}
           </button>
         </div>
       </form>
@@ -119,32 +136,41 @@ export default async function PaymentsListPage(props: {
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-3 font-medium">Reference</th>
-              <th className="px-3 py-3 font-medium">Facture</th>
-              <th className="px-3 py-3 font-medium">Beneficiaire</th>
-              <th className="px-3 py-3 font-medium">Montant</th>
-              <th className="px-3 py-3 font-medium">Statut</th>
-              <th className="px-3 py-3 font-medium">Prevu / execute</th>
+              <th className="px-3 py-3 font-medium">{t('columns.reference')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.invoice')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.beneficiary')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.amount')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.status')}</th>
+              <th className="px-3 py-3 font-medium">{t('columns.scheduledOrExecuted')}</th>
             </tr>
           </thead>
           <tbody>
             {payments.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucun paiement.
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('emptyShort')}
                 </td>
               </tr>
             )}
             {payments.map((p) => (
               <tr key={p.id} className="border-b last:border-0">
                 <td className="px-3 py-2 font-mono text-xs">
-                  <Link href={'/payments/' + p.id} className="text-[var(--color-primary)] hover:underline">
+                  <Link
+                    href={'/payments/' + p.id}
+                    className="text-[var(--color-primary)] hover:underline"
+                  >
                     {p.reference}
                   </Link>
                 </td>
                 <td className="px-3 py-2 font-mono text-xs">
-                  {p.invoice?.reference ?? '-'}<br />
-                  <span className="text-[var(--color-muted-foreground)]">{p.invoice?.invoiceNumber}</span>
+                  {p.invoice?.reference ?? '-'}
+                  <br />
+                  <span className="text-[var(--color-muted-foreground)]">
+                    {p.invoice?.invoiceNumber}
+                  </span>
                 </td>
                 <td className="px-3 py-2 text-xs">
                   <div>{p.beneficiaryName}</div>
@@ -159,10 +185,11 @@ export default async function PaymentsListPage(props: {
                   {p.status}
                 </td>
                 <td className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
-                  {p.scheduledAt && 'Prevu ' + formatDateTime(p.scheduledAt)}
+                  {p.scheduledAt && t('scheduledPrefix') + ' ' + formatDateTime(p.scheduledAt)}
                   {p.executedAt && (
                     <>
-                      {p.scheduledAt && <br />}Execute {formatDateTime(p.executedAt)}
+                      {p.scheduledAt && <br />}
+                      {t('executedPrefix')} {formatDateTime(p.executedAt)}
                     </>
                   )}
                 </td>

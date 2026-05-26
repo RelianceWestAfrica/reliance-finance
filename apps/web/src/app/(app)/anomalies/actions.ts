@@ -52,11 +52,7 @@ export async function runControlChecks(): Promise<{
 
   const memberships = await getUserMemberships(session.user.id);
   try {
-    requireAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CONTROLEUR_INTERNE,
-    ]);
+    requireAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CONTROLEUR_INTERNE]);
   } catch {
     return { ok: false, error: 'Privilege Controle Interne / DFG requis' };
   }
@@ -227,20 +223,12 @@ const assignSchema = z.object({
   assigneeId: z.string().cuid(),
 });
 
-export async function assignAnomaly(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function assignAnomaly(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
   const memberships = await getUserMemberships(session.user.id);
-  if (
-    !hasAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CONTROLEUR_INTERNE,
-    ])
-  ) {
+  if (!hasAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CONTROLEUR_INTERNE])) {
     return { ok: false, error: 'Privilege insuffisant' };
   }
 
@@ -280,20 +268,12 @@ const resolveSchema = z.object({
   outcome: z.enum(['RESOLVED', 'FALSE_POSITIVE', 'SANCTION_REQUESTED']),
 });
 
-export async function resolveAnomaly(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function resolveAnomaly(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
   const memberships = await getUserMemberships(session.user.id);
-  if (
-    !hasAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CONTROLEUR_INTERNE,
-    ])
-  ) {
+  if (!hasAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CONTROLEUR_INTERNE])) {
     return { ok: false, error: 'Privilege insuffisant' };
   }
 
@@ -302,7 +282,8 @@ export async function resolveAnomaly(
     resolution: formData.get('resolution'),
     outcome: formData.get('outcome'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const statusMap: Record<string, AnomalyStatus> = {
     RESOLVED: AnomalyStatus.RESOLVED,

@@ -1,13 +1,11 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
 import { formatCurrency } from '@/lib/format';
-import {
-  ExpenseRequestType,
-  PaymentStatus,
-} from '@reliance-finance/database';
+import { ExpenseRequestType, PaymentStatus } from '@reliance-finance/database';
 import { buildKpiSummary } from '@/lib/kpis/compute';
 
 export default async function ReportingPage(props: {
@@ -18,11 +16,20 @@ export default async function ReportingPage(props: {
   const params = await props.searchParams;
 
   const db = await getTenantedDb();
+  const t = await getTranslations('pages.reporting');
 
   const [entities, projects, payments, expenseRequests, emergencies, projectsBudget, topAnomalies] =
     await Promise.all([
-      db.entity.findMany({ where: { isActive: true }, orderBy: { code: 'asc' }, select: { id: true, code: true, name: true } }),
-      db.project.findMany({ where: { isActive: true }, orderBy: { code: 'asc' }, select: { id: true, code: true, name: true, entity: { select: { code: true } } } }),
+      db.entity.findMany({
+        where: { isActive: true },
+        orderBy: { code: 'asc' },
+        select: { id: true, code: true, name: true },
+      }),
+      db.project.findMany({
+        where: { isActive: true },
+        orderBy: { code: 'asc' },
+        select: { id: true, code: true, name: true, entity: { select: { code: true } } },
+      }),
       db.payment.findMany({
         where: {
           ...(params.entityId ? { entityId: params.entityId } : {}),
@@ -33,7 +40,9 @@ export default async function ReportingPage(props: {
             select: {
               receptionId: true,
               reception: { select: { status: true } },
-              threeWayMatch: { select: { quantityMatch: true, priceMatch: true, totalMatch: true } },
+              threeWayMatch: {
+                select: { quantityMatch: true, priceMatch: true, totalMatch: true },
+              },
             },
           },
         },
@@ -47,7 +56,19 @@ export default async function ReportingPage(props: {
           id: true,
           createdAt: true,
           status: true,
-          purchaseOrders: { select: { invoices: { select: { payments: { where: { status: { in: ['EXECUTED', 'RECONCILED'] } }, select: { executedAt: true }, take: 1 } } } } },
+          purchaseOrders: {
+            select: {
+              invoices: {
+                select: {
+                  payments: {
+                    where: { status: { in: ['EXECUTED', 'RECONCILED'] } },
+                    select: { executedAt: true },
+                    take: 1,
+                  },
+                },
+              },
+            },
+          },
         },
       }),
       db.expenseRequest.findMany({
@@ -94,7 +115,9 @@ export default async function ReportingPage(props: {
       hasPVDefinitif: p.invoice?.reception?.status === 'DEFINITIVE',
     })),
     expenseRequests: expenseRequests.map((er) => {
-      const firstPayment = er.purchaseOrders.flatMap((po) => po.invoices).flatMap((i) => i.payments)[0];
+      const firstPayment = er.purchaseOrders
+        .flatMap((po) => po.invoices)
+        .flatMap((i) => i.payments)[0];
       return {
         id: er.id,
         createdAt: er.createdAt,
@@ -117,82 +140,140 @@ export default async function ReportingPage(props: {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Reporting &amp; KPIs</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          Vue consolidee : conformite, delais, urgences, budget vs reel, top anomalies (cadre §10).
-        </p>
+        <h1 className="text-2xl font-semibold">{t('title')}</h1>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t('introConsolidated')}</p>
       </header>
 
       <form className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <select name="entityId" defaultValue={params.entityId ?? ''} className="rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- Toutes entites --</option>
+          <select
+            name="entityId"
+            defaultValue={params.entityId ?? ''}
+            className="rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('filters.allEntities')}</option>
             {entities.map((e) => (
-              <option key={e.id} value={e.id}>{e.code} - {e.name}</option>
+              <option key={e.id} value={e.id}>
+                {e.code} - {e.name}
+              </option>
             ))}
           </select>
-          <select name="projectId" defaultValue={params.projectId ?? ''} className="rounded-md border bg-white px-3 py-2 text-sm">
-            <option value="">-- Tous projets --</option>
+          <select
+            name="projectId"
+            defaultValue={params.projectId ?? ''}
+            className="rounded-md border bg-white px-3 py-2 text-sm"
+          >
+            <option value="">{t('filters.allProjects')}</option>
             {projects.map((p) => (
-              <option key={p.id} value={p.id}>{p.entity.code} / {p.code} - {p.name}</option>
+              <option key={p.id} value={p.id}>
+                {p.entity.code} / {p.code} - {p.name}
+              </option>
             ))}
           </select>
-          <button type="submit" className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90">
-            Filtrer
+          <button
+            type="submit"
+            className="rounded-md bg-[var(--color-foreground)] px-3 py-2 text-xs font-medium text-white hover:opacity-90"
+          >
+            {t('filters.apply')}
           </button>
         </div>
       </form>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">% paiements conformes</div>
-          <div className={'mt-1 text-3xl font-semibold tabular-nums ' + (kpi.compliantPaymentsPercent >= 95 ? 'text-[var(--color-success)]' : kpi.compliantPaymentsPercent >= 75 ? 'text-[var(--color-warning)]' : 'text-[var(--color-destructive)]')}>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpis.compliantPaymentsPercent')}
+          </div>
+          <div
+            className={
+              'mt-1 text-3xl font-semibold tabular-nums ' +
+              (kpi.compliantPaymentsPercent >= 95
+                ? 'text-[var(--color-success)]'
+                : kpi.compliantPaymentsPercent >= 75
+                  ? 'text-[var(--color-warning)]'
+                  : 'text-[var(--color-destructive)]')
+            }
+          >
             {kpi.compliantPaymentsPercent.toFixed(1)}%
           </div>
           <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            {kpi.compliantPayments} / {kpi.totalPayments} (3-way OK + PV DEF)
+            {t('kpis.compliantPaymentsHelp', {
+              compliant: kpi.compliantPayments,
+              total: kpi.totalPayments,
+            })}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Delai moyen FD -&gt; paiement</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpis.avgLeadTime')}
+          </div>
           <div className="mt-1 text-3xl font-semibold tabular-nums">
-            {kpi.avgLeadTimeDays !== null ? kpi.avgLeadTimeDays.toFixed(1) + ' j' : 'N/A'}
+            {kpi.avgLeadTimeDays !== null
+              ? t('kpis.avgLeadTimeUnit', { days: kpi.avgLeadTimeDays.toFixed(1) })
+              : t('kpis.notAvailable')}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Urgences hors delai</div>
-          <div className={'mt-1 text-3xl font-semibold tabular-nums ' + (kpi.emergencyOverdueCount > 0 ? 'text-[var(--color-destructive)]' : 'text-[var(--color-success)]')}>
-            {kpi.emergencyOverdueCount} / {kpi.emergencyCount}
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpis.emergencyOverdue')}
+          </div>
+          <div
+            className={
+              'mt-1 text-3xl font-semibold tabular-nums ' +
+              (kpi.emergencyOverdueCount > 0
+                ? 'text-[var(--color-destructive)]'
+                : 'text-[var(--color-success)]')
+            }
+          >
+            {t('kpis.emergencyOverdueRatio', {
+              count: kpi.emergencyOverdueCount,
+              total: kpi.emergencyCount,
+            })}
           </div>
           <div className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            {kpi.emergencyOverdueRate.toFixed(1)}% non regularisees
+            {t('kpis.emergencyOverdueHelp', { rate: kpi.emergencyOverdueRate.toFixed(1) })}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Anomalies semaine</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('kpis.weeklyAnomalies')}
+          </div>
           <div className="mt-1 text-3xl font-semibold tabular-nums">{topAnomalies.length}</div>
-          <Link href="/anomalies" className="mt-1 inline-block text-xs text-[var(--color-primary)] hover:underline">
-            Voir toutes
+          <Link
+            href="/anomalies"
+            className="mt-1 inline-block text-xs text-[var(--color-primary)] hover:underline"
+          >
+            {t('kpis.viewAll')}
           </Link>
         </div>
       </section>
 
       <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
         <header className="border-b px-4 py-3">
-          <h2 className="text-sm font-semibold">Top 5 anomalies de la semaine</h2>
+          <h2 className="text-sm font-semibold">{t('topAnomalies.title')}</h2>
         </header>
         {topAnomalies.length === 0 ? (
           <p className="px-4 py-6 text-center text-sm text-[var(--color-muted-foreground)]">
-            Aucune anomalie cette semaine. Excellent !
+            {t('topAnomalies.empty')}
           </p>
         ) : (
           <ul className="divide-y">
             {topAnomalies.map((a) => (
               <li key={a.id} className="px-4 py-3">
-                <Link href={'/anomalies/' + a.id} className="block hover:bg-[var(--color-muted)]/50">
+                <Link
+                  href={'/anomalies/' + a.id}
+                  className="hover:bg-[var(--color-muted)]/50 block"
+                >
                   <div className="flex items-baseline justify-between">
                     <div className="flex items-baseline gap-2">
-                      <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + (a.severity === 'CRITICAL' ? 'bg-[var(--color-destructive)]/10 text-[var(--color-destructive)]' : 'bg-[var(--color-warning)]/10 text-[var(--color-warning)]')}>
+                      <span
+                        className={
+                          'rounded-full px-2 py-0.5 text-[10px] font-medium ' +
+                          (a.severity === 'CRITICAL'
+                            ? 'bg-[var(--color-destructive)]/10 text-[var(--color-destructive)]'
+                            : 'bg-[var(--color-warning)]/10 text-[var(--color-warning)]')
+                        }
+                      >
                         {a.severity}
                       </span>
                       <span className="font-mono text-xs">{a.type}</span>
@@ -209,22 +290,31 @@ export default async function ReportingPage(props: {
 
       <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
         <header className="border-b px-4 py-3">
-          <h2 className="text-sm font-semibold">Budget vs reel par projet</h2>
+          <h2 className="text-sm font-semibold">{t('budgetVsActual.title')}</h2>
         </header>
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-2 font-medium">Projet</th>
-              <th className="px-3 py-2 font-medium text-right">Budget</th>
-              <th className="px-3 py-2 font-medium text-right">Reel</th>
-              <th className="px-3 py-2 font-medium text-right">Variance</th>
+              <th className="px-3 py-2 font-medium">{t('budgetVsActual.columns.project')}</th>
+              <th className="px-3 py-2 text-right font-medium">
+                {t('budgetVsActual.columns.budget')}
+              </th>
+              <th className="px-3 py-2 text-right font-medium">
+                {t('budgetVsActual.columns.actual')}
+              </th>
+              <th className="px-3 py-2 text-right font-medium">
+                {t('budgetVsActual.columns.variance')}
+              </th>
             </tr>
           </thead>
           <tbody>
             {kpi.budgetVsActual.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucun projet avec budget.
+                <td
+                  colSpan={4}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('budgetVsActual.empty')}
                 </td>
               </tr>
             )}
@@ -232,9 +322,19 @@ export default async function ReportingPage(props: {
               <tr key={p.projectCode} className="border-b last:border-0">
                 <td className="px-3 py-2 font-mono text-xs">{p.projectCode}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(p.budget)}</td>
-                <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(p.actualSpent)}</td>
-                <td className={'px-3 py-2 text-right text-xs font-medium tabular-nums ' + (p.isOverBudget ? 'text-[var(--color-destructive)]' : 'text-[var(--color-success)]')}>
-                  {p.variancePercent > 0 ? '+' : ''}{p.variancePercent.toFixed(1)}%
+                <td className="px-3 py-2 text-right tabular-nums">
+                  {formatCurrency(p.actualSpent)}
+                </td>
+                <td
+                  className={
+                    'px-3 py-2 text-right text-xs font-medium tabular-nums ' +
+                    (p.isOverBudget
+                      ? 'text-[var(--color-destructive)]'
+                      : 'text-[var(--color-success)]')
+                  }
+                >
+                  {p.variancePercent > 0 ? '+' : ''}
+                  {p.variancePercent.toFixed(1)}%
                 </td>
               </tr>
             ))}

@@ -98,7 +98,9 @@ export async function addMembership(formData: FormData): Promise<{ ok: boolean; 
 
 const revokeSchema = z.object({ membershipId: z.string().cuid() });
 
-export async function revokeMembership(formData: FormData): Promise<{ ok: boolean; error?: string }> {
+export async function revokeMembership(
+  formData: FormData,
+): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 

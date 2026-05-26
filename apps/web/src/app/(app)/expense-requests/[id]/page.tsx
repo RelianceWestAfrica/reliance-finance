@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -42,6 +43,8 @@ export default async function ExpenseRequestDetailPage(props: {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const errorMessage = searchParams.error ? decodeURIComponent(searchParams.error) : null;
+  const t = await getTranslations('pages.expenseRequests');
+  const tCommon = await getTranslations('common');
 
   const db = await getTenantedDb();
   const er = await db.expenseRequest.findUnique({
@@ -105,35 +108,38 @@ export default async function ExpenseRequestDetailPage(props: {
   async function handleSubmit(formData: FormData) {
     'use server';
     const r = await submitExpenseRequest(formData);
-    if (!r.ok) redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleSign(formData: FormData) {
     'use server';
     const r = await signExpenseRequest(formData);
-    if (!r.ok) redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleReject(formData: FormData) {
     'use server';
     const r = await rejectExpenseRequest(formData);
-    if (!r.ok) redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleCancel(formData: FormData) {
     'use server';
     const r = await cancelExpenseRequest(formData);
-    if (!r.ok) redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleRegularize(formData: FormData) {
     'use server';
     const r = await regularizeEmergency(formData);
-    if (!r.ok) redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/expense-requests/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
 
   const isMyDraft = er.status === ExpenseRequestStatus.DRAFT && er.createdById === session.user.id;
   const isEmergency = er.type === ExpenseRequestType.FD_URGENCE;
   const canRegularize =
-    isEmergency &&
-    er.status === ExpenseRequestStatus.APPROVED &&
-    !er.regularizedAt;
+    isEmergency && er.status === ExpenseRequestStatus.APPROVED && !er.regularizedAt;
 
   return (
     <div className="space-y-6">
@@ -142,83 +148,113 @@ export default async function ExpenseRequestDetailPage(props: {
           <h1 className="text-2xl font-semibold">{er.title}</h1>
           <p className="font-mono text-sm text-[var(--color-muted-foreground)]">{er.reference}</p>
           <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            Demandeur : {er.createdBy.email} - Cree le {formatDateTime(er.createdAt)}
+            {t('detail.requesterLine', {
+              email: er.createdBy.email,
+              date: formatDateTime(er.createdAt),
+            })}
           </p>
         </div>
-        <Link href="/expense-requests" className="text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Liste
+        <Link
+          href="/expense-requests"
+          className="text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {t('detail.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Statut</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.status')}
+          </div>
           <div className="mt-1 font-mono text-sm">{er.status}</div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Type</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.type')}
+          </div>
           <div className="mt-1 font-mono text-sm">{er.type}</div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Montant</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.amount')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(Number(er.amount.toString()), er.currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Urgence</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.urgency')}
+          </div>
           <div className="mt-1 font-mono text-sm">{er.urgency}</div>
         </div>
       </section>
 
       {isEmergency && er.emergencyDeadlineAt && (
-        <section className="rounded-lg border border-[var(--color-warning)] bg-[var(--color-warning)]/5 p-4">
+        <section className="bg-[var(--color-warning)]/5 rounded-lg border border-[var(--color-warning)] p-4">
           <div className="text-sm font-semibold text-[var(--color-warning)]">
-            FD_URGENCE - regularisation requise
+            {t('detail.emergency.title')}
           </div>
           <div className="mt-1 text-xs">
-            Deadline : {formatDateTime(er.emergencyDeadlineAt)} -
+            {t('detail.emergency.deadline', { date: formatDateTime(er.emergencyDeadlineAt) })} -{' '}
             {er.regularizedAt
-              ? ' Regularise le ' + formatDateTime(er.regularizedAt)
-              : ' Non regularise'}
+              ? t('detail.emergency.regularizedOn', { date: formatDateTime(er.regularizedAt) })
+              : t('detail.emergency.notRegularized')}
           </div>
         </section>
       )}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <h3 className="text-sm font-semibold">Contexte</h3>
+          <h3 className="text-sm font-semibold">{t('detail.sections.context')}</h3>
           <dl className="mt-2 grid grid-cols-2 gap-y-1 text-xs">
-            <dt className="text-[var(--color-muted-foreground)]">Entite</dt>
+            <dt className="text-[var(--color-muted-foreground)]">{t('detail.context.entity')}</dt>
             <dd className="font-mono">{er.entity.code}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Projet</dt>
+            <dt className="text-[var(--color-muted-foreground)]">{t('detail.context.project')}</dt>
             <dd className="font-mono">{er.project?.code ?? '-'}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Centre cout</dt>
+            <dt className="text-[var(--color-muted-foreground)]">
+              {t('detail.context.costCenter')}
+            </dt>
             <dd className="font-mono">{er.costCenter?.code ?? '-'}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Fournisseur</dt>
+            <dt className="text-[var(--color-muted-foreground)]">{t('detail.context.supplier')}</dt>
             <dd>{er.supplier ? er.supplier.code + ' - ' + er.supplier.name : '-'}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Sensibilite</dt>
-            <dd>{er.supplier?.sensitivity ?? '-'}{er.supplier?.isStrategic ? ' (strategique)' : ''}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Nature</dt>
+            <dt className="text-[var(--color-muted-foreground)]">
+              {t('detail.context.sensitivity')}
+            </dt>
+            <dd>
+              {er.supplier?.sensitivity ?? '-'}
+              {er.supplier?.isStrategic ? ' ' + t('detail.context.strategic') : ''}
+            </dd>
+            <dt className="text-[var(--color-muted-foreground)]">{t('detail.context.nature')}</dt>
             <dd>{er.opexCapex}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Hors budget</dt>
-            <dd>{er.isOutOfBudget ? 'Oui' : 'Non'}</dd>
-            <dt className="text-[var(--color-muted-foreground)]">Ligne budget</dt>
+            <dt className="text-[var(--color-muted-foreground)]">
+              {t('detail.context.outOfBudget')}
+            </dt>
+            <dd>{er.isOutOfBudget ? tCommon('yes') : tCommon('no')}</dd>
+            <dt className="text-[var(--color-muted-foreground)]">
+              {t('detail.context.budgetLine')}
+            </dt>
             <dd className="font-mono">{er.budgetLineRef ?? '-'}</dd>
           </dl>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <h3 className="text-sm font-semibold">Justification</h3>
-          <p className="mt-2 whitespace-pre-wrap text-xs">{er.justification ?? <span className="italic">(aucune)</span>}</p>
+          <h3 className="text-sm font-semibold">{t('detail.sections.justification')}</h3>
+          <p className="mt-2 whitespace-pre-wrap text-xs">
+            {er.justification ?? <span className="italic">{t('detail.justificationNone')}</span>}
+          </p>
           {er.description && (
             <>
-              <h3 className="mt-4 text-sm font-semibold">Description</h3>
+              <h3 className="mt-4 text-sm font-semibold">{t('detail.sections.description')}</h3>
               <p className="mt-2 whitespace-pre-wrap text-xs">{er.description}</p>
             </>
           )}
@@ -228,11 +264,19 @@ export default async function ExpenseRequestDetailPage(props: {
       {workflow && (
         <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
           <header className="flex items-baseline justify-between border-b px-4 py-3">
-            <h3 className="text-sm font-semibold">Workflow et signatures</h3>
+            <h3 className="text-sm font-semibold">{t('detail.sections.workflow')}</h3>
             <div className="flex items-center gap-2 text-xs">
-              <span className={'h-2 w-2 rounded-full ' + (chainVerify.ok ? 'bg-[var(--color-success)]' : 'bg-[var(--color-destructive)]')} />
+              <span
+                className={
+                  'h-2 w-2 rounded-full ' +
+                  (chainVerify.ok ? 'bg-[var(--color-success)]' : 'bg-[var(--color-destructive)]')
+                }
+              />
               <span className="font-mono text-[var(--color-muted-foreground)]">
-                Chaine sigs : {chainVerify.ok ? 'OK (' + chainVerify.count + ')' : (chainVerify as { reason: string }).reason}
+                {t('detail.chain.label')} :{' '}
+                {chainVerify.ok
+                  ? t('detail.chain.ok', { count: chainVerify.count })
+                  : (chainVerify as { reason: string }).reason}
               </span>
             </div>
           </header>
@@ -248,12 +292,12 @@ export default async function ExpenseRequestDetailPage(props: {
                     <div className="font-mono text-xs">{step.stage}</div>
                     <div className="text-xs text-[var(--color-muted-foreground)]">
                       {sig
-                        ? 'Signe par ' +
-                          (sig.actor.email ?? sig.actorId) +
-                          ' le ' +
-                          formatDateTime(sig.signedAt)
+                        ? t('detail.chain.signedBy', {
+                            actor: sig.actor.email ?? sig.actorId,
+                            date: formatDateTime(sig.signedAt),
+                          })
                         : step.status === 'PENDING'
-                          ? 'En attente'
+                          ? t('detail.chain.pending')
                           : step.status}
                     </div>
                     {sig?.comment && (
@@ -264,9 +308,11 @@ export default async function ExpenseRequestDetailPage(props: {
                   </div>
                   <div className="text-xs">
                     {sig ? (
-                      <span className="text-[var(--color-success)]">OK</span>
+                      <span className="text-[var(--color-success)]">{t('detail.chain.ok2')}</span>
                     ) : step.status === 'PENDING' ? (
-                      <span className="text-[var(--color-warning)]">attente</span>
+                      <span className="text-[var(--color-warning)]">
+                        {t('detail.chain.waiting')}
+                      </span>
                     ) : (
                       <span className="text-[var(--color-muted-foreground)]">-</span>
                     )}
@@ -279,20 +325,20 @@ export default async function ExpenseRequestDetailPage(props: {
       )}
 
       <section className="space-y-3 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h3 className="text-sm font-semibold">Actions</h3>
+        <h3 className="text-sm font-semibold">{t('detail.sections.actions')}</h3>
         <div className="flex flex-wrap gap-2">
           {isMyDraft && (
             <>
               <form action={handleSubmit}>
                 <input type="hidden" name="id" value={er.id} />
                 <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                  Soumettre pour validation
+                  {t('detail.actions.submit')}
                 </button>
               </form>
               <form action={handleCancel}>
                 <input type="hidden" name="id" value={er.id} />
                 <button className="rounded-md border px-3 py-2 text-xs hover:bg-[var(--color-muted)]">
-                  Annuler le brouillon
+                  {t('detail.actions.cancelDraft')}
                 </button>
               </form>
             </>
@@ -303,11 +349,11 @@ export default async function ExpenseRequestDetailPage(props: {
               <input type="hidden" name="id" value={er.id} />
               <input
                 name="comment"
-                placeholder="Commentaire (optionnel, conserve dans le hash)"
+                placeholder={t('detail.actions.signComment')}
                 className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
               />
               <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                Signer {actableSlot.stage}
+                {t('detail.actions.signStage', { stage: actableSlot.stage })}
               </button>
             </form>
           )}
@@ -327,11 +373,11 @@ export default async function ExpenseRequestDetailPage(props: {
                   name="reason"
                   required
                   minLength={5}
-                  placeholder="Motif du rejet"
+                  placeholder={t('detail.actions.rejectReason')}
                   className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
                 />
-                <button className="rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10">
-                  Rejeter
+                <button className="hover:bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)]">
+                  {t('detail.actions.reject')}
                 </button>
               </form>
             )}
@@ -339,8 +385,8 @@ export default async function ExpenseRequestDetailPage(props: {
           {canRegularize && (
             <form action={handleRegularize}>
               <input type="hidden" name="id" value={er.id} />
-              <button className="rounded-md border border-[var(--color-success)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-success)] hover:bg-[var(--color-success)]/10">
-                Marquer regularise (cloture urgence)
+              <button className="hover:bg-[var(--color-success)]/10 rounded-md border border-[var(--color-success)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-success)]">
+                {t('detail.actions.regularize')}
               </button>
             </form>
           )}

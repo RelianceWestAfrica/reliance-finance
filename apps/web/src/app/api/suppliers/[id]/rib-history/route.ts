@@ -22,10 +22,7 @@ function csvCell(value: unknown): string {
   return str;
 }
 
-export async function GET(
-  _req: Request,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Auth requise' }, { status: 401 });
@@ -128,11 +125,7 @@ export async function GET(
   const body = '﻿' + csv;
 
   const filename =
-    'RIB-history-' +
-    supplier.code +
-    '-' +
-    new Date().toISOString().slice(0, 10) +
-    '.csv';
+    'RIB-history-' + supplier.code + '-' + new Date().toISOString().slice(0, 10) + '.csv';
 
   return new NextResponse(body, {
     status: 200,

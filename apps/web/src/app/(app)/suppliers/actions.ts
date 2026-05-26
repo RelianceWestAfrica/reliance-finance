@@ -3,18 +3,9 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 
-import {
-  prisma,
-  RoleCode,
-  SupplierSensitivity,
-  SupplierStatus,
-} from '@reliance-finance/database';
+import { prisma, RoleCode, SupplierSensitivity, SupplierStatus } from '@reliance-finance/database';
 import { auth } from '@/lib/auth';
-import {
-  getUserMemberships,
-  requireAnyRole,
-  hasAnyRole,
-} from '@/lib/rbac';
+import { getUserMemberships, requireAnyRole, hasAnyRole } from '@/lib/rbac';
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 import { getRequestActorContext } from '@/lib/audit/actor-context';
 
@@ -28,11 +19,31 @@ const baseSupplierFields = {
     .toUpperCase()
     .trim(),
   name: z.string().min(2).max(200).trim(),
-  rccm: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  ifu: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  email: z.string().email().optional().or(z.literal('').transform(() => undefined)),
-  phone: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  address: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  rccm: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  ifu: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  phone: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  address: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   country: z
     .string()
     .length(2)
@@ -41,13 +52,37 @@ const baseSupplierFields = {
     .or(z.literal('').transform(() => undefined)),
   sensitivity: z.nativeEnum(SupplierSensitivity).default(SupplierSensitivity.STANDARD),
   isStrategic: z.coerce.boolean().default(false),
-  notes: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
+  notes: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   // RIB initial (optionnel - on peut creer le supplier et le RIB plus tard)
-  bankName: z.string().max(200).optional().or(z.literal('').transform(() => undefined)),
-  holderName: z.string().max(200).optional().or(z.literal('').transform(() => undefined)),
-  iban: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  rib: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  swift: z.string().max(20).optional().or(z.literal('').transform(() => undefined)),
+  bankName: z
+    .string()
+    .max(200)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  holderName: z
+    .string()
+    .max(200)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  iban: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  rib: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  swift: z
+    .string()
+    .max(20)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   currency: z.string().length(3).toUpperCase().default('XOF'),
 };
 
@@ -100,7 +135,8 @@ export async function createSupplier(
   });
   if (existing) return { ok: false, error: 'Code fournisseur deja utilise pour cette entite' };
 
-  const hasInitialRib = parsed.data.bankName && parsed.data.holderName && (parsed.data.iban || parsed.data.rib);
+  const hasInitialRib =
+    parsed.data.bankName && parsed.data.holderName && (parsed.data.iban || parsed.data.rib);
 
   const created = await prisma.supplier.create({
     data: {
@@ -188,11 +224,31 @@ export async function createSupplier(
 const updateSchema = z.object({
   id: z.string().cuid(),
   name: z.string().min(2).max(200).trim(),
-  rccm: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  ifu: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  email: z.string().email().optional().or(z.literal('').transform(() => undefined)),
-  phone: z.string().max(50).optional().or(z.literal('').transform(() => undefined)),
-  address: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  rccm: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  ifu: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  phone: z
+    .string()
+    .max(50)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  address: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   country: z
     .string()
     .length(2)
@@ -201,12 +257,14 @@ const updateSchema = z.object({
     .or(z.literal('').transform(() => undefined)),
   sensitivity: z.nativeEnum(SupplierSensitivity),
   isStrategic: z.coerce.boolean().default(false),
-  notes: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
+  notes: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
-export async function updateSupplier(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function updateSupplier(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -296,16 +354,11 @@ export async function updateSupplier(
   // verification a l'execution paiement en M10.
   if (
     (updated.sensitivity === SupplierSensitivity.STRATEGIC || updated.isStrategic) &&
-    !hasAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.FINANCE_GROUPE,
-    ])
+    !hasAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.FINANCE_GROUPE])
   ) {
     // Note d'avertissement - non bloquant a ce stade
     console.warn(
-      'WARN: fournisseur strategique modifie par role non-Groupe. ' +
-        'A verifier par le DFG.',
+      'WARN: fournisseur strategique modifie par role non-Groupe. ' + 'A verifier par le DFG.',
     );
   }
 

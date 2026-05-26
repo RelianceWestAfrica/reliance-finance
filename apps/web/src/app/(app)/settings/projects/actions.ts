@@ -19,11 +19,25 @@ const projectSchema = z.object({
     .toUpperCase()
     .trim(),
   name: z.string().min(2).max(200).trim(),
-  description: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
-  budget: z.coerce.number().min(0).optional().or(z.literal('').transform(() => undefined)),
+  description: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  budget: z.coerce
+    .number()
+    .min(0)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   currency: z.string().length(3).toUpperCase().default('XOF'),
-  startDate: z.string().optional().or(z.literal('').transform(() => undefined)),
-  endDate: z.string().optional().or(z.literal('').transform(() => undefined)),
+  startDate: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  endDate: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createProject(formData: FormData): Promise<{ ok: boolean; error?: string }> {
@@ -123,7 +137,11 @@ export async function archiveProject(formData: FormData): Promise<{ ok: boolean;
 
 const costCenterSchema = z.object({
   entityId: z.string().cuid(),
-  projectId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  projectId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   code: z
     .string()
     .min(2)

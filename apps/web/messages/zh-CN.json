@@ -1,0 +1,1807 @@
+{
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "saveChanges": "保存修改",
+    "edit": "编辑",
+    "delete": "删除",
+    "confirm": "确认",
+    "create": "创建",
+    "back": "返回",
+    "close": "关闭",
+    "search": "搜索",
+    "filter": "筛选",
+    "filters": "筛选条件",
+    "all": "全部",
+    "loading": "加载中…",
+    "empty": "暂无内容。",
+    "yes": "是",
+    "no": "否",
+    "actions": "操作",
+    "details": "详情",
+    "status": "状态",
+    "date": "日期",
+    "amount": "金额",
+    "currency": "币种",
+    "description": "描述",
+    "notes": "备注",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "createdBy": "创建人",
+    "validate": "确认",
+    "reject": "驳回",
+    "approve": "批准",
+    "submit": "提交",
+    "send": "发送",
+    "view": "查看",
+    "open": "打开",
+    "download": "下载",
+    "export": "导出",
+    "import": "导入",
+    "active": "启用",
+    "inactive": "停用",
+    "name": "名称",
+    "email": "邮箱",
+    "phone": "电话",
+    "address": "地址",
+    "type": "类型",
+    "reference": "编号",
+    "next": "下一步",
+    "previous": "上一步",
+    "previousAlt": "上一项",
+    "addLine": "添加行",
+    "remove": "移除",
+    "yesPlural": "是",
+    "noPlural": "否",
+    "subtotal": "小计",
+    "tax": "增值税",
+    "total": "合计",
+    "errorGeneric": "发生错误。",
+    "saving": "保存中…",
+    "submitting": "提交中…",
+    "required": "必填项",
+    "comment": "评论",
+    "reason": "原因",
+    "expectedDate": "预期日期",
+    "issueDate": "开具日期",
+    "dueDate": "到期日",
+    "paymentDate": "付款日期"
+  },
+  "nav": {
+    "groups": {
+      "pilotage": "运营总览",
+      "purchase": "采购流程",
+      "treasury": "资金与会计",
+      "control": "控制",
+      "admin": "管理"
+    },
+    "items": {
+      "dashboard": "仪表板",
+      "reporting": "报告与指标",
+      "suppliers": "供应商",
+      "expenseRequests": "采购申请",
+      "purchaseOrders": "采购订单",
+      "receptions": "收货单",
+      "invoices": "发票",
+      "payments": "付款",
+      "cashForecast": "13周现金预测",
+      "accounting": "会计",
+      "anomalies": "异常",
+      "audit": "审计",
+      "settings": "设置",
+      "profile": "个人资料",
+      "offerComparisons": "报价比对",
+      "soleSourceJustifications": "单一来源说明"
+    },
+    "backToPortal": "返回 RWA 总部",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "selectLanguage": "选择语言",
+    "notifications": "通知",
+    "appName": "RWA Finance"
+  },
+  "breadcrumb": {
+    "root": "RWA",
+    "app": "财务",
+    "label": "面包屑导航"
+  },
+  "accountMenu": {
+    "title": "账户",
+    "profile": "我的资料",
+    "profileSub": "姓名、邮箱、头像…",
+    "password": "密码",
+    "passwordSub": "重置密码",
+    "preferences": "偏好",
+    "preferencesSub": "语言、显示",
+    "logout": "退出登录"
+  },
+  "login": {
+    "appName": "Reliance Finance",
+    "ssoIntro": "登录由 RWA Core 身份验证门户统一管理。",
+    "ssoButton": "通过 RWA Core 登录",
+    "ssoRedirecting": "正在跳转至 RWA Core 门户…",
+    "localIntro": "应急登录(管理员)— 本地模式",
+    "emailLabel": "工作邮箱",
+    "emailPlaceholder": "first.last@reliancewestafrica.com",
+    "passwordLabel": "密码",
+    "signIn": "登录",
+    "orSeparator": "或",
+    "magicLinkLabel": "获取邮箱登录链接",
+    "magicLinkSubmit": "发送链接",
+    "footer": "仅限 Reliance West Africa 授权员工访问。所有登录均被记录(合规框架 §10)。",
+    "errors": {
+      "credentials": "凭证无效。请检查邮箱和密码。",
+      "generic": "认证错误:{code}",
+      "accountDisabled": "您的账户已被停用。请联系管理员。"
+    }
+  },
+  "profile": {
+    "title": "我的资料",
+    "subtitle": "管理您的个人信息、密码和偏好设置。",
+    "card": {
+      "lastLogin": "最近登录",
+      "lastLoginNever": "从未",
+      "status": "状态",
+      "active": "启用",
+      "inactive": "停用",
+      "noRole": "暂无活跃角色"
+    },
+    "tabs": {
+      "infos": "信息",
+      "security": "安全",
+      "preferences": "偏好"
+    },
+    "infos": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "邮箱",
+      "emailHelp": "此邮箱用于在平台中识别您的身份。"
+    },
+    "security": {
+      "passwordLabel": "密码",
+      "resetPassword": "重置密码",
+      "lastLoginAt": "最近登录:{date}。"
+    },
+    "preferences": {
+      "languageLabel": "界面语言",
+      "languageHelp": "所选语言将在下次登录时自动应用。",
+      "timezoneLabel": "显示时区"
+    },
+    "session": {
+      "title": "会话",
+      "help": "若对当前会话的安全性存在疑问,请先退出再重新登录。",
+      "logout": "退出登录"
+    }
+  },
+  "verifyRequest": {
+    "title": "链接已发送",
+    "body": "如该邮箱地址已注册,我们刚刚发送了一个登录链接邮件。链接将在 10 分钟内失效。"
+  },
+  "setPassword": {
+    "title": "设置密码",
+    "subtitle": "请设置一个强度足够的密码以完成账户激活。",
+    "passwordLabel": "新密码",
+    "confirmLabel": "确认密码",
+    "submit": "设置密码",
+    "constraints": "至少 12 个字符,包含大小写字母、数字和符号。"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "仪表板",
+      "subtitle": "您所辖业务的运营概览。",
+      "welcome": "欢迎,{name}",
+      "greeting": "您好",
+      "greetingWithName": "您好,{name}",
+      "intro": "财务流程合并视图 — 供应商、费用申请、报价比对、采购订单、收货、发票(三方匹配)、资金及 SYSCOHADA 会计。",
+      "noEntity": "您当前未关联任何主体。",
+      "stats": {
+        "entities": "主体",
+        "entitiesNote": "控股公司 + 子公司 + SPV",
+        "suppliers": "供应商",
+        "suppliersNote": "活跃 · 状态 ACTIVE",
+        "projects": "项目",
+        "projectsNote": "进行中的期间",
+        "thresholds": "阈值",
+        "thresholdsNote": "已配置 · 框架 §5"
+      },
+      "roles": {
+        "title": "您的角色",
+        "docRef": "docs/rbac-matrix.md",
+        "empty": "暂无活动角色。请联系管理员获取权限。"
+      },
+      "systemStatus": "系统运行正常 · 所有登录均被记录(合规框架 §10)。",
+      "kpi": {
+        "openRequests": "待处理申请",
+        "invoicesToPay": "待付发票",
+        "cashPosition": "资金头寸",
+        "anomaliesOpen": "未处理异常"
+      },
+      "shortcuts": {
+        "title": "快捷操作",
+        "newRequest": "新建申请",
+        "newSupplier": "新建供应商",
+        "registerInvoice": "录入发票",
+        "schedulePayment": "安排付款"
+      }
+    },
+    "reporting": {
+      "title": "报告与指标",
+      "subtitle": "按主体、期间和类别合并的财务指标。",
+      "introConsolidated": "合并视图:合规性、时效、紧急情况、预算与实际对比、重点异常(框架 §10)。",
+      "filters": {
+        "entity": "主体",
+        "period": "期间",
+        "category": "类别",
+        "currency": "币种",
+        "allEntities": "-- 全部主体 --",
+        "allProjects": "-- 全部项目 --",
+        "apply": "筛选"
+      },
+      "kpis": {
+        "compliantPaymentsPercent": "合规付款占比",
+        "compliantPaymentsHelp": "{compliant} / {total}(三方匹配通过 + 终检收货)",
+        "avgLeadTime": "平均处理时长 申请→付款",
+        "avgLeadTimeUnit": "{days} 天",
+        "notAvailable": "暂无",
+        "emergencyOverdue": "逾期紧急事项",
+        "emergencyOverdueRatio": "{count} / {total}",
+        "emergencyOverdueHelp": "未补正比例 {rate}%",
+        "weeklyAnomalies": "本周异常",
+        "viewAll": "查看全部"
+      },
+      "topAnomalies": {
+        "title": "本周前 5 项异常",
+        "empty": "本周无异常。优秀!"
+      },
+      "budgetVsActual": {
+        "title": "项目预算与实际对比",
+        "columns": {
+          "project": "项目",
+          "budget": "预算",
+          "actual": "实际",
+          "variance": "偏差"
+        },
+        "empty": "暂无含预算的项目。"
+      },
+      "sections": {
+        "spendByCategory": "按类别支出",
+        "spendByEntity": "按主体支出",
+        "supplierTop": "供应商排行",
+        "monthlyTrend": "月度趋势"
+      }
+    },
+    "suppliers": {
+      "title": "供应商",
+      "subtitle": "供应商生命周期 + 银行账号反欺诈(规范 §8)。最多显示最近 100 条结果。",
+      "newCta": "新建供应商",
+      "filters": {
+        "searchPlaceholder": "搜索:名称、编号、RCCM、IFU",
+        "allStatuses": "-- 全部状态 --",
+        "allSensitivities": "-- 全部敏感等级 --",
+        "submit": "筛选"
+      },
+      "columns": {
+        "code": "编号",
+        "name": "公司名称",
+        "kind": "类别",
+        "country": "国家",
+        "status": "状态",
+        "createdAt": "创建时间",
+        "entity": "主体",
+        "rccmIfu": "RCCM / IFU",
+        "sensitivity": "敏感等级",
+        "rib": "银行账号"
+      },
+      "empty": "暂无供应商。",
+      "list": {
+        "ribsCount": "银行账号 ({count})",
+        "strategic": "战略",
+        "ribOk": "正常",
+        "ribNone": "无"
+      },
+      "new": {
+        "title": "新建供应商",
+        "subtitle": "轻量化 KYC 录入:RCCM/IFU + 初始银行账号(后续通过双重审批验证 — 规范 §8)。",
+        "back": "← 返回列表",
+        "section": {
+          "identity": "基本信息",
+          "contact": "联系方式",
+          "fiscal": "税务",
+          "bank": "初始银行账号(可选)",
+          "sensitivity": "敏感等级(规范 §6.3)"
+        },
+        "bankHelp": "初始银行账号将被标记为「未验证」。必须通过双重审批流程(国别 CFO + 集团 CFO)完成验证后方可用于付款。",
+        "fields": {
+          "name": "公司名称 *",
+          "namePlaceholder": "ACME 公司",
+          "code": "供应商编号 *(大写)",
+          "codePlaceholder": "RWA-SUP-TOGO-0099",
+          "kind": "类别",
+          "country": "国家(ISO 2)",
+          "countryPlaceholder": "TG",
+          "taxId": "税号",
+          "address": "地址",
+          "phone": "电话",
+          "email": "邮箱",
+          "entity": "主体 *",
+          "entityPlaceholder": "-- 主体 --",
+          "rccm": "RCCM",
+          "rccmPlaceholder": "TG-LFW-2025-A-1234",
+          "ifu": "IFU / 税号",
+          "sensitivity": "敏感等级",
+          "isStrategic": "战略供应商(加强管控)",
+          "notes": "备注",
+          "bankName": "开户行",
+          "bankNamePlaceholder": "Ecobank Togo",
+          "holderName": "账户名(须与公司名称一致)",
+          "iban": "IBAN",
+          "rib": "银行账号",
+          "swift": "SWIFT / BIC",
+          "currency": "币种"
+        },
+        "submit": "创建供应商",
+        "cancel": "取消"
+      },
+      "detail": {
+        "back": "返回供应商列表",
+        "tabs": {
+          "details": "详情",
+          "banks": "银行账户",
+          "history": "账号变更"
+        },
+        "header": {
+          "entity": "主体 {code}",
+          "ribsCount": "银行账号 ({count})",
+          "historyLink": "账号变更"
+        },
+        "section": {
+          "identity": "基本信息与敏感等级",
+          "dangerZone": "危险操作区",
+          "footer": "创建时间 {date} - 状态 {status}"
+        },
+        "dangerZoneHelp": "归档操作记录在审计日志中,只能由管理员通过 SQL 回滚。现有的采购订单和发票仍可查看。",
+        "fields": {
+          "name": "公司名称 *",
+          "rccm": "RCCM",
+          "ifu": "IFU / 税号",
+          "email": "邮箱",
+          "phone": "电话",
+          "address": "地址",
+          "country": "国家",
+          "sensitivity": "敏感等级(规范 §6.3)",
+          "isStrategic": "战略供应商(加强管控)",
+          "notes": "备注",
+          "archiveReason": "归档原因(必填,至少 5 个字符)"
+        },
+        "actions": {
+          "save": "保存",
+          "archive": "归档"
+        }
+      },
+      "bankAccounts": {
+        "title": "银行账号 - {supplierName}",
+        "subtitle": "银行账号反欺诈流程:申请 → 一级审批 → 二级审批 → 24 小时隔离 → 生效(规范 §8)。",
+        "back": "← 返回供应商信息",
+        "addCta": "新增账户",
+        "activateMatured": "激活到期的隔离账号",
+        "registeredTitle": "已登记的银行账号",
+        "empty": "暂无银行账号。",
+        "columns": {
+          "label": "名称",
+          "iban": "IBAN",
+          "bic": "BIC",
+          "bank": "开户行",
+          "status": "状态",
+          "bankHolder": "开户行 / 账户名",
+          "ibanRib": "IBAN / 账号",
+          "usable": "可用",
+          "verified": "已验证",
+          "quarantine": "隔离期"
+        },
+        "values": {
+          "usable": "正常",
+          "notVerified": "未验证"
+        },
+        "verifyCta": "验证(回拨确认)",
+        "changeForm": {
+          "title": "银行账号变更申请",
+          "help": "必须经过双重审批(一级 + 二级)及 24 小时隔离后才可启用。",
+          "replaces": "替换现有银行账号(可选)",
+          "noReplacement": "-- 无(新账号) --",
+          "newBankNamePlaceholder": "新开户行",
+          "newHolderNamePlaceholder": "账户名(= 公司名称)",
+          "newIbanPlaceholder": "IBAN",
+          "newRibPlaceholder": "银行账号",
+          "justificationPlaceholder": "必填的书面说明(规范 §8) — 例如:新开账户、更换银行等。",
+          "submit": "提交申请"
+        },
+        "changesTitle": "变更申请记录",
+        "changesEmpty": "暂无申请。",
+        "changesColumns": {
+          "date": "时间",
+          "requester": "申请人",
+          "oldNew": "原账号 → 新账号",
+          "status": "状态",
+          "validations": "审批"
+        },
+        "changeStatus": {
+          "REQUESTED": "待一级审批",
+          "DUAL_VALIDATION_PENDING": "待二级审批",
+          "QUARANTINE": "24 小时隔离",
+          "ACTIVE": "已生效",
+          "REJECTED": "已拒绝"
+        },
+        "changeRow": {
+          "creation": "新建",
+          "quarantineUntil": "至 {date}",
+          "n1Done": "一级:{email}",
+          "n1Pending": "待一级审批",
+          "n2Done": "二级:{email}",
+          "n2Pending": "待二级审批",
+          "approveN1": "一级审批通过",
+          "approveN2": "二级审批通过(集团 CFO)",
+          "reject": "拒绝",
+          "rejectReasonN1": "界面操作拒绝(原因待补充)",
+          "rejectReasonN2": "二级审批拒绝"
+        }
+      },
+      "history": {
+        "title": "账号变更记录 - {supplierName}",
+        "subtitle": "通过 SHA-256 链式校验保证不可篡改。最多显示最近 200 条。",
+        "back": "← 返回信息",
+        "empty": "暂无记录。",
+        "exportCsv": "导出 CSV",
+        "verifyChain": "校验完整性",
+        "chainStatusLabel": "供应商审计链:",
+        "chainOk": "正常",
+        "chainEntries": "(共 {count} 条)",
+        "system": "系统",
+        "columns": {
+          "date": "时间",
+          "actor": "操作人",
+          "before": "变更前",
+          "after": "变更后",
+          "action": "操作",
+          "target": "对象",
+          "hash": "哈希"
+        }
+      }
+    },
+    "expenseRequests": {
+      "title": "费用申请",
+      "subtitle": "FDA / FD / FD_URGENCE 阈值审批流程(规范 §5 + §7)。",
+      "newCta": "+ 新建申请",
+      "checkStaleCta": "检查逾期紧急申请",
+      "filtersAllStatus": "-- 全部状态 --",
+      "filtersAllTypes": "-- 全部类型 --",
+      "filterCta": "筛选",
+      "columns": {
+        "ref": "编号",
+        "subject": "事由",
+        "requester": "申请人",
+        "entity": "主体",
+        "amount": "含税金额",
+        "status": "状态",
+        "createdAt": "创建时间",
+        "type": "类型",
+        "title": "标题",
+        "entityProject": "主体 / 项目",
+        "supplier": "供应商",
+        "urgency": "紧急程度",
+        "created": "创建于"
+      },
+      "empty": "暂无申请。",
+      "pagination": "最多显示最近 100 条。分页与列排序:打磨阶段交付。",
+      "statusLabels": {
+        "DRAFT": "草稿",
+        "SUBMITTED": "已提交",
+        "CONTROL_DOC_OK": "文档审核通过",
+        "CONTROL_DOC_KO": "文档审核不通过",
+        "BUDGET_OK": "预算通过",
+        "BUDGET_KO": "预算不通过",
+        "FINANCE_FIL_VISA_PENDING": "待子公司财务签字",
+        "FINANCE_FIL_VISA_OK": "子公司财务已签",
+        "FINANCE_GROUPE_VISA_PENDING": "待集团财务签字",
+        "FINANCE_GROUPE_VISA_OK": "集团财务已签",
+        "AG_APPROVAL_PENDING": "待股东大会批准",
+        "AG_APPROVED": "股东大会已批准",
+        "APPROVED": "已批准",
+        "REJECTED": "已驳回",
+        "ARCHIVED": "已归档",
+        "CANCELLED": "已取消"
+      },
+      "new": {
+        "title": "新建费用申请",
+        "subtitle": "草稿 → 提交 → 根据阈值与供应商敏感度自动计算签字链。",
+        "back": "← 返回列表",
+        "sections": {
+          "identification": "基本信息",
+          "amountBudget": "金额与预算",
+          "urgencyDelivery": "紧急程度与交付"
+        },
+        "fields": {
+          "type": "类型 *",
+          "entity": "主体 *",
+          "entityPlaceholder": "-- 选择主体 --",
+          "project": "项目(可选)",
+          "projectNone": "-- 无 --",
+          "costCenter": "成本中心(可选)",
+          "costCenterNone": "-- 无 --",
+          "supplier": "供应商(FDA 可选)",
+          "supplierNone": "-- 无 --",
+          "title": "标题 / 事由 *",
+          "titlePlaceholder": "例如:CIDPE 工地水泥采购 - 第 4 批",
+          "description": "说明",
+          "justification": "申请理由(目标 / 影响)",
+          "amount": "金额 *",
+          "currency": "币种",
+          "nature": "性质",
+          "budgetLine": "预算行(可选)",
+          "outOfBudget": "超出预算(触发股东大会审批)",
+          "urgency": "紧急程度",
+          "urgencyReason": "紧急原因(若为高)",
+          "desiredDate": "期望日期",
+          "location": "地点"
+        },
+        "typeOptions": {
+          "FDA": "FDA - 采购前置申请",
+          "FD": "FD - 费用申请单",
+          "FD_URGENCE": "FD_URGENCE - 紧急流程(§7)"
+        },
+        "submit": "创建草稿",
+        "cancel": "取消"
+      },
+      "detail": {
+        "back": "← 返回列表",
+        "requesterLine": "申请人:{email} - 创建于 {date}",
+        "tiles": {
+          "status": "状态",
+          "type": "类型",
+          "amount": "金额",
+          "urgency": "紧急程度"
+        },
+        "emergency": {
+          "title": "FD_URGENCE - 需补办手续",
+          "deadline": "截止时间:{date}",
+          "regularizedOn": "已于 {date} 补办",
+          "notRegularized": "尚未补办"
+        },
+        "sections": {
+          "context": "上下文",
+          "justification": "申请理由",
+          "description": "说明",
+          "workflow": "审批流程与签字",
+          "actions": "操作"
+        },
+        "context": {
+          "entity": "主体",
+          "project": "项目",
+          "costCenter": "成本中心",
+          "supplier": "供应商",
+          "sensitivity": "敏感等级",
+          "strategic": "(战略)",
+          "nature": "性质",
+          "outOfBudget": "超出预算",
+          "budgetLine": "预算行"
+        },
+        "justificationNone": "(无)",
+        "chain": {
+          "label": "签字链",
+          "ok": "正常(共 {count} 条)",
+          "signedBy": "由 {actor} 于 {date} 签字",
+          "pending": "待处理",
+          "ok2": "通过",
+          "waiting": "等待"
+        },
+        "actions": {
+          "submit": "提交审批",
+          "cancelDraft": "取消草稿",
+          "signStage": "签字 {stage}",
+          "signComment": "评论(可选,记入哈希)",
+          "rejectReason": "驳回原因",
+          "reject": "驳回",
+          "regularize": "标记已补办(关闭紧急流程)"
+        }
+      }
+    },
+    "purchaseOrders": {
+      "title": "采购订单与合同",
+      "subtitle": "多级签字流程 + 供应商银行账号快照(规范 §6 + §8)。",
+      "newCta": "+ 新建采购订单",
+      "filtersAllStatus": "-- 全部状态 --",
+      "filtersAllTypes": "-- 全部类型 --",
+      "filterCta": "筛选",
+      "columns": {
+        "ref": "编号",
+        "supplier": "供应商",
+        "entity": "主体",
+        "amount": "金额",
+        "status": "状态",
+        "issuedAt": "开具时间",
+        "type": "类型",
+        "objet": "事由",
+        "totalTtc": "含税总额",
+        "linkedExpense": "关联 FD",
+        "created": "创建于"
+      },
+      "empty": "暂无采购订单。",
+      "new": {
+        "title": "新建采购订单 / 合同",
+        "back": "← 返回",
+        "sections": {
+          "identification": "基本信息",
+          "deliveryConditions": "交付与条款",
+          "receptionRequired": "需收货确认(规范 §6.4)"
+        },
+        "fields": {
+          "type": "类型 *",
+          "entity": "主体 *",
+          "entityPlaceholder": "-- 选择主体 --",
+          "project": "项目(可选)",
+          "projectNone": "-- 无 --",
+          "linkedRequest": "关联申请(已批准 FD)",
+          "linkedRequestNone": "-- 无 --",
+          "supplier": "供应商 *",
+          "supplierPlaceholder": "-- 选择供应商 --",
+          "objet": "事由 *",
+          "description": "说明",
+          "deliveryLocation": "交货地点",
+          "deliveryDeadline": "截止日期",
+          "currency": "币种",
+          "incoterm": "Incoterm(进口时)",
+          "paymentTerms": "付款条件",
+          "paymentTermsPlaceholder": "例如:验收 + 收货单 + 合规发票后 100% 支付",
+          "depositPercent": "预付款比例 (%)",
+          "warrantyMonths": "保修期(月)",
+          "penaltyPerDay": "逾期违约金/天",
+          "requiresReceptionPv": "收货确认单",
+          "requiresServiceDone": "服务完成确认单",
+          "requiresWorkAttachment": "工程量清单"
+        },
+        "typeOptions": {
+          "BC": "BC - 采购订单",
+          "CONTRACT": "CONTRACT - 合同 / 服务"
+        },
+        "submit": "创建采购订单(草稿)",
+        "cancel": "取消"
+      },
+      "detail": {
+        "back": "← 返回列表",
+        "fdPrefix": "FD:",
+        "tiles": {
+          "status": "状态",
+          "totalTtc": "含税总额",
+          "supplier": "供应商",
+          "ribSnapshot": "账号快照",
+          "ribOk": "正常",
+          "ribMissing": "缺少账号快照 - 付款受阻"
+        },
+        "items": {
+          "title": "订单明细",
+          "count": "共 {count} 条",
+          "columns": {
+            "position": "序号",
+            "description": "名称",
+            "quantity": "数量",
+            "unit": "单位",
+            "unitPriceHt": "未税单价",
+            "totalHt": "未税合计"
+          },
+          "empty": "暂无明细。",
+          "remove": "删除",
+          "addLineHeader": "+ 新增一行",
+          "placeholders": {
+            "position": "序号",
+            "description": "名称",
+            "quantity": "数量",
+            "unit": "单位",
+            "unitPrice": "未税单价"
+          }
+        },
+        "workflow": {
+          "title": "签字流程",
+          "chainLabel": "链路",
+          "chainOk": "正常(共 {count} 条)",
+          "signedBy": "由 {actor} 于 {date} 签字",
+          "pending": "待处理",
+          "ok2": "通过",
+          "waiting": "等待"
+        },
+        "actions": {
+          "title": "操作",
+          "submit": "提交签字",
+          "signStage": "签字 {stage}",
+          "signComment": "评论(可选,记入哈希)",
+          "send": "发送给供应商",
+          "cancelReason": "取消原因",
+          "cancel": "取消订单",
+          "lockedHelp": "提交后订单锁定。签字后的修改需通过补充协议流程(打磨阶段交付)。"
+        }
+      }
+    },
+    "receptions": {
+      "title": "收货单(模板 4)",
+      "subtitle": "OPS → TECH → FINANCE 流程。「无收货单 = 无终款」(规范 §4.1)。",
+      "newCta": "新建收货单",
+      "columns": {
+        "ref": "编号",
+        "po": "关联订单",
+        "supplier": "供应商",
+        "receivedAt": "收货日期",
+        "status": "状态",
+        "type": "类型"
+      },
+      "empty": "暂无收货单。请从已签字的订单页面创建。",
+      "new": {
+        "title": "新建收货单",
+        "back": "← 返回",
+        "fields": {
+          "po": "关联订单 *",
+          "poPlaceholder": "-- 已签 / 已发出的订单 --",
+          "type": "收货类型 *",
+          "receptionDate": "收货日期",
+          "location": "地点",
+          "requiresTechnical": "需技术验收(技术性物品建议勾选)"
+        },
+        "typeOptions": {
+          "GOODS": "货物收货",
+          "SERVICE_DONE": "服务完成",
+          "WORK_ATTACHMENT": "工程量清单"
+        },
+        "help": "明细将从订单自动预填。您可调整实收数量并在签字前标记不合格项。",
+        "submit": "创建收货单(草稿)",
+        "cancel": "取消"
+      },
+      "detail": {
+        "back": "← 返回列表",
+        "headerLine": "{entity} - 订单:{ref}({supplier})",
+        "tiles": {
+          "status": "状态",
+          "type": "类型",
+          "reserves": "保留意见",
+          "yes": "有",
+          "no": "无"
+        },
+        "items": {
+          "title": "收货明细",
+          "columns": {
+            "position": "序号",
+            "description": "名称",
+            "quantityExpected": "应收数量",
+            "quantityReceived": "实收数量",
+            "compliant": "合格",
+            "observations": "备注"
+          },
+          "compliantYes": "是",
+          "compliantNo": "否",
+          "compliantLabel": "合格",
+          "observationsPlaceholder": "备注",
+          "saveCta": "确定"
+        },
+        "workflow": {
+          "title": "签字",
+          "chainLabel": "链路",
+          "chainOk": "正常(共 {count} 条)",
+          "chainKo": "异常",
+          "waiting": "等待中",
+          "signedLine": "{actor} - {date}"
+        },
+        "actions": {
+          "title": "操作",
+          "signStage": "签字 {stage}",
+          "signComment": "评论(可选)",
+          "rejectReason": "驳回原因",
+          "reject": "驳回"
+        }
+      }
+    },
+    "invoices": {
+      "title": "发票",
+      "subtitle": "供应商已开具发票及其付款流程。",
+      "listTitle": "发票与红字发票",
+      "listSubtitle": "三单匹配（采购订单 vs 收货单 vs 发票）+ “无收货单 = 不付款”原则（合规框架 §4.1, §5）。",
+      "newCta": "新建发票",
+      "newCtaWithPlus": "+ 新建发票",
+      "filters": {
+        "allStatuses": "-- 全部状态 --",
+        "allTypes": "-- 全部类型 --",
+        "apply": "筛选"
+      },
+      "columns": {
+        "ref": "发票号",
+        "reference": "编号",
+        "type": "类型",
+        "supplier": "供应商",
+        "entity": "主体",
+        "poPv": "订单 / 收货",
+        "amount": "含税金额",
+        "totalTtc": "含税合计",
+        "dueDate": "到期日",
+        "status": "状态",
+        "date": "日期"
+      },
+      "empty": "暂无发票。",
+      "emptyShort": "暂无发票。",
+      "poLabel": "订单：",
+      "pvLabel": "收货：",
+      "new": {
+        "title": "新建发票",
+        "titleFull": "新建发票 / 红字发票",
+        "back": "返回发票列表",
+        "backShort": "返回",
+        "sections": {
+          "identification": "基本信息",
+          "invoice": "发票"
+        },
+        "options": {
+          "none": "-- 无 --",
+          "noneMasc": "-- 无 --",
+          "entityPlaceholder": "-- 主体 --",
+          "supplierPlaceholder": "-- 供应商 --",
+          "standard": "STANDARD（发票）",
+          "creditNote": "CREDIT_NOTE（红字发票）",
+          "deposit": "DEPOSIT（定金）",
+          "advance": "ADVANCE（预付款）"
+        },
+        "fields": {
+          "type": "类型 *",
+          "originalInvoice": "原发票（若为红字）",
+          "entity": "主体 *",
+          "supplier": "供应商 *",
+          "po": "关联采购订单（三单匹配）",
+          "reception": "收货单",
+          "number": "发票号",
+          "numberRequired": "发票号 *",
+          "issueDate": "开具日期",
+          "invoiceDate": "发票日期 *",
+          "dueDate": "到期日",
+          "dueDateShort": "到期日",
+          "amount": "含税金额",
+          "subtotalHt": "不含税小计 *",
+          "taxAmount": "增值税 / 税额",
+          "retentionAmount": "扣留款",
+          "totalTtc": "含税合计 *",
+          "currency": "币种",
+          "taxRate": "税率（%）",
+          "taxLabel": "税目说明"
+        },
+        "taxLabelPlaceholder": "例：多哥增值税 18%",
+        "submit": "保存发票",
+        "cancel": "取消"
+      },
+      "detail": {
+        "back": "返回发票列表",
+        "backShort": "列表",
+        "creditBadge": "红字",
+        "section": {
+          "summary": "概要",
+          "lines": "明细",
+          "linesTitle": "发票明细",
+          "history": "历史",
+          "links": "三单关联",
+          "threeWay": "三单匹配",
+          "discrepancies": "检测到差异",
+          "creditNotes": "关联红字发票（{count}）",
+          "actions": "操作"
+        },
+        "kpi": {
+          "status": "状态",
+          "totalTtc": "含税合计",
+          "amountDue": "应付余额",
+          "paymentEligible": "可付款",
+          "yes": "是",
+          "no": "否"
+        },
+        "linksInfo": {
+          "po": "采购订单",
+          "reception": "收货单",
+          "missing": "缺失",
+          "missingBlocked": "缺失 — 付款受阻"
+        },
+        "threeWay": {
+          "notRun": "尚未执行。",
+          "quantities": "数量",
+          "prices": "单价",
+          "total": "合计",
+          "ok": "✓ 通过",
+          "ko": "✗ 不通过",
+          "checkedAt": "校验时间 {date}"
+        },
+        "lines": {
+          "empty": "暂无明细。三单匹配需要明细。",
+          "columns": {
+            "position": "序号",
+            "description": "说明",
+            "quantity": "数量",
+            "unitPrice": "单价",
+            "totalHt": "不含税合计"
+          },
+          "placeholders": {
+            "position": "序号",
+            "description": "说明",
+            "quantity": "数量",
+            "unitPrice": "单价"
+          },
+          "addCta": "+ 新增明细"
+        },
+        "creditNotes": {
+          "columns": {
+            "reference": "编号",
+            "date": "日期",
+            "amount": "金额",
+            "status": "状态"
+          }
+        },
+        "actions": {
+          "validate": "审核发票",
+          "schedulePayment": "安排付款",
+          "downloadPdf": "下载 PDF",
+          "runMatch": "执行三单匹配",
+          "approveForPayment": "批准付款",
+          "disputePlaceholder": "争议原因",
+          "markDisputed": "标记为 DISPUTED"
+        }
+      }
+    },
+    "payments": {
+      "title": "付款",
+      "subtitle": "本范围内已发起及预排的付款。",
+      "listTitle": "付款与资金",
+      "listSubtitle": "银行账户反欺诈 + 双重审批 + 强制银行凭证（合规框架 §5 第7步 + §8）。",
+      "newCta": "新建付款",
+      "newCtaWithPlus": "+ 新建付款",
+      "filters": {
+        "allStatuses": "-- 全部状态 --",
+        "apply": "筛选"
+      },
+      "kpi": {
+        "executed": "已执行",
+        "scheduled": "已排期",
+        "futureCommitments": "未来承付",
+        "totalCommitted": "总承付"
+      },
+      "columns": {
+        "ref": "编号",
+        "reference": "编号",
+        "supplier": "供应商",
+        "invoice": "发票",
+        "beneficiary": "收款人",
+        "amount": "金额",
+        "scheduledAt": "排期日",
+        "scheduledOrExecuted": "排期 / 执行",
+        "status": "状态"
+      },
+      "empty": "暂无排期付款。",
+      "emptyShort": "暂无付款。",
+      "scheduledPrefix": "排期",
+      "executedPrefix": "执行",
+      "new": {
+        "title": "新建付款",
+        "back": "返回付款列表",
+        "backShort": "返回",
+        "fields": {
+          "invoice": "发票",
+          "invoiceToPay": "待付发票 *",
+          "supplier": "供应商",
+          "beneficiaryBank": "收款银行账户 *",
+          "amount": "金额",
+          "amountRequired": "金额 *",
+          "currency": "币种",
+          "method": "付款方式",
+          "methodRequired": "方式 *",
+          "scheduledAt": "排期日",
+          "scheduledDate": "计划日期",
+          "bankAccount": "付款账户"
+        },
+        "options": {
+          "invoicePlaceholder": "-- 已审批发票 --",
+          "bankPlaceholder": "-- 银行账户 --",
+          "pvNotDefinitive": "（收货单非正式！）",
+          "notVerified": "（未核验）",
+          "quarantine": "（隔离中）",
+          "remaining": "余额"
+        },
+        "submit": "排期付款",
+        "submitDraft": "创建付款（草稿）",
+        "cancel": "取消"
+      },
+      "detail": {
+        "back": "返回付款列表",
+        "backShort": "列表",
+        "beneficiaryLabel": "收款人：",
+        "invoiceLabel": "发票：",
+        "section": {
+          "summary": "概要",
+          "history": "历史",
+          "ribSnapshot": "收款账户（快照）",
+          "bankProof": "银行凭证",
+          "workflow": "签批流程",
+          "actions": "操作"
+        },
+        "kpi": {
+          "status": "状态",
+          "amount": "金额",
+          "ribUsable": "账户可用",
+          "reception": "收货单",
+          "yes": "是",
+          "no": "否",
+          "none": "无"
+        },
+        "rib": {
+          "bank": "开户行",
+          "holder": "户名",
+          "ibanRib": "IBAN / 账号",
+          "verifiedAt": "核验时间"
+        },
+        "proof": {
+          "swift": "SWIFT",
+          "transaction": "交易号",
+          "executedAt": "执行时间",
+          "proof": "凭证",
+          "download": "下载"
+        },
+        "workflow": {
+          "chainOk": "签批链：通过（{count}）",
+          "chainKo": "签批链：失败",
+          "signedBy": "{actor} 于 {date} 签批",
+          "pending": "待签批"
+        },
+        "actions": {
+          "execute": "标记为已执行",
+          "downloadPdf": "下载 PDF",
+          "submit": "提交反欺诈与签批",
+          "sign": "签批",
+          "commentPlaceholder": "备注",
+          "executePayment": "执行付款（限速 5/分钟）",
+          "swiftPlaceholder": "SWIFT 编号 *",
+          "transactionPlaceholder": "交易号 *",
+          "proofUrlPlaceholder": "银行凭证 URL（可选）",
+          "reconcile": "标记为已核销",
+          "cancelReasonPlaceholder": "取消原因",
+          "cancelPayment": "取消付款"
+        }
+      }
+    },
+    "cashForecast": {
+      "title": "13 周现金预测",
+      "subtitle": "滚动预测：期初 + 流入 - 流出 = 每周期末（框架 §3.5）。如预计资金缺口将通知财务总监。",
+      "noEntityAccessible": "暂无可访问的主体。",
+      "errorFallback": "操作失败",
+      "loadButton": "加载",
+      "filters": {
+        "entity": "主体",
+        "scenario": "方案",
+        "currency": "币种"
+      },
+      "columns": {
+        "week": "周",
+        "inflow": "流入",
+        "outflow": "流出",
+        "net": "净额",
+        "cumulative": "累计头寸"
+      },
+      "empty": "暂无预测数据。",
+      "actions": {
+        "refresh": "重新计算",
+        "export": "导出"
+      },
+      "kpi": {
+        "openingCash": "期初现金",
+        "closingMin": "W0-W12 期末最低",
+        "weeksInRupture": "资金缺口周数",
+        "ruptureHorizon": "缺口出现时间",
+        "ruptureOk": "正常",
+        "ruptureDay": "D+{days}"
+      },
+      "heatmap": {
+        "title": "13 周热力图",
+        "weekHeader": "周",
+        "opening": "期初",
+        "inflows": "+ 流入",
+        "outflows": "- 流出",
+        "closing": "= 期末"
+      },
+      "forms": {
+        "setOpening": {
+          "title": "设置期初现金",
+          "amountPlaceholder": "金额",
+          "submit": "更新"
+        },
+        "addInflow": {
+          "title": "添加预计流入",
+          "labelPlaceholder": "摘要（如：客户 X 回款）",
+          "amountPlaceholder": "金额",
+          "submit": "+ 添加流入"
+        },
+        "detect": {
+          "title": "缺口检测",
+          "description": "运行分析 + 创建异常 + 若预计 D+15 内出现缺口通知财务总监／司库。若缺口在 14 天内，严重程度为 CRITICAL。",
+          "submit": "运行检测"
+        }
+      }
+    },
+    "accounting": {
+      "title": "会计",
+      "subtitle": "月度期间 + 由付款／发票自动生成的分录（框架 §5 步骤 8）。关账 = 追溯性锁定。",
+      "errorFallback": "操作失败",
+      "filters": {
+        "entity": "主体",
+        "period": "期间",
+        "journal": "凭证账"
+      },
+      "columns": {
+        "date": "日期",
+        "journal": "凭证账",
+        "ref": "凭证号",
+        "label": "摘要",
+        "debit": "借方",
+        "credit": "贷方",
+        "status": "状态"
+      },
+      "empty": "本期间暂无分录。",
+      "periods": {
+        "sectionTitle": "开启 / 关闭期间",
+        "open": {
+          "title": "开启",
+          "entityPlaceholder": "-- 主体 --",
+          "submit": "开启"
+        },
+        "close": {
+          "title": "关闭",
+          "entityPlaceholder": "-- 主体 --",
+          "submit": "关闭",
+          "warning": "所有 DRAFT 分录必须先过账或删除。"
+        },
+        "list": {
+          "title": "期间（{count}）",
+          "columns": {
+            "entity": "主体",
+            "year": "年度",
+            "month": "月份",
+            "status": "状态",
+            "entries": "分录",
+            "export": "导出"
+          },
+          "empty": "暂无期间。请通过上方表单创建。",
+          "statusClosed": "于 {date} 关闭",
+          "statusOpen": "开启中"
+        }
+      },
+      "recent": {
+        "title": "最近 10 条分录",
+        "viewAll": "查看全部",
+        "columns": {
+          "reference": "编号",
+          "entity": "主体",
+          "journal": "凭证账",
+          "date": "日期",
+          "amount": "金额",
+          "status": "状态"
+        },
+        "empty": "暂无分录。"
+      },
+      "entry": {
+        "back": "返回分录列表",
+        "title": "分录 {ref}",
+        "headerDescription": "{description} - 凭证账 {journal}",
+        "backShort": "会计",
+        "periodClosed": "已关闭",
+        "periodOpen": "开启中",
+        "kpi": {
+          "status": "状态",
+          "period": "期间",
+          "totalDebit": "借方合计",
+          "balance": "平衡",
+          "balanceOk": "OK",
+          "balanceKo": "KO"
+        },
+        "lines": {
+          "title": "明细（{count}）",
+          "columns": {
+            "position": "序号",
+            "account": "科目",
+            "label": "摘要",
+            "debit": "借方",
+            "credit": "贷方"
+          },
+          "total": "合计"
+        },
+        "actionsTitle": "操作",
+        "postButton": "过账（不可撤销）",
+        "generatedFromPayment": "由付款生成",
+        "section": {
+          "summary": "概要",
+          "lines": "明细",
+          "audit": "审计"
+        }
+      }
+    },
+    "anomalies": {
+      "title": "异常",
+      "subtitle": "自动检测：发票重复、付款拆分、缺失收货单、DRAFT 超过 30 天、重复加急、可疑银行账号（框架 §13）。",
+      "errorFallback": "操作失败",
+      "runChecks": "运行控制",
+      "filters": {
+        "severity": "严重程度",
+        "type": "类型",
+        "status": "状态",
+        "allStatuses": "-- 全部状态 --",
+        "allSeverities": "-- 全部严重程度 --",
+        "allTypes": "-- 全部类型 --",
+        "submit": "筛选"
+      },
+      "columns": {
+        "ref": "编号",
+        "type": "类型",
+        "severity": "严重程度",
+        "title": "标题",
+        "entity": "主体",
+        "status": "状态",
+        "assignee": "处理人",
+        "detectedAt": "发现时间"
+      },
+      "empty": "暂无异常。请运行控制进行扫描。",
+      "severity": {
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "critical": "严重"
+      },
+      "detail": {
+        "back": "返回异常列表",
+        "backShort": "列表",
+        "kpi": {
+          "severity": "严重程度",
+          "type": "类型",
+          "status": "状态",
+          "detected": "发现时间"
+        },
+        "description": {
+          "title": "描述",
+          "rule": "规则",
+          "evidence": "证据（JSON）"
+        },
+        "linkedResources": {
+          "title": "关联资源",
+          "expenseRequest": "申请单",
+          "invoice": "发票",
+          "payment": "付款",
+          "supplier": "供应商"
+        },
+        "assignedTo": "处理人",
+        "resolution": {
+          "title": "处理结果",
+          "resolvedAt": "于 {date} 解决"
+        },
+        "assign": {
+          "title": "分配",
+          "placeholder": "-- 处理人（内控／财务总监／管理员）--",
+          "submit": "分配"
+        },
+        "resolve": {
+          "title": "解决",
+          "placeholder": "调查过程及结论",
+          "submit": "解决",
+          "falsePositive": "误报",
+          "sanction": "申请处罚"
+        },
+        "section": {
+          "summary": "概要",
+          "context": "上下文",
+          "remediation": "整改计划"
+        },
+        "actions": {
+          "resolve": "解决",
+          "escalate": "升级",
+          "ignore": "忽略"
+        }
+      }
+    },
+    "audit": {
+      "title": "审计",
+      "subtitle": "合并的审计日志 — 用户和系统操作。",
+      "headerTitle": "审计日志",
+      "headerSubtitle": "仅追加,采用 SHA-256 链式校验。可通过以下方式验证",
+      "filterPlaceholders": {
+        "entityType": "entityType (例如 User)",
+        "entityId": "entityId (cuid)",
+        "action": "操作包含..."
+      },
+      "filterSubmit": "筛选",
+      "chains": {
+        "title": "校验链路完整性"
+      },
+      "table": {
+        "date": "时间",
+        "action": "操作",
+        "actor": "操作人",
+        "target": "对象",
+        "hash": "哈希",
+        "empty": "暂无条目。",
+        "systemActor": "系统"
+      },
+      "footer": "仅显示最近 100 条记录。分页 + CSV 导出:第 9 期 (M13)。",
+      "filters": {
+        "actor": "操作人",
+        "action": "操作",
+        "entityType": "对象类型",
+        "period": "期间"
+      },
+      "columns": {
+        "timestamp": "时间戳",
+        "actor": "操作人",
+        "action": "操作",
+        "entity": "对象",
+        "ip": "IP"
+      },
+      "empty": "本期间暂无事件。"
+    },
+    "offerComparisons": {
+      "title": "报价比对(模板一)",
+      "subtitle": "对 2-3 份报价进行比对并附理由充分的推荐(框架第 6 节)。",
+      "newCta": "+ 新建比对",
+      "columns": {
+        "ref": "编号",
+        "entity": "主体",
+        "request": "关联申请",
+        "offers": "报价数",
+        "status": "状态",
+        "createdAt": "创建时间"
+      },
+      "empty": "暂无比对。",
+      "new": {
+        "title": "新建报价比对",
+        "back": "返回",
+        "fields": {
+          "entity": "主体 *",
+          "entityPlaceholder": "-- 主体 --",
+          "project": "项目(可选)",
+          "projectPlaceholder": "-- 无 --",
+          "request": "关联申请(可选)",
+          "requestPlaceholder": "-- 无 --",
+          "technicalSpecs": "技术规格",
+          "desiredDelay": "期望交付周期",
+          "paymentTerms": "付款条件",
+          "warrantyRequired": "需要质保",
+          "warrantyMonths": "质保(月)",
+          "penaltyClause": "违约金条款",
+          "criteria": "评估标准"
+        },
+        "submit": "创建比对"
+      },
+      "detail": {
+        "headerTitle": "比对 {reference}",
+        "back": "← 列表",
+        "status": "状态",
+        "createdAt": "创建于 {date}",
+        "offersTitle": "已收到报价({count})",
+        "offersColumns": {
+          "supplier": "供应商",
+          "priceHt": "不含税价",
+          "priceTtc": "含税价",
+          "delay": "交付周期",
+          "techOk": "技术合格",
+          "autoScore": "自动评分"
+        },
+        "offersEmpty": "暂无报价,请至少添加 2 份。",
+        "techOkYes": "是",
+        "techOkNo": "否",
+        "recommendedBadge": "已推荐",
+        "addOffer": {
+          "title": "添加报价",
+          "supplierPlaceholder": "-- 供应商 --",
+          "referencePlaceholder": "报价单编号",
+          "priceHtPlaceholder": "不含税价",
+          "priceTtcPlaceholder": "含税价",
+          "taxAmountPlaceholder": "税额",
+          "deliveryDelayPlaceholder": "交付周期",
+          "warrantyPlaceholder": "质保",
+          "technicallyCompliant": "技术合格",
+          "immediatelyAvailable": "可即时供货",
+          "observationsPlaceholder": "备注",
+          "submit": "添加报价"
+        },
+        "recommendation": {
+          "title": "推荐",
+          "offerPlaceholder": "-- 推荐报价 --",
+          "justificationPlaceholder": "理由(至少 30 个字符):为何选择该报价而非其他?",
+          "submit": "确定推荐"
+        },
+        "actions": {
+          "title": "操作",
+          "submit": "提交审批",
+          "approve": "批准",
+          "reject": "驳回",
+          "selectOffer": "选择此报价",
+          "validate": "确认选择"
+        },
+        "section": {
+          "summary": "概要",
+          "offers": "报价",
+          "scoring": "评分",
+          "recommendation": "推荐"
+        }
+      },
+      "errors": {
+        "fallback": "操作失败"
+      }
+    },
+    "soleSourceJustifications": {
+      "title": "单一来源说明",
+      "subtitle": "针对非招标采购的说明记录。",
+      "newCta": "新建说明",
+      "columns": {
+        "ref": "编号",
+        "request": "申请",
+        "supplier": "供应商",
+        "amount": "金额",
+        "status": "状态"
+      },
+      "empty": "暂无说明。",
+      "new": {
+        "title": "单一来源说明(模板二)",
+        "subtitle": "豁免三家比价规则(框架第 6 节),必须提供书面说明。",
+        "back": "返回说明列表",
+        "fields": {
+          "request": "关联支出申请 *",
+          "requestPlaceholder": "-- 申请 --",
+          "reason": "原因 *",
+          "reasonPlaceholder": "-- 原因 --",
+          "otherReason": "若选择\"其他\",请说明",
+          "estimatedAmount": "预计金额 *",
+          "currency": "币种",
+          "justification": "详细说明 *(至少 50 个字符)",
+          "supplier": "供应商"
+        },
+        "reasons": {
+          "monopoly": "垄断 / 技术独占",
+          "urgencyCritical": "紧急情况(停机 / 安全环保 / 法律)",
+          "technicalCompatibility": "技术兼容 / 系统连续性",
+          "contractualRequirement": "合同 / 质保指定供应商",
+          "other": "其他"
+        },
+        "safeguards": {
+          "legend": "风险管控措施(批准时至少需满足 4 项中的 2 项)",
+          "negotiatedPrice": "价格谈判 / 已获折扣",
+          "reinforcedPaymentTerms": "强化付款条款(验收后结算)",
+          "warrantyOrPenalty": "采购单已包含质保 / 违约金条款",
+          "reinforcedReception": "加强验收检查"
+        },
+        "submit": "创建说明",
+        "cancel": "取消"
+      },
+      "detail": {
+        "subtitle": "单一来源说明 - 模板二(框架第 6 节)",
+        "back": "← 申请列表",
+        "statusLabel": "状态",
+        "statusApproved": "已批准",
+        "statusPending": "待审批",
+        "estimatedAmount": "预计金额",
+        "safeguardsLabel": "风险管控措施",
+        "safeguardsCount": "{count} / 4(最少 2 项)",
+        "reason": "原因",
+        "justification": "说明",
+        "safeguardsChecked": "已勾选的风险管控措施",
+        "safeguardItems": {
+          "negotiatedPrice": "价格谈判 / 折扣",
+          "reinforcedPaymentTerms": "强化付款条款",
+          "warrantyOrPenalty": "已包含质保 / 违约金",
+          "reinforcedReception": "加强验收"
+        },
+        "approvedBy": "由 {actor} 于 {date} 批准。",
+        "systemActor": "系统",
+        "approveCta": "批准(财务总监 / 集团财务 / 总经理)",
+        "approveHint": "至少勾选 2 项风险管控措施后方可批准。",
+        "section": {
+          "summary": "概要",
+          "justification": "说明",
+          "history": "历史"
+        },
+        "actions": {
+          "approve": "批准",
+          "reject": "驳回"
+        }
+      },
+      "errors": {
+        "fallback": "操作失败"
+      }
+    },
+    "settings": {
+      "title": "设置",
+      "subtitle": "配置范围、访问权限和主数据。",
+      "tabs": {
+        "users": "用户",
+        "memberships": "成员关系",
+        "entities": "主体",
+        "projects": "项目",
+        "chartAccounts": "会计科目",
+        "thresholds": "阈值与控制"
+      },
+      "users": {
+        "title": "用户",
+        "addCta": "邀请用户",
+        "columns": {
+          "name": "姓名",
+          "email": "邮箱",
+          "status": "状态",
+          "lastLogin": "最近登录",
+          "actions": "操作",
+          "nameEmail": "姓名 / 邮箱",
+          "activeRoles": "在用角色"
+        },
+        "empty": "暂无用户。",
+        "actions": {
+          "deactivate": "停用",
+          "reactivate": "启用",
+          "resetPassword": "重置密码"
+        },
+        "subtitle": "邀请、查看、停用。所有操作均记入审计日志。",
+        "invite": {
+          "title": "邀请用户",
+          "description": "将通过魔法链接发送邀请邮件。用户首次登录时设置密码。",
+          "fullNamePlaceholder": "姓名",
+          "emailPlaceholder": "email@reliancewestafrica.com",
+          "entityPlaceholder": "-- 主体 --",
+          "submit": "邀请"
+        },
+        "info": {
+          "invited": "邀请已发送(开发环境请检查 Mailhog)。",
+          "createdNoEmail": "用户已创建,但邮件发送失败。"
+        },
+        "status": {
+          "deactivated": "已停用",
+          "invitedNoPassword": "已邀请(尚未设置密码)",
+          "emailNotVerified": "邮箱未验证",
+          "active": "启用"
+        },
+        "rolesNone": "无",
+        "lastLoginNever": "从未",
+        "unnamed": "(未命名)",
+        "errors": {
+          "failure": "操作失败"
+        }
+      },
+      "memberships": {
+        "title": "角色与主体",
+        "addCta": "新增关系",
+        "columns": {
+          "user": "用户",
+          "entity": "主体",
+          "role": "角色",
+          "status": "状态"
+        },
+        "empty": "暂无在用角色。",
+        "subtitle": "一名用户可在多个主体上拥有不同角色(例如:集团审计 + 多哥财务总监)。",
+        "addSection": "新增角色",
+        "form": {
+          "userPlaceholder": "-- 用户 --",
+          "entityPlaceholder": "-- 主体 --",
+          "rolePlaceholder": "-- 角色 --",
+          "submit": "新增"
+        },
+        "actions": {
+          "revoke": "撤销"
+        },
+        "errors": {
+          "failure": "操作失败"
+        }
+      },
+      "entities": {
+        "title": "集团主体",
+        "addCta": "新建主体",
+        "columns": {
+          "code": "编号",
+          "name": "名称",
+          "kind": "类型",
+          "country": "国家",
+          "status": "状态",
+          "parent": "上级",
+          "countryCurrency": "国家 / 币种",
+          "relations": "子主体 / 项目 / 供应商",
+          "createdAt": "创建"
+        },
+        "empty": "暂无主体。",
+        "subtitle": "控股 → 子公司 → SPV 层级。所有创建均记入日志(框架 §2.2 + §12)。",
+        "kind": {
+          "HOLDING": "控股公司",
+          "SUBSIDIARY": "子公司",
+          "SPV": "SPV / 项目载体"
+        },
+        "edit": {
+          "heading": "编辑 {code}",
+          "name": "名称",
+          "country": "国家(ISO 3166-1 alpha-2)",
+          "countryPlaceholder": "TG",
+          "defaultCurrency": "默认币种",
+          "rccm": "RCCM",
+          "ifu": "IFU / 税号",
+          "address": "地址",
+          "save": "保存",
+          "cancel": "取消"
+        },
+        "create": {
+          "heading": "新建主体",
+          "code": "编号(唯一,大写)",
+          "codePlaceholder": "BENIN, CIV1, SPV-LOME-2",
+          "name": "全名",
+          "namePlaceholder": "Reliance Benin SARL",
+          "kind": "类型",
+          "parent": "上级主体(控股除外)",
+          "parentPlaceholder": "-- 无(控股)--",
+          "country": "国家(ISO 2 位)",
+          "countryPlaceholder": "TG",
+          "defaultCurrency": "默认币种",
+          "submit": "创建主体"
+        },
+        "actions": {
+          "edit": "编辑",
+          "archive": "归档",
+          "archived": "已归档",
+          "archiveReason": "通过 /settings/entities 手动归档"
+        },
+        "errors": {
+          "failure": "操作失败"
+        }
+      },
+      "projects": {
+        "title": "项目与成本中心",
+        "addCta": "新建项目",
+        "columns": {
+          "code": "编号",
+          "name": "名称",
+          "entity": "主体",
+          "status": "状态"
+        },
+        "empty": "暂无项目。",
+        "subtitle": "支出的预算归属(框架 §2.1)。",
+        "sections": {
+          "projects": "项目",
+          "costCenters": "成本中心"
+        },
+        "projectForm": {
+          "entityPlaceholder": "-- 主体 --",
+          "codePlaceholder": "编号(例 CIDPE)",
+          "namePlaceholder": "项目全名",
+          "budgetPlaceholder": "预算",
+          "descriptionPlaceholder": "描述(可选)",
+          "submit": "创建项目"
+        },
+        "projectColumns": {
+          "entity": "主体",
+          "code": "编号",
+          "name": "名称",
+          "budget": "预算",
+          "relations": "成本中心 / 申请"
+        },
+        "projectEmpty": "暂无项目。",
+        "costCenterForm": {
+          "entityPlaceholder": "-- 主体 --",
+          "projectPlaceholder": "-- 项目(可选)--",
+          "codePlaceholder": "编号(CC-ADMIN)",
+          "namePlaceholder": "名称",
+          "submit": "新增"
+        },
+        "costCenterColumns": {
+          "entity": "主体",
+          "project": "项目",
+          "code": "编号",
+          "label": "名称"
+        },
+        "costCenterEmpty": "暂无成本中心。",
+        "actions": {
+          "archive": "归档",
+          "archived": "已归档"
+        },
+        "errors": {
+          "failure": "操作失败"
+        }
+      },
+      "chartAccounts": {
+        "title": "SYSCOHADA 会计科目表",
+        "addCta": "新建科目",
+        "columns": {
+          "code": "编码",
+          "label": "名称",
+          "type": "类型",
+          "status": "状态",
+          "class": "类别"
+        },
+        "empty": "暂无科目。运行 `pnpm db:seed` 以加载初始 SYSCOHADA 科目表。",
+        "subtitle": "无需修改代码即可扩展。1-7 类依据 SYSCOHADA 修订版(§12,符合 OHADA)。",
+        "typeLabels": {
+          "ASSET": "资产",
+          "LIABILITY": "负债",
+          "EQUITY": "所有者权益",
+          "INCOME": "收入",
+          "EXPENSE": "费用"
+        },
+        "form": {
+          "heading": "新增科目",
+          "codePlaceholder": "编码(例 605100)",
+          "labelPlaceholder": "名称",
+          "classCodePlaceholder": "类别",
+          "typePlaceholder": "-- 类型 --",
+          "classNamePlaceholder": "类别名称",
+          "submit": "新增"
+        },
+        "filters": {
+          "all": "全部",
+          "class": "{code} 类 — {name}"
+        },
+        "status": {
+          "active": "启用",
+          "inactive": "停用"
+        },
+        "actions": {
+          "deactivate": "停用",
+          "reactivate": "启用"
+        },
+        "errors": {
+          "failure": "操作失败"
+        }
+      },
+      "thresholds": {
+        "title": "审批阈值",
+        "addCta": "新建阈值",
+        "columns": {
+          "name": "名称",
+          "scope": "范围",
+          "value": "数值",
+          "status": "状态"
+        },
+        "empty": "暂无阈值配置。",
+        "subtitle": "按 effectiveFrom 进行版本管理。每次修改都会新增条目并关闭上一条;进行中的事项保留原阈值,新建事项使用当前在用阈值(框架 §5)。",
+        "typeLabels": {
+          "FILIALE_N2_REQUIRED_ABOVE": "超过此金额需子公司二级会签",
+          "GROUPE_REQUIRED_ABOVE": "超过此金额需集团财务会签",
+          "AG_REQUIRED_ABOVE": "超过此金额需股东会授权",
+          "CASH_PAYMENT_MAX": "现金支付上限",
+          "ADVANCE_MAX_PERCENT": "最大预付款比例(%)",
+          "URGENCY_MAX_AMOUNT": "紧急程序上限",
+          "URGENCY_REGULARIZATION_HOURS": "紧急事项补办最长延时(小时)",
+          "THREE_OFFERS_REQUIRED_ABOVE": "超过此金额需三方比价",
+          "PROVIDER_ONBOARDING_REQUIRED_ABOVE": "超过此金额需完整供应商准入"
+        },
+        "form": {
+          "heading": "新增或替换阈值",
+          "hint": "若(类型,主体)已有在用阈值,将自动关闭(effectiveTo = 当前)。",
+          "typePlaceholder": "-- 阈值类型 --",
+          "entityGlobal": "全局(所有主体)",
+          "amountPlaceholder": "金额(XOF)",
+          "valuePlaceholder": "或数值(小时、%)",
+          "descriptionPlaceholder": "描述(可选)",
+          "submit": "创建 / 替换阈值"
+        },
+        "list": {
+          "heading": "在用阈值与历史",
+          "empty": "暂无阈值。运行 `pnpm db:seed` 以加载默认值。",
+          "scopeGlobal": "全局",
+          "activeSince": "自 {date} 起在用",
+          "historyToggleOne": "历史({count} 个版本)",
+          "historyToggleOther": "历史({count} 个版本)",
+          "historyRangeOpen": "{value} — 自 {from} 起",
+          "historyRangeClosed": "{value} — 自 {from} 至 {to}"
+        },
+        "actions": {
+          "deactivate": "停用"
+        },
+        "units": {
+          "percent": "%",
+          "hours": "小时"
+        },
+        "errors": {
+          "failure": "操作失败"
+        }
+      },
+      "sidebar": {
+        "heading": "设置",
+        "users": "用户",
+        "memberships": "角色",
+        "entities": "主体",
+        "projects": "项目与成本中心",
+        "thresholds": "阈值",
+        "chartAccounts": "SYSCOHADA 科目表"
+      }
+    }
+  }
+}

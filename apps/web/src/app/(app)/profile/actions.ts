@@ -1,17 +1,25 @@
 'use server';
 
 import { z } from 'zod';
+import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 
 import { prisma } from '@reliance-finance/database';
 import { auth } from '@/lib/auth';
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 import { getRequestActorContext } from '@/lib/audit/actor-context';
+import { isSupportedLocale, LOCALE_COOKIE } from '@/i18n/locales';
 
 import { ALLOWED_TIMEZONES, ALLOWED_LOCALES } from './constants';
 
 const schema = z.object({
-  name: z.string().min(2).max(100).trim().optional().or(z.literal('').transform(() => undefined)),
+  name: z
+    .string()
+    .min(2)
+    .max(100)
+    .trim()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   preferredTimezone: z.enum(ALLOWED_TIMEZONES),
   preferredLocale: z.enum(ALLOWED_LOCALES),
 });
@@ -63,6 +71,21 @@ export async function updatePreferences(
     userAgent,
   }).catch(() => undefined);
 
-  revalidatePath('/profile');
+  // Met à jour le cookie de locale pour que next-intl prenne effet
+  // immédiatement (le getRequestConfig le lit en priorité).
+  if (isSupportedLocale(parsed.data.preferredLocale)) {
+    const cookieStore = await cookies();
+    cookieStore.set(LOCALE_COOKIE, parsed.data.preferredLocale, {
+      path: '/',
+      sameSite: 'lax',
+      httpOnly: false,
+      // 1 an
+      maxAge: 60 * 60 * 24 * 365,
+    });
+  }
+
+  // Revalidate l'ensemble du layout pour rafraîchir le shell après changement
+  // de langue (sidebar, fil d'Ariane, menu compte, etc.).
+  revalidatePath('/', 'layout');
   return { ok: true };
 }

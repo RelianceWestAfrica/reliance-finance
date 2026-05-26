@@ -3,12 +3,7 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 
-import {
-  prisma,
-  DocumentType,
-  OfferComparisonStatus,
-  RoleCode,
-} from '@reliance-finance/database';
+import { prisma, DocumentType, OfferComparisonStatus, RoleCode } from '@reliance-finance/database';
 
 import { auth } from '@/lib/auth';
 import { getUserMemberships, requireAnyRole } from '@/lib/rbac';
@@ -23,14 +18,43 @@ import { validateForSubmission } from '@/lib/offer-comparisons/validation';
 
 const createSchema = z.object({
   entityId: z.string().cuid(),
-  projectId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  expenseRequestId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  technicalSpecs: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
-  desiredDelay: z.string().max(200).optional().or(z.literal('').transform(() => undefined)),
-  paymentTerms: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  projectId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  expenseRequestId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  technicalSpecs: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  desiredDelay: z
+    .string()
+    .max(200)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  paymentTerms: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   warrantyRequired: z.coerce.boolean().default(false),
-  warrantyMonths: z.coerce.number().int().min(0).optional().or(z.literal('').transform(() => undefined)),
-  penaltyClause: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  warrantyMonths: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  penaltyClause: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createOfferComparison(
@@ -64,7 +88,8 @@ export async function createOfferComparison(
     warrantyMonths: formData.get('warrantyMonths') ?? undefined,
     penaltyClause: formData.get('penaltyClause') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const [entity, project] = await Promise.all([
     prisma.entity.findUnique({
@@ -99,7 +124,8 @@ export async function createOfferComparison(
       desiredDelay: parsed.data.desiredDelay,
       paymentTerms: parsed.data.paymentTerms,
       warrantyRequired: parsed.data.warrantyRequired,
-      warrantyMonths: typeof parsed.data.warrantyMonths === 'number' ? parsed.data.warrantyMonths : undefined,
+      warrantyMonths:
+        typeof parsed.data.warrantyMonths === 'number' ? parsed.data.warrantyMonths : undefined,
       penaltyClause: parsed.data.penaltyClause,
     },
   });
@@ -126,23 +152,41 @@ export async function createOfferComparison(
 const addOfferSchema = z.object({
   comparisonId: z.string().cuid(),
   supplierId: z.string().cuid(),
-  reference: z.string().max(100).optional().or(z.literal('').transform(() => undefined)),
+  reference: z
+    .string()
+    .max(100)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   priceHt: z.coerce.number().min(0),
   taxAmount: z.coerce.number().min(0).default(0),
   retentionAmount: z.coerce.number().min(0).default(0),
   priceTtc: z.coerce.number().positive(),
   currency: z.string().length(3).toUpperCase().default('XOF'),
-  deliveryDelay: z.string().max(200).optional().or(z.literal('').transform(() => undefined)),
-  paymentTerms: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
-  warranty: z.string().max(200).optional().or(z.literal('').transform(() => undefined)),
+  deliveryDelay: z
+    .string()
+    .max(200)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  paymentTerms: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  warranty: z
+    .string()
+    .max(200)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   technicallyCompliant: z.coerce.boolean().default(false),
   immediatelyAvailable: z.coerce.boolean().default(false),
-  observations: z.string().max(1000).optional().or(z.literal('').transform(() => undefined)),
+  observations: z
+    .string()
+    .max(1000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
-export async function addOffer(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function addOffer(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -162,7 +206,8 @@ export async function addOffer(
     immediatelyAvailable: formData.get('immediatelyAvailable') === 'on',
     observations: formData.get('observations') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const comparison = await prisma.offerComparison.findUnique({
     where: { id: parsed.data.comparisonId },
@@ -198,7 +243,11 @@ export async function addOffer(
     entityId: parsed.data.comparisonId,
     action: AuditAction.OFFER_ADDED,
     actorId: session.user.id,
-    payload: { offerId: created.id, supplierId: parsed.data.supplierId, priceTtc: parsed.data.priceTtc },
+    payload: {
+      offerId: created.id,
+      supplierId: parsed.data.supplierId,
+      priceTtc: parsed.data.priceTtc,
+    },
     ip,
     userAgent,
   }).catch(() => undefined);
@@ -217,9 +266,7 @@ const recommendSchema = z.object({
   justification: z.string().min(30).max(2000),
 });
 
-export async function recommendOffer(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function recommendOffer(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -228,7 +275,8 @@ export async function recommendOffer(
     offerId: formData.get('offerId'),
     justification: formData.get('justification'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const comparison = await prisma.offerComparison.findUnique({
     where: { id: parsed.data.comparisonId },

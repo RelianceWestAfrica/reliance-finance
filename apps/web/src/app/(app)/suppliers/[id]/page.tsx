@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -16,6 +17,8 @@ export default async function SupplierDetailPage(props: {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const errorMessage = searchParams.error ? decodeURIComponent(searchParams.error) : null;
+
+  const t = await getTranslations('pages.suppliers.detail');
 
   const db = await getTenantedDb();
   const supplier = await db.supplier.findUnique({
@@ -47,7 +50,8 @@ export default async function SupplierDetailPage(props: {
         <div>
           <h1 className="text-2xl font-semibold">{supplier.name}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">
-            <span className="font-mono">{supplier.code}</span> - Entite {supplier.entity.code}
+            <span className="font-mono">{supplier.code}</span> -{' '}
+            {t('header.entity', { code: supplier.entity.code })}
           </p>
         </div>
         <div className="flex gap-2">
@@ -55,29 +59,32 @@ export default async function SupplierDetailPage(props: {
             href={'/suppliers/' + id + '/bank-accounts'}
             className="rounded-md border px-3 py-1.5 text-xs hover:bg-[var(--color-muted)]"
           >
-            RIBs ({supplier._count.bankAccounts})
+            {t('header.ribsCount', { count: supplier._count.bankAccounts })}
           </Link>
           <Link
             href={'/suppliers/' + id + '/history'}
             className="rounded-md border px-3 py-1.5 text-xs hover:bg-[var(--color-muted)]"
           >
-            Historique RIB
+            {t('header.historyLink')}
           </Link>
         </div>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h2 className="text-lg font-semibold">Identification & sensibilite</h2>
+        <h2 className="text-lg font-semibold">{t('section.identity')}</h2>
         <form action={handleUpdate} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <input type="hidden" name="id" value={supplier.id} />
           <label className="text-sm sm:col-span-2">
-            Raison sociale *
+            {t('fields.name')}
             <input
               name="name"
               required
@@ -86,23 +93,23 @@ export default async function SupplierDetailPage(props: {
             />
           </label>
           <label className="text-sm">
-            RCCM
+            {t('fields.rccm')}
             <input
               name="rccm"
               defaultValue={supplier.rccm ?? ''}
-              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
             />
           </label>
           <label className="text-sm">
-            IFU / NIF
+            {t('fields.ifu')}
             <input
               name="ifu"
               defaultValue={supplier.ifu ?? ''}
-              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
             />
           </label>
           <label className="text-sm">
-            Email
+            {t('fields.email')}
             <input
               name="email"
               type="email"
@@ -111,7 +118,7 @@ export default async function SupplierDetailPage(props: {
             />
           </label>
           <label className="text-sm">
-            Telephone
+            {t('fields.phone')}
             <input
               name="phone"
               defaultValue={supplier.phone ?? ''}
@@ -119,7 +126,7 @@ export default async function SupplierDetailPage(props: {
             />
           </label>
           <label className="text-sm sm:col-span-2">
-            Adresse
+            {t('fields.address')}
             <input
               name="address"
               defaultValue={supplier.address ?? ''}
@@ -127,7 +134,7 @@ export default async function SupplierDetailPage(props: {
             />
           </label>
           <label className="text-sm">
-            Pays
+            {t('fields.country')}
             <input
               name="country"
               maxLength={2}
@@ -136,7 +143,7 @@ export default async function SupplierDetailPage(props: {
             />
           </label>
           <label className="text-sm">
-            Sensibilite (cadre §6.3)
+            {t('fields.sensitivity')}
             <select
               name="sensitivity"
               defaultValue={supplier.sensitivity}
@@ -150,15 +157,11 @@ export default async function SupplierDetailPage(props: {
             </select>
           </label>
           <label className="flex items-center gap-2 text-sm sm:col-span-2">
-            <input
-              type="checkbox"
-              name="isStrategic"
-              defaultChecked={supplier.isStrategic}
-            />
-            Fournisseur strategique (controle renforce)
+            <input type="checkbox" name="isStrategic" defaultChecked={supplier.isStrategic} />
+            {t('fields.isStrategic')}
           </label>
           <label className="text-sm sm:col-span-2">
-            Notes
+            {t('fields.notes')}
             <textarea
               name="notes"
               rows={3}
@@ -170,39 +173,38 @@ export default async function SupplierDetailPage(props: {
             type="submit"
             className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-2"
           >
-            Enregistrer
+            {t('actions.save')}
           </button>
         </form>
       </section>
 
       {supplier.status === 'ACTIVE' && (
-        <section className="rounded-lg border border-[var(--color-destructive)] bg-[var(--color-destructive)]/5 p-6">
-          <h2 className="text-sm font-semibold text-[var(--color-destructive)]">Zone dangereuse</h2>
-          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
-            L&apos;archivage est journalise et reversible uniquement par requete SQL admin.
-            Les BC et factures existants restent consultables.
-          </p>
+        <section className="bg-[var(--color-destructive)]/5 rounded-lg border border-[var(--color-destructive)] p-6">
+          <h2 className="text-sm font-semibold text-[var(--color-destructive)]">
+            {t('section.dangerZone')}
+          </h2>
+          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">{t('dangerZoneHelp')}</p>
           <form action={handleArchive} className="mt-3 flex gap-2">
             <input type="hidden" name="id" value={supplier.id} />
             <input
               name="reason"
               required
-              placeholder="Motif d'archivage (obligatoire, min 5 chars)"
+              placeholder={t('fields.archiveReason')}
               minLength={5}
               className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
             />
             <button
               type="submit"
-              className="rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10"
+              className="hover:bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)]"
             >
-              Archiver
+              {t('actions.archive')}
             </button>
           </form>
         </section>
       )}
 
       <section className="rounded-lg border bg-[var(--color-card)] p-4 text-xs text-[var(--color-muted-foreground)]">
-        Cree le {formatDateTime(supplier.createdAt)} - Statut <span className="font-mono">{supplier.status}</span>
+        {t('section.footer', { date: formatDateTime(supplier.createdAt), status: supplier.status })}
       </section>
     </div>
   );

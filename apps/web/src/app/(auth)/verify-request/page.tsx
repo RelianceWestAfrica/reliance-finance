@@ -4,8 +4,8 @@ export default function VerifyRequestPage() {
       <div className="w-full max-w-md space-y-4 rounded-lg border bg-[var(--color-card)] p-8 text-center shadow-sm">
         <h1 className="text-2xl font-semibold">Verifiez votre boite mail</h1>
         <p className="text-sm text-[var(--color-muted-foreground)]">
-          Un lien magique vient de vous etre envoye. Cliquez sur le lien recu
-          pour acceder a la plateforme. Le lien expire dans 15 minutes.
+          Un lien magique vient de vous etre envoye. Cliquez sur le lien recu pour acceder a la
+          plateforme. Le lien expire dans 15 minutes.
         </p>
         <p className="text-xs text-[var(--color-muted-foreground)]">
           En developpement : consultez Mailhog sur{' '}

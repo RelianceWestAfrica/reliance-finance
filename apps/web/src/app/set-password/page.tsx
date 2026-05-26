@@ -44,8 +44,8 @@ export default async function SetPasswordPage(props: {
           </p>
           {isFirstTime && (
             <p className="text-xs text-[var(--color-muted-foreground)]">
-              Premiere connexion. Vous devez definir un mot de passe avant
-              d&apos;acceder a la plateforme.
+              Premiere connexion. Vous devez definir un mot de passe avant d&apos;acceder a la
+              plateforme.
             </p>
           )}
         </header>
@@ -53,7 +53,7 @@ export default async function SetPasswordPage(props: {
         {errorMessage && (
           <div
             role="alert"
-            className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]"
+            className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
           >
             {errorMessage}
           </div>

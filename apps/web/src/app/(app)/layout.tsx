@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { auth, signOut } from '@/lib/auth';
 import { getUserMemberships } from '@/lib/rbac';
 import { prisma } from '@reliance-finance/database';
@@ -24,6 +25,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   const memberships = await getUserMemberships(session.user.id);
+  const tProfile = await getTranslations('profile.card');
 
   // Carte utilisateur : prénom + nom (depuis la base), pas l'email.
   const userLabel = userState.name?.trim() || session.user.name || 'Utilisateur';
@@ -33,7 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           .slice(0, 2)
           .map((m) => m.role + ' · ' + m.entityCode)
           .join('  /  ')
-      : 'Aucun rôle actif';
+      : tProfile('noRole');
 
   async function logoutAction() {
     'use server';

@@ -3,6 +3,7 @@ import { getUserMemberships } from '@/lib/rbac';
 import { getTenantedDb } from '@/lib/tenancy';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 const iconProps = {
   fill: 'none',
@@ -30,11 +31,13 @@ export default async function DashboardPage() {
     prisma.threshold.count({ where: { isActive: true } }),
   ]);
 
+  const t = await getTranslations('pages.dashboard');
+
   const stats = [
     {
-      label: 'Entités',
+      label: t('stats.entities'),
       value: entityCount,
-      note: 'Holding + filiales + SPV',
+      note: t('stats.entitiesNote'),
       icon: (
         <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
           <path d="M3 21h18M5 21V7l7-4 7 4v14" />
@@ -43,9 +46,9 @@ export default async function DashboardPage() {
       ),
     },
     {
-      label: 'Fournisseurs',
+      label: t('stats.suppliers'),
       value: supplierCount,
-      note: 'Actifs · statut ACTIVE',
+      note: t('stats.suppliersNote'),
       icon: (
         <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
           <path d="M3 7h18M3 12h18M3 17h12" />
@@ -53,9 +56,9 @@ export default async function DashboardPage() {
       ),
     },
     {
-      label: 'Projets',
+      label: t('stats.projects'),
       value: projectCount,
-      note: 'Périodes en cours',
+      note: t('stats.projectsNote'),
       icon: (
         <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
           <path d="M3 7l9-4 9 4-9 4z" />
@@ -64,9 +67,9 @@ export default async function DashboardPage() {
       ),
     },
     {
-      label: 'Seuils',
+      label: t('stats.thresholds'),
       value: thresholdCount,
-      note: 'Configurés · cadre §5',
+      note: t('stats.thresholdsNote'),
       icon: (
         <svg viewBox="0 0 24 24" {...iconProps} className="h-4 w-4">
           <path d="M4 21V10M12 21V4M20 21v-7" />
@@ -78,17 +81,16 @@ export default async function DashboardPage() {
   ];
 
   const firstName = (session.user.name ?? session.user.email ?? '').split(/[@.\s]/)[0];
+  const displayName = firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1) : '';
 
   return (
     <div className="space-y-7">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold">
-          Bonjour{firstName ? ', ' + firstName.charAt(0).toUpperCase() + firstName.slice(1) : ''}
+          {displayName ? t('greetingWithName', { name: displayName }) : t('greeting')}
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-[var(--color-muted-foreground)]">
-          Vue consolidée du cycle financier — fournisseurs, demandes de dépense, comparatifs,
-          bons de commande, réceptions, factures (3-way match), trésorerie et comptabilité
-          SYSCOHADA.
+          {t('intro')}
         </p>
       </header>
 
@@ -115,13 +117,13 @@ export default async function DashboardPage() {
 
       <section className="rounded-[var(--radius)] border bg-[var(--color-card)] shadow-[var(--shadow-card)]">
         <div className="flex items-baseline justify-between border-b border-[var(--color-border-soft)] px-5 py-4">
-          <h2 className="text-base font-semibold">Vos rôles</h2>
-          <span className="font-mono text-[11px] text-[var(--color-faint)]">docs/rbac-matrix.md</span>
+          <h2 className="text-base font-semibold">{t('roles.title')}</h2>
+          <span className="font-mono text-[11px] text-[var(--color-faint)]">
+            {t('roles.docRef')}
+          </span>
         </div>
         {memberships.length === 0 ? (
-          <p className="px-5 py-5 text-sm text-[var(--color-warning)]">
-            Aucun rôle actif. Contactez votre administrateur pour obtenir vos permissions.
-          </p>
+          <p className="px-5 py-5 text-sm text-[var(--color-warning)]">{t('roles.empty')}</p>
         ) : (
           <ul>
             {memberships.map((m) => (
@@ -132,7 +134,9 @@ export default async function DashboardPage() {
                 <span className="rounded-md bg-[var(--color-primary-soft)] px-2.5 py-1 font-mono text-[11.5px] font-semibold text-[var(--color-primary)]">
                   {m.role}
                 </span>
-                <span className="text-[13px] text-[var(--color-muted-foreground)]">{m.entityCode}</span>
+                <span className="text-[13px] text-[var(--color-muted-foreground)]">
+                  {m.entityCode}
+                </span>
               </li>
             ))}
           </ul>
@@ -141,7 +145,7 @@ export default async function DashboardPage() {
 
       <p className="flex items-center gap-2 text-[11.5px] text-[var(--color-faint)]">
         <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)]" />
-        Système opérationnel · toute connexion est journalisée (cadre normatif §10).
+        {t('systemStatus')}
       </p>
     </div>
   );

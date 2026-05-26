@@ -43,7 +43,12 @@ async function checkDb(): Promise<DepCheck> {
   }
 }
 
-async function checkTcp(name: string, host: string, port: number, timeoutMs = 2500): Promise<DepCheck> {
+async function checkTcp(
+  name: string,
+  host: string,
+  port: number,
+  timeoutMs = 2500,
+): Promise<DepCheck> {
   const start = Date.now();
   return new Promise((resolve) => {
     const socket = new net.Socket();

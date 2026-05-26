@@ -1,6 +1,7 @@
 import { SupplierSensitivity } from '@reliance-finance/database';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -13,6 +14,8 @@ export default async function NewSupplierPage(props: {
   if (!session?.user?.id) redirect('/login');
   const params = await props.searchParams;
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
+
+  const t = await getTranslations('pages.suppliers.new');
 
   const db = await getTenantedDb();
   const entities = await db.entity.findMany({
@@ -33,36 +36,37 @@ export default async function NewSupplierPage(props: {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold">Nouveau fournisseur</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          Onboarding KYC light : RCCM/IFU + RIB initial (verification ulterieure par double validation - cadre §8).
-        </p>
+        <h1 className="text-2xl font-semibold">{t('title')}</h1>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
         <Link
           href="/suppliers"
           className="mt-2 inline-block text-xs text-[var(--color-primary)] hover:underline"
         >
-          &larr; Retour a la liste
+          {t('back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <form action={handleCreate} className="space-y-6">
         <section className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Identification</h2>
+          <h2 className="text-lg font-semibold">{t('section.identity')}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">
-              Entite *
+              {t('fields.entity')}
               <select
                 name="entityId"
                 required
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               >
-                <option value="">-- Entite --</option>
+                <option value="">{t('fields.entityPlaceholder')}</option>
                 {entities.map((e) => (
                   <option key={e.id} value={e.id}>
                     {e.code} - {e.name} ({e.kind})
@@ -71,40 +75,40 @@ export default async function NewSupplierPage(props: {
               </select>
             </label>
             <label className="text-sm">
-              Code fournisseur * (MAJUSCULES)
+              {t('fields.code')}
               <input
                 name="code"
                 required
-                placeholder="RWA-SUP-TOGO-0099"
+                placeholder={t('fields.codePlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm uppercase"
               />
             </label>
             <label className="text-sm sm:col-span-2">
-              Raison sociale *
+              {t('fields.name')}
               <input
                 name="name"
                 required
-                placeholder="ACME SARL"
+                placeholder={t('fields.namePlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm">
-              RCCM
+              {t('fields.rccm')}
               <input
                 name="rccm"
-                placeholder="TG-LFW-2025-A-1234"
-                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+                placeholder={t('fields.rccmPlaceholder')}
+                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
               />
             </label>
             <label className="text-sm">
-              IFU / NIF
+              {t('fields.ifu')}
               <input
                 name="ifu"
-                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
               />
             </label>
             <label className="text-sm">
-              Email
+              {t('fields.email')}
               <input
                 name="email"
                 type="email"
@@ -112,25 +116,25 @@ export default async function NewSupplierPage(props: {
               />
             </label>
             <label className="text-sm">
-              Telephone
+              {t('fields.phone')}
               <input
                 name="phone"
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm sm:col-span-2">
-              Adresse
+              {t('fields.address')}
               <input
                 name="address"
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm">
-              Pays (ISO 2)
+              {t('fields.country')}
               <input
                 name="country"
                 maxLength={2}
-                placeholder="TG"
+                placeholder={t('fields.countryPlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm uppercase"
               />
             </label>
@@ -138,10 +142,10 @@ export default async function NewSupplierPage(props: {
         </section>
 
         <section className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Sensibilite (cadre §6.3)</h2>
+          <h2 className="text-lg font-semibold">{t('section.sensitivity')}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">
-              Sensibilite
+              {t('fields.sensitivity')}
               <select
                 name="sensitivity"
                 defaultValue={SupplierSensitivity.STANDARD}
@@ -155,10 +159,10 @@ export default async function NewSupplierPage(props: {
               </select>
             </label>
             <label className="mt-6 flex items-center gap-2 text-sm">
-              <input type="checkbox" name="isStrategic" /> Fournisseur strategique (controle renforce)
+              <input type="checkbox" name="isStrategic" /> {t('fields.isStrategic')}
             </label>
             <label className="text-sm sm:col-span-2">
-              Notes
+              {t('fields.notes')}
               <textarea
                 name="notes"
                 rows={3}
@@ -169,50 +173,47 @@ export default async function NewSupplierPage(props: {
         </section>
 
         <section className="space-y-4 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">RIB initial (optionnel)</h2>
-          <p className="text-xs text-[var(--color-muted-foreground)]">
-            Le RIB sera initialement marque NON verifie. Il devra etre verifie via le workflow
-            de double validation (DAF Pays + DFG) avant de pouvoir etre utilise pour un paiement.
-          </p>
+          <h2 className="text-lg font-semibold">{t('section.bank')}</h2>
+          <p className="text-xs text-[var(--color-muted-foreground)]">{t('bankHelp')}</p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-sm">
-              Banque
+              {t('fields.bankName')}
               <input
                 name="bankName"
-                placeholder="Ecobank Togo"
+                placeholder={t('fields.bankNamePlaceholder')}
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm">
-              Titulaire (doit egaler raison sociale)
+              {t('fields.holderName')}
               <input
                 name="holderName"
                 className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm"
               />
             </label>
             <label className="text-sm">
-              IBAN
+              {t('fields.iban')}
               <input
                 name="iban"
-                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
               />
             </label>
             <label className="text-sm">
-              RIB
+              {t('fields.rib')}
               <input
                 name="rib"
-                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono"
+                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm"
               />
             </label>
             <label className="text-sm">
-              SWIFT / BIC
+              {t('fields.swift')}
               <input
                 name="swift"
-                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm font-mono uppercase"
+                className="mt-1 block w-full rounded-md border bg-white px-3 py-2 font-mono text-sm uppercase"
               />
             </label>
             <label className="text-sm">
-              Devise
+              {t('fields.currency')}
               <input
                 name="currency"
                 defaultValue="XOF"
@@ -228,13 +229,13 @@ export default async function NewSupplierPage(props: {
             type="submit"
             className="rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
           >
-            Creer le fournisseur
+            {t('submit')}
           </button>
           <Link
             href="/suppliers"
             className="rounded-md border px-4 py-2 text-sm hover:bg-[var(--color-muted)]"
           >
-            Annuler
+            {t('cancel')}
           </Link>
         </div>
       </form>

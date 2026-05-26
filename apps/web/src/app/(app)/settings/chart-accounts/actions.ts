@@ -32,11 +32,7 @@ export async function createChartAccount(
 
   const memberships = await getUserMemberships(session.user.id);
   try {
-    requireAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CHIEF_ACCOUNTANT,
-    ]);
+    requireAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CHIEF_ACCOUNTANT]);
   } catch {
     return {
       ok: false,
@@ -85,11 +81,7 @@ export async function toggleChartAccount(
 
   const memberships = await getUserMemberships(session.user.id);
   try {
-    requireAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CHIEF_ACCOUNTANT,
-    ]);
+    requireAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CHIEF_ACCOUNTANT]);
   } catch {
     return { ok: false, error: 'Privilege insuffisant' };
   }

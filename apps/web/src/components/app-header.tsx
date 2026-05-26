@@ -1,37 +1,48 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
-// Functional breadcrumb derived from the route. Chrome only — no global search
-// or page actions here (those belong to each page when wired to real features).
-const TITLES: Record<string, string> = {
-  dashboard: 'Tableau de bord',
-  reporting: 'Reporting & KPIs',
-  suppliers: 'Fournisseurs',
-  'expense-requests': 'Demandes',
-  'purchase-orders': 'Bons de commande',
-  receptions: 'PV de réception',
-  invoices: 'Factures',
-  payments: 'Paiements',
-  'cash-forecast': 'Cash forecast 13s',
-  accounting: 'Comptabilité',
-  anomalies: 'Anomalies',
-  audit: 'Audit',
-  settings: 'Paramètres',
-  profile: 'Profil',
+// Fil d'Ariane fonctionnel dérivé de l'URL. Pas de recherche globale ni d'actions
+// de page ici — celles-ci sont câblées au sein de chaque page si nécessaire.
+// La clé `nav.items.<key>` est utilisée pour traduire le segment courant.
+const SEGMENT_TO_KEY: Record<string, string> = {
+  dashboard: 'dashboard',
+  reporting: 'reporting',
+  suppliers: 'suppliers',
+  'expense-requests': 'expenseRequests',
+  'purchase-orders': 'purchaseOrders',
+  receptions: 'receptions',
+  invoices: 'invoices',
+  payments: 'payments',
+  'cash-forecast': 'cashForecast',
+  accounting: 'accounting',
+  anomalies: 'anomalies',
+  audit: 'audit',
+  settings: 'settings',
+  profile: 'profile',
+  'offer-comparisons': 'offerComparisons',
+  'sole-source-justifications': 'soleSourceJustifications',
 };
 
 export function AppHeader() {
   const pathname = usePathname() ?? '/';
   const seg = pathname.split('/').filter(Boolean)[0] ?? 'dashboard';
-  const title = TITLES[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1);
+  const tNav = useTranslations('nav');
+  const tCrumb = useTranslations('breadcrumb');
+
+  const key = SEGMENT_TO_KEY[seg];
+  const title = key ? tNav(`items.${key}`) : seg.charAt(0).toUpperCase() + seg.slice(1);
 
   return (
     <div className="flex items-center px-5 pt-7 pb-1 md:px-9 md:pt-9">
-      <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-[13px] text-[var(--fg-tertiary)]">
-        <span>RWA</span>
+      <nav
+        aria-label={tCrumb('label')}
+        className="flex items-center gap-2 text-[13px] text-[var(--fg-tertiary)]"
+      >
+        <span>{tCrumb('root')}</span>
         <span className="text-[var(--fg-muted)]">/</span>
-        <span>Finances</span>
+        <span>{tCrumb('app')}</span>
         <span className="text-[var(--fg-muted)]">/</span>
         <span className="font-medium text-[var(--fg-primary)]">{title}</span>
       </nav>

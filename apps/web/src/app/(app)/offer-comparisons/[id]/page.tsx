@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -23,6 +24,8 @@ export default async function OfferComparisonDetailPage(props: {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const errorMessage = searchParams.error ? decodeURIComponent(searchParams.error) : null;
+
+  const t = await getTranslations('pages.offerComparisons');
 
   const db = await getTenantedDb();
   const comparison = await db.offerComparison.findUnique({
@@ -59,88 +62,111 @@ export default async function OfferComparisonDetailPage(props: {
   async function handleAddOffer(formData: FormData) {
     'use server';
     const r = await addOffer(formData);
-    if (!r.ok) redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleRecommend(formData: FormData) {
     'use server';
     const r = await recommendOffer(formData);
-    if (!r.ok) redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleSubmit(formData: FormData) {
     'use server';
     const r = await submitOfferComparison(formData);
-    if (!r.ok) redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleApprove(formData: FormData) {
     'use server';
     const r = await approveOfferComparison(formData);
-    if (!r.ok) redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleReject(formData: FormData) {
     'use server';
     const r = await rejectOfferComparison(formData);
-    if (!r.ok) redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/offer-comparisons/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
 
   return (
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Comparatif {comparison.reference}</h1>
+          <h1 className="text-2xl font-semibold">
+            {t('detail.headerTitle', { reference: comparison.reference })}
+          </h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">
             {comparison.entity.code}
             {comparison.project && ' / ' + comparison.project.code}
             {comparison.expenseRequest && (
               <>
                 {' - '}
-                <Link href={'/expense-requests/' + comparison.expenseRequest.id} className="text-[var(--color-primary)] hover:underline">
+                <Link
+                  href={'/expense-requests/' + comparison.expenseRequest.id}
+                  className="text-[var(--color-primary)] hover:underline"
+                >
                   {comparison.expenseRequest.reference}
                 </Link>
               </>
             )}
           </p>
         </div>
-        <Link href="/offer-comparisons" className="text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Liste
+        <Link
+          href="/offer-comparisons"
+          className="text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {t('detail.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="text-xs uppercase text-[var(--color-muted-foreground)]">Statut</span>
+          <span className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.status')}
+          </span>
           <span className="font-mono text-sm">{comparison.status}</span>
           <span className="ml-4 text-xs text-[var(--color-muted-foreground)]">
-            Cree {formatDateTime(comparison.createdAt)}
+            {t('detail.createdAt', { date: formatDateTime(comparison.createdAt) })}
           </span>
         </div>
       </section>
 
       <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
         <header className="border-b px-4 py-3">
-          <h2 className="text-sm font-semibold">Offres reçues ({comparison.offers.length})</h2>
+          <h2 className="text-sm font-semibold">
+            {t('detail.offersTitle', { count: comparison.offers.length })}
+          </h2>
         </header>
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-2 font-medium">Fournisseur</th>
-              <th className="px-3 py-2 font-medium">Prix HT</th>
-              <th className="px-3 py-2 font-medium">Prix TTC</th>
-              <th className="px-3 py-2 font-medium">Delai</th>
-              <th className="px-3 py-2 font-medium">Tech OK</th>
-              <th className="px-3 py-2 font-medium">Score auto</th>
+              <th className="px-3 py-2 font-medium">{t('detail.offersColumns.supplier')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.offersColumns.priceHt')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.offersColumns.priceTtc')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.offersColumns.delay')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.offersColumns.techOk')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.offersColumns.autoScore')}</th>
             </tr>
           </thead>
           <tbody>
             {comparison.offers.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucune offre. Ajoutez-en au moins 2.
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('detail.offersEmpty')}
                 </td>
               </tr>
             )}
@@ -148,29 +174,38 @@ export default async function OfferComparisonDetailPage(props: {
               const rank = ranking.find((r) => r.offer.id === o.id);
               const isRecommended = comparison.recommendedOfferId === o.id;
               return (
-                <tr key={o.id} className={'border-b last:border-0 ' + (isRecommended ? 'bg-[var(--color-success)]/5' : '')}>
+                <tr
+                  key={o.id}
+                  className={
+                    'border-b last:border-0 ' + (isRecommended ? 'bg-[var(--color-success)]/5' : '')
+                  }
+                >
                   <td className="px-3 py-2">
                     <div className="font-medium">{o.supplier.name}</div>
-                    <div className="font-mono text-xs text-[var(--color-muted-foreground)]">{o.supplier.code}</div>
+                    <div className="font-mono text-xs text-[var(--color-muted-foreground)]">
+                      {o.supplier.code}
+                    </div>
                   </td>
                   <td className="px-3 py-2 text-right text-xs tabular-nums">
                     {formatCurrency(Number(o.priceHt.toString()), o.currency)}
                   </td>
-                  <td className="px-3 py-2 text-right text-sm tabular-nums font-semibold">
+                  <td className="px-3 py-2 text-right text-sm font-semibold tabular-nums">
                     {formatCurrency(Number(o.priceTtc.toString()), o.currency)}
                   </td>
                   <td className="px-3 py-2 text-xs">{o.deliveryDelay ?? '-'}</td>
                   <td className="px-3 py-2 text-xs">
                     {o.technicallyCompliant ? (
-                      <span className="text-[var(--color-success)]">Oui</span>
+                      <span className="text-[var(--color-success)]">{t('detail.techOkYes')}</span>
                     ) : (
-                      <span className="text-[var(--color-warning)]">Non</span>
+                      <span className="text-[var(--color-warning)]">{t('detail.techOkNo')}</span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-right text-xs font-mono">
+                  <td className="px-3 py-2 text-right font-mono text-xs">
                     {rank ? rank.score.toFixed(3) : '-'}
                     {isRecommended && (
-                      <div className="text-[10px] text-[var(--color-success)]">RECOMMANDEE</div>
+                      <div className="text-[10px] text-[var(--color-success)]">
+                        {t('detail.recommendedBadge')}
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -183,45 +218,110 @@ export default async function OfferComparisonDetailPage(props: {
       {isEditable && (
         <>
           <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-            <h2 className="text-sm font-semibold">Ajouter une offre</h2>
-            <form action={handleAddOffer} className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <h2 className="text-sm font-semibold">{t('detail.addOffer.title')}</h2>
+            <form
+              action={handleAddOffer}
+              className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            >
               <input type="hidden" name="comparisonId" value={comparison.id} />
-              <select name="supplierId" required className="rounded-md border bg-white px-3 py-2 text-sm">
-                <option value="">-- Fournisseur --</option>
+              <select
+                name="supplierId"
+                required
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              >
+                <option value="">{t('detail.addOffer.supplierPlaceholder')}</option>
                 {suppliers.map((s) => (
-                  <option key={s.id} value={s.id}>{s.code} - {s.name}</option>
+                  <option key={s.id} value={s.id}>
+                    {s.code} - {s.name}
+                  </option>
                 ))}
               </select>
-              <input name="reference" placeholder="Ref devis" className="rounded-md border bg-white px-3 py-2 text-sm" />
-              <input name="priceHt" type="number" min="0" step="0.01" required placeholder="Prix HT" className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums" />
-              <input name="priceTtc" type="number" min="1" step="0.01" required placeholder="Prix TTC" className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums" />
-              <input name="taxAmount" type="number" min="0" step="0.01" defaultValue="0" placeholder="TVA" className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums" />
-              <input name="currency" defaultValue="XOF" maxLength={3} className="rounded-md border bg-white px-3 py-2 text-sm uppercase" />
-              <input name="deliveryDelay" placeholder="Delai" className="rounded-md border bg-white px-3 py-2 text-sm" />
-              <input name="warranty" placeholder="Garantie" className="rounded-md border bg-white px-3 py-2 text-sm" />
+              <input
+                name="reference"
+                placeholder={t('detail.addOffer.referencePlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              />
+              <input
+                name="priceHt"
+                type="number"
+                min="0"
+                step="0.01"
+                required
+                placeholder={t('detail.addOffer.priceHtPlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
+              />
+              <input
+                name="priceTtc"
+                type="number"
+                min="1"
+                step="0.01"
+                required
+                placeholder={t('detail.addOffer.priceTtcPlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
+              />
+              <input
+                name="taxAmount"
+                type="number"
+                min="0"
+                step="0.01"
+                defaultValue="0"
+                placeholder={t('detail.addOffer.taxAmountPlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
+              />
+              <input
+                name="currency"
+                defaultValue="XOF"
+                maxLength={3}
+                className="rounded-md border bg-white px-3 py-2 text-sm uppercase"
+              />
+              <input
+                name="deliveryDelay"
+                placeholder={t('detail.addOffer.deliveryDelayPlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              />
+              <input
+                name="warranty"
+                placeholder={t('detail.addOffer.warrantyPlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              />
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="technicallyCompliant" /> Tech conforme
+                <input type="checkbox" name="technicallyCompliant" />{' '}
+                {t('detail.addOffer.technicallyCompliant')}
               </label>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="immediatelyAvailable" /> Dispo immediat
+                <input type="checkbox" name="immediatelyAvailable" />{' '}
+                {t('detail.addOffer.immediatelyAvailable')}
               </label>
-              <input name="observations" placeholder="Observations" className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2" />
-              <button type="submit" className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-2 lg:col-span-4">
-                Ajouter l&apos;offre
+              <input
+                name="observations"
+                placeholder={t('detail.addOffer.observationsPlaceholder')}
+                className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2"
+              />
+              <button
+                type="submit"
+                className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-2 lg:col-span-4"
+              >
+                {t('detail.addOffer.submit')}
               </button>
             </form>
           </section>
 
           {comparison.offers.length >= 2 && (
             <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-              <h2 className="text-sm font-semibold">Recommandation</h2>
+              <h2 className="text-sm font-semibold">{t('detail.recommendation.title')}</h2>
               <form action={handleRecommend} className="mt-3 space-y-3">
                 <input type="hidden" name="comparisonId" value={comparison.id} />
-                <select name="offerId" required defaultValue={comparison.recommendedOfferId ?? ''} className="block w-full rounded-md border bg-white px-3 py-2 text-sm">
-                  <option value="">-- Offre recommandee --</option>
+                <select
+                  name="offerId"
+                  required
+                  defaultValue={comparison.recommendedOfferId ?? ''}
+                  className="block w-full rounded-md border bg-white px-3 py-2 text-sm"
+                >
+                  <option value="">{t('detail.recommendation.offerPlaceholder')}</option>
                   {comparison.offers.map((o) => (
                     <option key={o.id} value={o.id}>
-                      {o.supplier.code} - {formatCurrency(Number(o.priceTtc.toString()), o.currency)}
+                      {o.supplier.code} -{' '}
+                      {formatCurrency(Number(o.priceTtc.toString()), o.currency)}
                     </option>
                   ))}
                 </select>
@@ -231,11 +331,14 @@ export default async function OfferComparisonDetailPage(props: {
                   required
                   minLength={30}
                   defaultValue={comparison.recommendationJustification ?? ''}
-                  placeholder="Justification (>= 30 caracteres) : pourquoi cette offre vs les autres ?"
+                  placeholder={t('detail.recommendation.justificationPlaceholder')}
                   className="block w-full rounded-md border bg-white px-3 py-2 text-sm"
                 />
-                <button type="submit" className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                  Fixer la recommandation
+                <button
+                  type="submit"
+                  className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
+                >
+                  {t('detail.recommendation.submit')}
                 </button>
               </form>
             </section>
@@ -244,13 +347,13 @@ export default async function OfferComparisonDetailPage(props: {
       )}
 
       <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h2 className="text-sm font-semibold">Actions</h2>
+        <h2 className="text-sm font-semibold">{t('detail.actions.title')}</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {comparison.status === OfferComparisonStatus.DRAFT && (
             <form action={handleSubmit}>
               <input type="hidden" name="id" value={comparison.id} />
               <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                Soumettre pour approbation
+                {t('detail.actions.submit')}
               </button>
             </form>
           )}
@@ -259,13 +362,13 @@ export default async function OfferComparisonDetailPage(props: {
               <form action={handleApprove}>
                 <input type="hidden" name="id" value={comparison.id} />
                 <button className="rounded-md bg-[var(--color-success)] px-3 py-2 text-sm font-medium text-[var(--color-success-foreground)] hover:opacity-90">
-                  Approuver
+                  {t('detail.actions.approve')}
                 </button>
               </form>
               <form action={handleReject}>
                 <input type="hidden" name="id" value={comparison.id} />
-                <button className="rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10">
-                  Rejeter
+                <button className="hover:bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)]">
+                  {t('detail.actions.reject')}
                 </button>
               </form>
             </>

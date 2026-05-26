@@ -72,7 +72,10 @@ export async function POST(req: Request) {
           er.emergencyDeadlineAt?.toISOString() +
           ') est depasse. Cadre §7.',
         detectionRule: 'EMERGENCY_OVERDUE/cron',
-        evidence: { deadlineAt: er.emergencyDeadlineAt?.toISOString(), checkedAt: now.toISOString() },
+        evidence: {
+          deadlineAt: er.emergencyDeadlineAt?.toISOString(),
+          checkedAt: now.toISOString(),
+        },
       },
     });
 

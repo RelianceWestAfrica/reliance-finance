@@ -12,11 +12,27 @@ import { getRequestActorContext } from '@/lib/audit/actor-context';
 const createSchema = z
   .object({
     type: z.nativeEnum(ThresholdType),
-    entityId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-    amount: z.coerce.number().min(0).optional().or(z.literal('').transform(() => undefined)),
-    value: z.coerce.number().min(0).optional().or(z.literal('').transform(() => undefined)),
+    entityId: z
+      .string()
+      .cuid()
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    amount: z.coerce
+      .number()
+      .min(0)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
+    value: z.coerce
+      .number()
+      .min(0)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
     currency: z.string().length(3).toUpperCase().default('XOF'),
-    description: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+    description: z
+      .string()
+      .max(500)
+      .optional()
+      .or(z.literal('').transform(() => undefined)),
   })
   .refine((d) => d.amount !== undefined || d.value !== undefined, {
     message: 'Renseignez amount (XOF) ou value (heures/pourcentage)',
@@ -26,7 +42,9 @@ const createSchema = z
  * "Replace" : cree un nouveau seuil avec effectiveFrom = now et cloture
  * l'ancien actif (effectiveTo = now, isActive = false). Versioning natif.
  */
-export async function replaceThreshold(formData: FormData): Promise<{ ok: boolean; error?: string }> {
+export async function replaceThreshold(
+  formData: FormData,
+): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 

@@ -33,7 +33,10 @@ const createSchema = z.object({
   amount: z.coerce.number().positive(),
   bankAccountId: z.string().cuid(),
   method: z.nativeEnum(PaymentMethod).default(PaymentMethod.BANK_TRANSFER),
-  scheduledAt: z.string().optional().or(z.literal('').transform(() => undefined)),
+  scheduledAt: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createPayment(
@@ -62,7 +65,8 @@ export async function createPayment(
     method: formData.get('method') ?? undefined,
     scheduledAt: formData.get('scheduledAt') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const invoice = await prisma.invoice.findUnique({
     where: { id: parsed.data.invoiceId },
@@ -97,12 +101,7 @@ export async function createPayment(
   if (parsed.data.amount > balance.amountDue) {
     return {
       ok: false,
-      error:
-        'Montant (' +
-        parsed.data.amount +
-        ') depasse le reste du (' +
-        balance.amountDue +
-        ')',
+      error: 'Montant (' + parsed.data.amount + ') depasse le reste du (' + balance.amountDue + ')',
     };
   }
 
@@ -176,9 +175,7 @@ export async function createPayment(
 // SUBMIT FOR ANTI-FRAUD + SIGNATURE WORKFLOW
 // =============================================================================
 
-export async function submitPayment(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function submitPayment(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -332,9 +329,7 @@ const signSchema = z.object({
   comment: z.string().max(500).optional(),
 });
 
-export async function signPayment(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function signPayment(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -387,7 +382,9 @@ export async function signPayment(
       error: 'Le createur du paiement ne peut pas le signer (separation des fonctions §12)',
     };
   }
-  const alreadySigned = payment.workflowInstance.signatures.some((s) => s.actorId === session.user.id);
+  const alreadySigned = payment.workflowInstance.signatures.some(
+    (s) => s.actorId === session.user.id,
+  );
   if (alreadySigned) {
     return {
       ok: false,
@@ -447,7 +444,11 @@ export async function signPayment(
     entityId: payment.id,
     action: AuditAction.PAYMENT_SIGNED,
     actorId: session.user.id,
-    payload: { reference: payment.reference, stage: pendingStep.stage, position: pendingStep.position },
+    payload: {
+      reference: payment.reference,
+      stage: pendingStep.stage,
+      position: pendingStep.position,
+    },
     ip,
     userAgent,
   }).catch(() => undefined);
@@ -476,12 +477,14 @@ const executeSchema = z.object({
   id: z.string().cuid(),
   swiftReference: z.string().min(3).max(100),
   transactionNumber: z.string().min(1).max(100),
-  bankProofUrl: z.string().url().optional().or(z.literal('').transform(() => undefined)),
+  bankProofUrl: z
+    .string()
+    .url()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
-export async function executePayment(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function executePayment(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -499,7 +502,8 @@ export async function executePayment(
     transactionNumber: formData.get('transactionNumber'),
     bankProofUrl: formData.get('bankProofUrl') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   // RATE LIMITING (cadre brief : 5 req/min/IP sur paiements)
   const { ip, userAgent } = await getRequestActorContext();
@@ -578,7 +582,7 @@ export async function executePayment(
     }).catch(() => undefined);
     return {
       ok: false,
-      error: 'Le createur du paiement ne peut pas l\'executer (separation des fonctions §12)',
+      error: "Le createur du paiement ne peut pas l'executer (separation des fonctions §12)",
     };
   }
 
@@ -689,9 +693,7 @@ const cancelSchema = z.object({
   reason: z.string().min(5).max(500),
 });
 
-export async function cancelPayment(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function cancelPayment(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -706,20 +708,18 @@ export async function cancelPayment(
     id: formData.get('id'),
     reason: formData.get('reason'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const payment = await prisma.payment.findUnique({
     where: { id: parsed.data.id },
     select: { status: true, reference: true },
   });
   if (!payment) return { ok: false, error: 'Paiement introuvable' };
-  if (
-    payment.status === PaymentStatus.EXECUTED ||
-    payment.status === PaymentStatus.RECONCILED
-  ) {
+  if (payment.status === PaymentStatus.EXECUTED || payment.status === PaymentStatus.RECONCILED) {
     return {
       ok: false,
-      error: 'Annulation impossible apres execution (utilisez une procedure d\'avoir)',
+      error: "Annulation impossible apres execution (utilisez une procedure d'avoir)",
     };
   }
 

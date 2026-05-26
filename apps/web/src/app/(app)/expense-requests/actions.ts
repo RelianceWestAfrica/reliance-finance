@@ -64,21 +64,56 @@ const STAGE_TO_STATUS: Record<SignatureStageId, ExpenseRequestStatus> = {
 const createSchema = z.object({
   type: z.nativeEnum(ExpenseRequestType).default(ExpenseRequestType.FD),
   entityId: z.string().cuid(),
-  projectId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  costCenterId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  supplierId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  projectId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  costCenterId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  supplierId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   title: z.string().min(3).max(200).trim(),
-  description: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
-  justification: z.string().max(2000).optional().or(z.literal('').transform(() => undefined)),
+  description: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  justification: z
+    .string()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   urgency: z.nativeEnum(UrgencyLevel).default(UrgencyLevel.LOW),
-  urgencyReason: z.string().max(500).optional().or(z.literal('').transform(() => undefined)),
+  urgencyReason: z
+    .string()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   opexCapex: z.nativeEnum(OpexCapex).default(OpexCapex.OPEX),
   amount: z.coerce.number().positive(),
   currency: z.string().length(3).toUpperCase().default('XOF'),
-  budgetLineRef: z.string().max(100).optional().or(z.literal('').transform(() => undefined)),
+  budgetLineRef: z
+    .string()
+    .max(100)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   isOutOfBudget: z.coerce.boolean().default(false),
-  desiredDate: z.string().optional().or(z.literal('').transform(() => undefined)),
-  location: z.string().max(200).optional().or(z.literal('').transform(() => undefined)),
+  desiredDate: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  location: z
+    .string()
+    .max(200)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createExpenseRequest(
@@ -505,9 +540,7 @@ export async function signExpenseRequest(
 
     // 3. Calculer le nouveau statut de l'ER
     const isLastSlot = approvalChain[approvalChain.length - 1]?.position === slot.position;
-    const newStatus = isLastSlot
-      ? ExpenseRequestStatus.APPROVED
-      : STAGE_TO_STATUS[slot.stage];
+    const newStatus = isLastSlot ? ExpenseRequestStatus.APPROVED : STAGE_TO_STATUS[slot.stage];
 
     await tx.expenseRequest.update({
       where: { id: parsed.data.id },
@@ -609,7 +642,8 @@ export async function rejectExpenseRequest(
     id: formData.get('id'),
     reason: formData.get('reason'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const er = await prisma.expenseRequest.update({
     where: { id: parsed.data.id },
@@ -751,11 +785,7 @@ export async function detectStaleRegularizations(): Promise<{
 
   const memberships = await getUserMemberships(session.user.id);
   try {
-    requireAnyRole(memberships, [
-      RoleCode.ADMIN,
-      RoleCode.DFG,
-      RoleCode.CONTROLEUR_INTERNE,
-    ]);
+    requireAnyRole(memberships, [RoleCode.ADMIN, RoleCode.DFG, RoleCode.CONTROLEUR_INTERNE]);
   } catch {
     return { ok: false, flagged: 0 };
   }

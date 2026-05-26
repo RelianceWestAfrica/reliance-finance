@@ -1,41 +1,54 @@
 import { prisma } from '@reliance-finance/database';
 import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
 import { formatCurrency } from '@/lib/format';
-import {
-  createProject,
-  archiveProject,
-  createCostCenter,
-  archiveCostCenter,
-} from './actions';
+import { createProject, archiveProject, createCostCenter, archiveCostCenter } from './actions';
 
 export default async function ProjectsSettingsPage(props: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  const t = await getTranslations('pages.settings.projects');
+
   const params = await props.searchParams;
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
 
   async function handleCreateProject(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.projects');
     const r = await createProject(formData);
     if (!r.ok) {
-      redirect('/settings/projects?error=' + encodeURIComponent(r.error ?? 'Echec'));
+      redirect(
+        '/settings/projects?error=' + encodeURIComponent(r.error ?? tServer('errors.failure')),
+      );
     }
   }
   async function handleArchiveProject(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.projects');
     const r = await archiveProject(formData);
-    if (!r.ok) redirect('/settings/projects?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect(
+        '/settings/projects?error=' + encodeURIComponent(r.error ?? tServer('errors.failure')),
+      );
   }
   async function handleCreateCostCenter(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.projects');
     const r = await createCostCenter(formData);
-    if (!r.ok) redirect('/settings/projects?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect(
+        '/settings/projects?error=' + encodeURIComponent(r.error ?? tServer('errors.failure')),
+      );
   }
   async function handleArchiveCostCenter(formData: FormData) {
     'use server';
+    const tServer = await getTranslations('pages.settings.projects');
     const r = await archiveCostCenter(formData);
-    if (!r.ok) redirect('/settings/projects?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect(
+        '/settings/projects?error=' + encodeURIComponent(r.error ?? tServer('errors.failure')),
+      );
   }
 
   const [entities, projects, costCenters] = await Promise.all([
@@ -63,26 +76,34 @@ export default async function ProjectsSettingsPage(props: {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="text-2xl font-semibold">Projets &amp; centres de cout</h1>
-        <p className="text-sm text-[var(--color-muted-foreground)]">
-          Rattachement budgetaire des depenses (cadre §2.1).
-        </p>
+        <h1 className="text-2xl font-semibold">{t('title')}</h1>
+        <p className="text-sm text-[var(--color-muted-foreground)]">{t('subtitle')}</p>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       {/* PROJETS */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Projets</h2>
+        <h2 className="text-lg font-semibold">{t('sections.projects')}</h2>
 
         <div className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <form action={handleCreateProject} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <select name="entityId" required className="rounded-md border bg-white px-3 py-2 text-sm">
-              <option value="">-- Entite --</option>
+          <form
+            action={handleCreateProject}
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            <select
+              name="entityId"
+              required
+              className="rounded-md border bg-white px-3 py-2 text-sm"
+            >
+              <option value="">{t('projectForm.entityPlaceholder')}</option>
               {entities.map((e) => (
                 <option key={e.id} value={e.id}>
                   {e.code} ({e.kind})
@@ -92,13 +113,13 @@ export default async function ProjectsSettingsPage(props: {
             <input
               name="code"
               required
-              placeholder="Code (ex: CIDPE)"
+              placeholder={t('projectForm.codePlaceholder')}
               className="rounded-md border bg-white px-3 py-2 text-sm uppercase"
             />
             <input
               name="name"
               required
-              placeholder="Nom complet du projet"
+              placeholder={t('projectForm.namePlaceholder')}
               className="rounded-md border bg-white px-3 py-2 text-sm"
             />
             <div className="flex gap-2">
@@ -107,7 +128,7 @@ export default async function ProjectsSettingsPage(props: {
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Budget"
+                placeholder={t('projectForm.budgetPlaceholder')}
                 className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
               />
               <input
@@ -129,14 +150,14 @@ export default async function ProjectsSettingsPage(props: {
             />
             <input
               name="description"
-              placeholder="Description (optionnel)"
+              placeholder={t('projectForm.descriptionPlaceholder')}
               className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2"
             />
             <button
               type="submit"
               className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-2 lg:col-span-4"
             >
-              Creer le projet
+              {t('projectForm.submit')}
             </button>
           </form>
         </div>
@@ -145,24 +166,30 @@ export default async function ProjectsSettingsPage(props: {
           <table className="w-full text-sm">
             <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
               <tr>
-                <th className="px-4 py-3 font-medium">Entite</th>
-                <th className="px-4 py-3 font-medium">Code</th>
-                <th className="px-4 py-3 font-medium">Nom</th>
-                <th className="px-4 py-3 font-medium">Budget</th>
-                <th className="px-4 py-3 font-medium">CC / Demandes</th>
+                <th className="px-4 py-3 font-medium">{t('projectColumns.entity')}</th>
+                <th className="px-4 py-3 font-medium">{t('projectColumns.code')}</th>
+                <th className="px-4 py-3 font-medium">{t('projectColumns.name')}</th>
+                <th className="px-4 py-3 font-medium">{t('projectColumns.budget')}</th>
+                <th className="px-4 py-3 font-medium">{t('projectColumns.relations')}</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {projects.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                    Aucun projet.
+                  <td
+                    colSpan={6}
+                    className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                  >
+                    {t('projectEmpty')}
                   </td>
                 </tr>
               )}
               {projects.map((p) => (
-                <tr key={p.id} className={'border-b last:border-0 ' + (p.isActive ? '' : 'opacity-50')}>
+                <tr
+                  key={p.id}
+                  className={'border-b last:border-0 ' + (p.isActive ? '' : 'opacity-50')}
+                >
                   <td className="px-4 py-3 font-mono text-xs">{p.entity.code}</td>
                   <td className="px-4 py-3 font-mono text-xs font-semibold">{p.code}</td>
                   <td className="px-4 py-3">{p.name}</td>
@@ -177,11 +204,13 @@ export default async function ProjectsSettingsPage(props: {
                       <form action={handleArchiveProject}>
                         <input type="hidden" name="id" value={p.id} />
                         <button className="text-xs text-[var(--color-destructive)] hover:underline">
-                          Archiver
+                          {t('actions.archive')}
                         </button>
                       </form>
                     ) : (
-                      <span className="text-xs text-[var(--color-muted-foreground)]">Archive</span>
+                      <span className="text-xs text-[var(--color-muted-foreground)]">
+                        {t('actions.archived')}
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -193,20 +222,31 @@ export default async function ProjectsSettingsPage(props: {
 
       {/* CENTRES DE COUT */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Centres de cout</h2>
+        <h2 className="text-lg font-semibold">{t('sections.costCenters')}</h2>
 
         <div className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-          <form action={handleCreateCostCenter} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <select name="entityId" required className="rounded-md border bg-white px-3 py-2 text-sm">
-              <option value="">-- Entite --</option>
+          <form
+            action={handleCreateCostCenter}
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5"
+          >
+            <select
+              name="entityId"
+              required
+              className="rounded-md border bg-white px-3 py-2 text-sm"
+            >
+              <option value="">{t('costCenterForm.entityPlaceholder')}</option>
               {entities.map((e) => (
                 <option key={e.id} value={e.id}>
                   {e.code}
                 </option>
               ))}
             </select>
-            <select name="projectId" defaultValue="" className="rounded-md border bg-white px-3 py-2 text-sm">
-              <option value="">-- Projet (optionnel) --</option>
+            <select
+              name="projectId"
+              defaultValue=""
+              className="rounded-md border bg-white px-3 py-2 text-sm"
+            >
+              <option value="">{t('costCenterForm.projectPlaceholder')}</option>
               {projects
                 .filter((p) => p.isActive)
                 .map((p) => (
@@ -218,20 +258,20 @@ export default async function ProjectsSettingsPage(props: {
             <input
               name="code"
               required
-              placeholder="Code (CC-ADMIN)"
+              placeholder={t('costCenterForm.codePlaceholder')}
               className="rounded-md border bg-white px-3 py-2 text-sm uppercase"
             />
             <input
               name="name"
               required
-              placeholder="Libelle"
+              placeholder={t('costCenterForm.namePlaceholder')}
               className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2 lg:col-span-1"
             />
             <button
               type="submit"
               className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90"
             >
-              Ajouter
+              {t('costCenterForm.submit')}
             </button>
           </form>
         </div>
@@ -240,23 +280,29 @@ export default async function ProjectsSettingsPage(props: {
           <table className="w-full text-sm">
             <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
               <tr>
-                <th className="px-4 py-3 font-medium">Entite</th>
-                <th className="px-4 py-3 font-medium">Projet</th>
-                <th className="px-4 py-3 font-medium">Code</th>
-                <th className="px-4 py-3 font-medium">Libelle</th>
+                <th className="px-4 py-3 font-medium">{t('costCenterColumns.entity')}</th>
+                <th className="px-4 py-3 font-medium">{t('costCenterColumns.project')}</th>
+                <th className="px-4 py-3 font-medium">{t('costCenterColumns.code')}</th>
+                <th className="px-4 py-3 font-medium">{t('costCenterColumns.label')}</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {costCenters.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                    Aucun centre de cout.
+                  <td
+                    colSpan={5}
+                    className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                  >
+                    {t('costCenterEmpty')}
                   </td>
                 </tr>
               )}
               {costCenters.map((c) => (
-                <tr key={c.id} className={'border-b last:border-0 ' + (c.isActive ? '' : 'opacity-50')}>
+                <tr
+                  key={c.id}
+                  className={'border-b last:border-0 ' + (c.isActive ? '' : 'opacity-50')}
+                >
                   <td className="px-4 py-3 font-mono text-xs">{c.entity.code}</td>
                   <td className="px-4 py-3 font-mono text-xs">{c.project?.code ?? '-'}</td>
                   <td className="px-4 py-3 font-mono text-xs font-semibold">{c.code}</td>
@@ -266,11 +312,13 @@ export default async function ProjectsSettingsPage(props: {
                       <form action={handleArchiveCostCenter}>
                         <input type="hidden" name="id" value={c.id} />
                         <button className="text-xs text-[var(--color-destructive)] hover:underline">
-                          Archiver
+                          {t('actions.archive')}
                         </button>
                       </form>
                     ) : (
-                      <span className="text-xs text-[var(--color-muted-foreground)]">Archive</span>
+                      <span className="text-xs text-[var(--color-muted-foreground)]">
+                        {t('actions.archived')}
+                      </span>
                     )}
                   </td>
                 </tr>

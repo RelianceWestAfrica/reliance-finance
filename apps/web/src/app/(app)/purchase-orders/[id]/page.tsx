@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -44,6 +45,7 @@ export default async function PurchaseOrderDetailPage(props: {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const errorMessage = searchParams.error ? decodeURIComponent(searchParams.error) : null;
+  const t = await getTranslations('pages.purchaseOrders');
 
   const db = await getTenantedDb();
   const po = await db.purchaseOrder.findUnique({
@@ -74,7 +76,16 @@ export default async function PurchaseOrderDetailPage(props: {
   const bankAccount = po.bankAccountSnapshotId
     ? await prisma.bankAccount.findUnique({
         where: { id: po.bankAccountSnapshotId },
-        select: { id: true, bankName: true, holderName: true, iban: true, rib: true, isActive: true, verifiedAt: true, quarantineUntil: true },
+        select: {
+          id: true,
+          bankName: true,
+          holderName: true,
+          iban: true,
+          rib: true,
+          isActive: true,
+          verifiedAt: true,
+          quarantineUntil: true,
+        },
       })
     : null;
   const bankUsability = bankAccount ? isBankAccountUsable(bankAccount) : null;
@@ -115,32 +126,38 @@ export default async function PurchaseOrderDetailPage(props: {
   async function handleAddItem(formData: FormData) {
     'use server';
     const r = await addPurchaseOrderItem(formData);
-    if (!r.ok) redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleRemoveItem(formData: FormData) {
     'use server';
     const r = await removePurchaseOrderItem(formData);
-    if (!r.ok) redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleSubmit(formData: FormData) {
     'use server';
     const r = await submitPurchaseOrder(formData);
-    if (!r.ok) redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleSign(formData: FormData) {
     'use server';
     const r = await signPurchaseOrder(formData);
-    if (!r.ok) redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleSend(formData: FormData) {
     'use server';
     const r = await sendPurchaseOrderToSupplier(formData);
-    if (!r.ok) redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
   async function handleCancel(formData: FormData) {
     'use server';
     const r = await cancelPurchaseOrder(formData);
-    if (!r.ok) redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
+    if (!r.ok)
+      redirect('/purchase-orders/' + id + '?error=' + encodeURIComponent(r.error ?? 'Echec'));
   }
 
   const isEditable = po.status === PurchaseOrderStatus.DRAFT;
@@ -158,78 +175,113 @@ export default async function PurchaseOrderDetailPage(props: {
             {po.project && ' / ' + po.project.code}
             {po.expenseRequest && (
               <>
-                {' - FD : '}
-                <Link href={'/expense-requests/' + po.expenseRequest.id} className="text-[var(--color-primary)] hover:underline">
+                {' - ' + t('detail.fdPrefix') + ' '}
+                <Link
+                  href={'/expense-requests/' + po.expenseRequest.id}
+                  className="text-[var(--color-primary)] hover:underline"
+                >
                   {po.expenseRequest.reference}
                 </Link>
               </>
             )}
           </p>
         </div>
-        <Link href="/purchase-orders" className="text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Liste
+        <Link
+          href="/purchase-orders"
+          className="text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {t('detail.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Statut</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.status')}
+          </div>
           <div className="mt-1 font-mono text-sm">{po.status}</div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Total TTC</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.totalTtc')}
+          </div>
           <div className="mt-1 text-xl font-semibold tabular-nums">
             {formatCurrency(Number(po.totalTtc.toString()), po.currency)}
           </div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Fournisseur</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.supplier')}
+          </div>
           <div className="mt-1 font-mono text-sm">{po.supplier.code}</div>
           <div className="text-xs text-[var(--color-muted-foreground)]">{po.supplier.name}</div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">RIB snapshot</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.ribSnapshot')}
+          </div>
           {bankAccount ? (
             <>
               <div className="mt-1 font-mono text-xs">{bankAccount.iban ?? bankAccount.rib}</div>
-              <div className={'text-xs ' + (bankUsability?.usable ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]')}>
-                {bankUsability?.usable ? 'OK' : bankUsability?.usable === false ? bankUsability.reason : '-'}
+              <div
+                className={
+                  'text-xs ' +
+                  (bankUsability?.usable
+                    ? 'text-[var(--color-success)]'
+                    : 'text-[var(--color-warning)]')
+                }
+              >
+                {bankUsability?.usable
+                  ? t('detail.tiles.ribOk')
+                  : bankUsability?.usable === false
+                    ? bankUsability.reason
+                    : '-'}
               </div>
             </>
           ) : (
-            <div className="mt-1 text-xs text-[var(--color-destructive)]">Aucun RIB snapshot - paiement bloque</div>
+            <div className="mt-1 text-xs text-[var(--color-destructive)]">
+              {t('detail.tiles.ribMissing')}
+            </div>
           )}
         </div>
       </section>
 
       <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
-        <header className="border-b px-4 py-3 flex items-baseline justify-between">
-          <h2 className="text-sm font-semibold">Lignes du BC</h2>
-          <span className="text-xs text-[var(--color-muted-foreground)]">{po.items.length} item(s)</span>
+        <header className="flex items-baseline justify-between border-b px-4 py-3">
+          <h2 className="text-sm font-semibold">{t('detail.items.title')}</h2>
+          <span className="text-xs text-[var(--color-muted-foreground)]">
+            {t('detail.items.count', { count: po.items.length })}
+          </span>
         </header>
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-2 font-medium">N°</th>
-              <th className="px-3 py-2 font-medium">Designation</th>
-              <th className="px-3 py-2 font-medium">Qte</th>
-              <th className="px-3 py-2 font-medium">Unite</th>
-              <th className="px-3 py-2 font-medium">PU HT</th>
-              <th className="px-3 py-2 font-medium">Total HT</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.position')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.description')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.quantity')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.unit')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.unitPriceHt')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.totalHt')}</th>
               <th className="px-3 py-2"></th>
             </tr>
           </thead>
           <tbody>
             {po.items.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-[var(--color-muted-foreground)]">
-                  Aucun item.
+                <td
+                  colSpan={7}
+                  className="px-4 py-6 text-center text-[var(--color-muted-foreground)]"
+                >
+                  {t('detail.items.empty')}
                 </td>
               </tr>
             )}
@@ -237,19 +289,23 @@ export default async function PurchaseOrderDetailPage(props: {
               <tr key={item.id} className="border-b last:border-0">
                 <td className="px-3 py-2 font-mono text-xs">{item.position}</td>
                 <td className="px-3 py-2">{item.description}</td>
-                <td className="px-3 py-2 text-right text-xs tabular-nums">{item.quantity.toString()}</td>
+                <td className="px-3 py-2 text-right text-xs tabular-nums">
+                  {item.quantity.toString()}
+                </td>
                 <td className="px-3 py-2 text-xs">{item.unit ?? '-'}</td>
                 <td className="px-3 py-2 text-right text-xs tabular-nums">
                   {formatCurrency(Number(item.unitPrice.toString()), po.currency)}
                 </td>
-                <td className="px-3 py-2 text-right text-sm tabular-nums font-semibold">
+                <td className="px-3 py-2 text-right text-sm font-semibold tabular-nums">
                   {formatCurrency(Number(item.totalHt.toString()), po.currency)}
                 </td>
                 <td className="px-3 py-2 text-right">
                   {isEditable && (
                     <form action={handleRemoveItem}>
                       <input type="hidden" name="id" value={item.id} />
-                      <button className="text-xs text-[var(--color-destructive)] hover:underline">Supprimer</button>
+                      <button className="text-xs text-[var(--color-destructive)] hover:underline">
+                        {t('detail.items.remove')}
+                      </button>
                     </form>
                   )}
                 </td>
@@ -261,13 +317,50 @@ export default async function PurchaseOrderDetailPage(props: {
           <div className="border-t p-4">
             <form action={handleAddItem} className="grid grid-cols-1 gap-3 sm:grid-cols-6">
               <input type="hidden" name="purchaseOrderId" value={po.id} />
-              <input name="position" type="number" required min="1" defaultValue={po.items.length + 1} placeholder="N°" className="rounded-md border bg-white px-3 py-2 text-sm" />
-              <input name="description" required minLength={2} placeholder="Designation" className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2" />
-              <input name="quantity" type="number" min="0.001" step="0.001" required placeholder="Qte" className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums" />
-              <input name="unit" placeholder="Unite" className="rounded-md border bg-white px-3 py-2 text-sm" />
-              <input name="unitPrice" type="number" min="0.01" step="0.01" required placeholder="PU HT" className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums" />
-              <button type="submit" className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-6">
-                + Ajouter une ligne
+              <input
+                name="position"
+                type="number"
+                required
+                min="1"
+                defaultValue={po.items.length + 1}
+                placeholder={t('detail.items.placeholders.position')}
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              />
+              <input
+                name="description"
+                required
+                minLength={2}
+                placeholder={t('detail.items.placeholders.description')}
+                className="rounded-md border bg-white px-3 py-2 text-sm sm:col-span-2"
+              />
+              <input
+                name="quantity"
+                type="number"
+                min="0.001"
+                step="0.001"
+                required
+                placeholder={t('detail.items.placeholders.quantity')}
+                className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
+              />
+              <input
+                name="unit"
+                placeholder={t('detail.items.placeholders.unit')}
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              />
+              <input
+                name="unitPrice"
+                type="number"
+                min="0.01"
+                step="0.01"
+                required
+                placeholder={t('detail.items.placeholders.unitPrice')}
+                className="rounded-md border bg-white px-3 py-2 text-sm tabular-nums"
+              />
+              <button
+                type="submit"
+                className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90 sm:col-span-6"
+              >
+                {t('detail.items.addLineHeader')}
               </button>
             </form>
           </div>
@@ -277,11 +370,19 @@ export default async function PurchaseOrderDetailPage(props: {
       {workflow && (
         <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
           <header className="flex items-baseline justify-between border-b px-4 py-3">
-            <h3 className="text-sm font-semibold">Workflow signatures</h3>
+            <h3 className="text-sm font-semibold">{t('detail.workflow.title')}</h3>
             <div className="flex items-center gap-2 text-xs">
-              <span className={'h-2 w-2 rounded-full ' + (chainVerify.ok ? 'bg-[var(--color-success)]' : 'bg-[var(--color-destructive)]')} />
+              <span
+                className={
+                  'h-2 w-2 rounded-full ' +
+                  (chainVerify.ok ? 'bg-[var(--color-success)]' : 'bg-[var(--color-destructive)]')
+                }
+              />
               <span className="font-mono text-[var(--color-muted-foreground)]">
-                Chaine : {chainVerify.ok ? 'OK (' + chainVerify.count + ')' : chainVerify.reason}
+                {t('detail.workflow.chainLabel')} :{' '}
+                {chainVerify.ok
+                  ? t('detail.workflow.chainOk', { count: chainVerify.count })
+                  : chainVerify.reason}
               </span>
             </div>
           </header>
@@ -297,17 +398,32 @@ export default async function PurchaseOrderDetailPage(props: {
                     <div className="font-mono text-xs">{step.stage}</div>
                     <div className="text-xs text-[var(--color-muted-foreground)]">
                       {sig
-                        ? 'Signe par ' + (sig.actor.email ?? sig.actorId) + ' le ' + formatDateTime(sig.signedAt)
+                        ? t('detail.workflow.signedBy', {
+                            actor: sig.actor.email ?? sig.actorId,
+                            date: formatDateTime(sig.signedAt),
+                          })
                         : step.status === 'PENDING'
-                          ? 'En attente'
+                          ? t('detail.workflow.pending')
                           : step.status}
                     </div>
                     {sig?.comment && (
-                      <div className="text-xs italic text-[var(--color-muted-foreground)]">{sig.comment}</div>
+                      <div className="text-xs italic text-[var(--color-muted-foreground)]">
+                        {sig.comment}
+                      </div>
                     )}
                   </div>
                   <div className="text-xs">
-                    {sig ? <span className="text-[var(--color-success)]">OK</span> : step.status === 'PENDING' ? <span className="text-[var(--color-warning)]">attente</span> : '-'}
+                    {sig ? (
+                      <span className="text-[var(--color-success)]">
+                        {t('detail.workflow.ok2')}
+                      </span>
+                    ) : step.status === 'PENDING' ? (
+                      <span className="text-[var(--color-warning)]">
+                        {t('detail.workflow.waiting')}
+                      </span>
+                    ) : (
+                      '-'
+                    )}
                   </div>
                 </li>
               );
@@ -317,13 +433,13 @@ export default async function PurchaseOrderDetailPage(props: {
       )}
 
       <section className="space-y-3 rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h3 className="text-sm font-semibold">Actions</h3>
+        <h3 className="text-sm font-semibold">{t('detail.actions.title')}</h3>
         <div className="flex flex-wrap gap-2">
           {isEditable && (
             <form action={handleSubmit}>
               <input type="hidden" name="id" value={po.id} />
               <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                Soumettre pour signatures
+                {t('detail.actions.submit')}
               </button>
             </form>
           )}
@@ -331,9 +447,13 @@ export default async function PurchaseOrderDetailPage(props: {
           {actableSlot && (
             <form action={handleSign} className="flex flex-1 gap-2">
               <input type="hidden" name="id" value={po.id} />
-              <input name="comment" placeholder="Commentaire (optionnel, dans le hash)" className="flex-1 rounded-md border bg-white px-3 py-2 text-sm" />
+              <input
+                name="comment"
+                placeholder={t('detail.actions.signComment')}
+                className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
+              />
               <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                Signer {actableSlot.stage}
+                {t('detail.actions.signStage', { stage: actableSlot.stage })}
               </button>
             </form>
           )}
@@ -346,25 +466,31 @@ export default async function PurchaseOrderDetailPage(props: {
             <form action={handleSend}>
               <input type="hidden" name="id" value={po.id} />
               <button className="rounded-md bg-[var(--color-success)] px-3 py-2 text-sm font-medium text-[var(--color-success-foreground)] hover:opacity-90">
-                Envoyer au fournisseur
+                {t('detail.actions.send')}
               </button>
             </form>
           )}
 
-          {(po.status === PurchaseOrderStatus.DRAFT || po.status === PurchaseOrderStatus.PENDING_SIGNATURES) && (
+          {(po.status === PurchaseOrderStatus.DRAFT ||
+            po.status === PurchaseOrderStatus.PENDING_SIGNATURES) && (
             <form action={handleCancel} className="flex gap-2">
               <input type="hidden" name="id" value={po.id} />
-              <input name="reason" required minLength={5} placeholder="Motif annulation" className="rounded-md border bg-white px-3 py-2 text-sm" />
-              <button className="rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10">
-                Annuler le BC
+              <input
+                name="reason"
+                required
+                minLength={5}
+                placeholder={t('detail.actions.cancelReason')}
+                className="rounded-md border bg-white px-3 py-2 text-sm"
+              />
+              <button className="hover:bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)]">
+                {t('detail.actions.cancel')}
               </button>
             </form>
           )}
         </div>
         {!isEditable && (
           <p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
-            BC verrouille apres soumission. Modifications post-signature : procedure d&apos;avenant
-            (a livrer en session de polish).
+            {t('detail.actions.lockedHelp')}
           </p>
         )}
       </section>

@@ -18,10 +18,7 @@ import { getUserMemberships, requireAnyRole } from '@/lib/rbac';
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 import { getRequestActorContext } from '@/lib/audit/actor-context';
 import { allocateReference } from '@/lib/document-sequence/allocate';
-import {
-  threeWayMatch,
-  DEFAULT_MATCH_CONFIG,
-} from '@/lib/three-way-match/match';
+import { threeWayMatch, DEFAULT_MATCH_CONFIG } from '@/lib/three-way-match/match';
 
 // =============================================================================
 // CREATE INVOICE
@@ -30,21 +27,49 @@ import {
 const createSchema = z.object({
   type: z.nativeEnum(InvoiceType).default(InvoiceType.STANDARD),
   entityId: z.string().cuid(),
-  projectId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  projectId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   supplierId: z.string().cuid(),
-  purchaseOrderId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  receptionId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
-  originalInvoiceId: z.string().cuid().optional().or(z.literal('').transform(() => undefined)),
+  purchaseOrderId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  receptionId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  originalInvoiceId: z
+    .string()
+    .cuid()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   invoiceNumber: z.string().min(1).max(100),
   invoiceDate: z.string(),
-  dueDate: z.string().optional().or(z.literal('').transform(() => undefined)),
+  dueDate: z
+    .string()
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
   subtotalHt: z.coerce.number().min(0),
   taxAmount: z.coerce.number().min(0).default(0),
   retentionAmount: z.coerce.number().min(0).default(0),
   totalTtc: z.coerce.number().min(0),
   currency: z.string().length(3).toUpperCase().default('XOF'),
-  taxLabel: z.string().max(100).optional().or(z.literal('').transform(() => undefined)),
-  taxRate: z.coerce.number().min(0).max(100).optional().or(z.literal('').transform(() => undefined)),
+  taxLabel: z
+    .string()
+    .max(100)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  taxRate: z.coerce
+    .number()
+    .min(0)
+    .max(100)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 
 export async function createInvoice(
@@ -85,7 +110,8 @@ export async function createInvoice(
     taxLabel: formData.get('taxLabel') ?? undefined,
     taxRate: formData.get('taxRate') ?? undefined,
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   // Si CREDIT_NOTE, originalInvoiceId obligatoire
   if (parsed.data.type === InvoiceType.CREDIT_NOTE && !parsed.data.originalInvoiceId) {
@@ -97,13 +123,23 @@ export async function createInvoice(
 
   // Verifier unicite (supplierId + invoiceNumber)
   const duplicate = await prisma.invoice.findUnique({
-    where: { supplierId_invoiceNumber: { supplierId: parsed.data.supplierId, invoiceNumber: parsed.data.invoiceNumber } },
+    where: {
+      supplierId_invoiceNumber: {
+        supplierId: parsed.data.supplierId,
+        invoiceNumber: parsed.data.invoiceNumber,
+      },
+    },
     select: { id: true, reference: true },
   });
   if (duplicate) {
     return {
       ok: false,
-      error: 'Doublon detecte : facture ' + parsed.data.invoiceNumber + ' deja enregistree (' + duplicate.reference + ')',
+      error:
+        'Doublon detecte : facture ' +
+        parsed.data.invoiceNumber +
+        ' deja enregistree (' +
+        duplicate.reference +
+        ')',
     };
   }
 
@@ -191,9 +227,7 @@ const addLineSchema = z.object({
   unitPrice: z.coerce.number().positive(),
 });
 
-export async function addInvoiceLine(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function addInvoiceLine(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -204,7 +238,8 @@ export async function addInvoiceLine(
     quantity: formData.get('quantity'),
     unitPrice: formData.get('unitPrice'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const invoice = await prisma.invoice.findUnique({
     where: { id: parsed.data.invoiceId },
@@ -428,9 +463,7 @@ export async function runThreeWayMatch(
 // APPROVE / DISPUTE
 // =============================================================================
 
-export async function approveInvoice(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function approveInvoice(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -452,7 +485,13 @@ export async function approveInvoice(
 
   const invoice = await prisma.invoice.findUnique({
     where: { id },
-    select: { id: true, reference: true, status: true, receptionId: true, reception: { select: { status: true } } },
+    select: {
+      id: true,
+      reference: true,
+      status: true,
+      receptionId: true,
+      reception: { select: { status: true } },
+    },
   });
   if (!invoice) return { ok: false, error: 'Facture introuvable' };
 
@@ -470,7 +509,10 @@ export async function approveInvoice(
   ) {
     return {
       ok: false,
-      error: 'Statut invalide pour approbation : ' + invoice.status + '. Faites tourner le 3-way match d\'abord.',
+      error:
+        'Statut invalide pour approbation : ' +
+        invoice.status +
+        ". Faites tourner le 3-way match d'abord.",
     };
   }
 
@@ -499,9 +541,7 @@ const disputeSchema = z.object({
   reason: z.string().min(5).max(1000),
 });
 
-export async function disputeInvoice(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
+export async function disputeInvoice(formData: FormData): Promise<{ ok: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: 'Auth requise' };
 
@@ -522,7 +562,8 @@ export async function disputeInvoice(
     id: formData.get('id'),
     reason: formData.get('reason'),
   });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
+  if (!parsed.success)
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Donnees invalides' };
 
   const invoice = await prisma.invoice.update({
     where: { id: parsed.data.id },

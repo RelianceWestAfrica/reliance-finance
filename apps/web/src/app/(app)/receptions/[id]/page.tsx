@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 import { auth } from '@/lib/auth';
 import { getTenantedDb } from '@/lib/tenancy';
@@ -8,11 +9,7 @@ import { getUserMemberships } from '@/lib/rbac';
 import { formatDateTime } from '@/lib/format';
 import { canActorSignReception } from '@/lib/receptions/can-sign';
 import { verifySignatureChain } from '@/lib/signatures/service';
-import {
-  updateReceptionItem,
-  signReception,
-  rejectReception,
-} from '../actions';
+import { updateReceptionItem, signReception, rejectReception } from '../actions';
 
 export default async function ReceptionDetailPage(props: {
   params: Promise<{ id: string }>;
@@ -23,6 +20,7 @@ export default async function ReceptionDetailPage(props: {
   const { id } = await props.params;
   const searchParams = await props.searchParams;
   const errorMessage = searchParams.error ? decodeURIComponent(searchParams.error) : null;
+  const t = await getTranslations('pages.receptions');
 
   const db = await getTenantedDb();
   const reception = await db.reception.findUnique({
@@ -66,7 +64,9 @@ export default async function ReceptionDetailPage(props: {
     { id: session.user.id, roles: memberships.map((m) => m.role) },
   );
 
-  const chainVerify = workflow ? await verifySignatureChain(workflow.id) : { ok: true as const, count: 0 };
+  const chainVerify = workflow
+    ? await verifySignatureChain(workflow.id)
+    : { ok: true as const, count: 0 };
 
   async function handleUpdateItem(formData: FormData) {
     'use server';
@@ -93,54 +93,72 @@ export default async function ReceptionDetailPage(props: {
         <div>
           <h1 className="text-2xl font-semibold">PV {reception.reference}</h1>
           <p className="text-sm text-[var(--color-muted-foreground)]">
-            {reception.entity.code} - BC :{' '}
-            <Link href={'/purchase-orders/' + reception.purchaseOrder.id} className="text-[var(--color-primary)] hover:underline">
-              {reception.purchaseOrder.reference}
-            </Link>
-            {' '}({reception.purchaseOrder.supplier.code})
+            {t('detail.headerLine', {
+              entity: reception.entity.code,
+              ref: reception.purchaseOrder.reference,
+              supplier: reception.purchaseOrder.supplier.code,
+            })}
           </p>
         </div>
         <Link href="/receptions" className="text-xs text-[var(--color-primary)] hover:underline">
-          &larr; Liste
+          {t('detail.back')}
         </Link>
       </header>
 
       {errorMessage && (
-        <div role="alert" className="rounded-md border border-[var(--color-destructive)] bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+        <div
+          role="alert"
+          className="bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] px-3 py-2 text-sm text-[var(--color-destructive)]"
+        >
           {errorMessage}
         </div>
       )}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Statut</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.status')}
+          </div>
           <div className="mt-1 font-mono text-sm">{reception.status}</div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Type</div>
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.type')}
+          </div>
           <div className="mt-1 font-mono text-sm">{reception.type}</div>
         </div>
         <div className="rounded-lg border bg-[var(--color-card)] p-4 shadow-sm">
-          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">Reserves</div>
-          <div className={'mt-1 font-mono text-sm ' + (hasReserves ? 'text-[var(--color-warning)]' : 'text-[var(--color-success)]')}>
-            {hasReserves ? 'OUI' : 'NON'}
+          <div className="text-xs uppercase text-[var(--color-muted-foreground)]">
+            {t('detail.tiles.reserves')}
+          </div>
+          <div
+            className={
+              'mt-1 font-mono text-sm ' +
+              (hasReserves ? 'text-[var(--color-warning)]' : 'text-[var(--color-success)]')
+            }
+          >
+            {hasReserves ? t('detail.tiles.yes') : t('detail.tiles.no')}
           </div>
         </div>
       </section>
 
       <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
         <header className="border-b px-4 py-3">
-          <h2 className="text-sm font-semibold">Items receptionnes</h2>
+          <h2 className="text-sm font-semibold">{t('detail.items.title')}</h2>
         </header>
         <table className="w-full text-sm">
           <thead className="border-b text-left text-xs uppercase text-[var(--color-muted-foreground)]">
             <tr>
-              <th className="px-3 py-2 font-medium">N°</th>
-              <th className="px-3 py-2 font-medium">Designation</th>
-              <th className="px-3 py-2 font-medium">Qte prevue</th>
-              <th className="px-3 py-2 font-medium">Qte recue</th>
-              <th className="px-3 py-2 font-medium">Conforme</th>
-              <th className="px-3 py-2 font-medium">Observations</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.position')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.description')}</th>
+              <th className="px-3 py-2 font-medium">
+                {t('detail.items.columns.quantityExpected')}
+              </th>
+              <th className="px-3 py-2 font-medium">
+                {t('detail.items.columns.quantityReceived')}
+              </th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.compliant')}</th>
+              <th className="px-3 py-2 font-medium">{t('detail.items.columns.observations')}</th>
             </tr>
           </thead>
           <tbody>
@@ -148,7 +166,9 @@ export default async function ReceptionDetailPage(props: {
               <tr key={item.id} className="border-b last:border-0">
                 <td className="px-3 py-2 font-mono text-xs">{item.position}</td>
                 <td className="px-3 py-2">{item.description}</td>
-                <td className="px-3 py-2 text-right tabular-nums">{item.quantityExpected.toString()}</td>
+                <td className="px-3 py-2 text-right tabular-nums">
+                  {item.quantityExpected.toString()}
+                </td>
                 {isEditable ? (
                   <td colSpan={3}>
                     <form action={handleUpdateItem} className="flex gap-2 px-3 py-1">
@@ -162,27 +182,38 @@ export default async function ReceptionDetailPage(props: {
                         className="w-24 rounded-md border bg-white px-2 py-1 text-sm tabular-nums"
                       />
                       <label className="flex items-center gap-1 text-xs">
-                        <input type="checkbox" name="isCompliant" defaultChecked={item.isCompliant} /> Conforme
+                        <input
+                          type="checkbox"
+                          name="isCompliant"
+                          defaultChecked={item.isCompliant}
+                        />{' '}
+                        {t('detail.items.compliantLabel')}
                       </label>
                       <input
                         name="observations"
                         defaultValue={item.observations ?? ''}
-                        placeholder="Observations"
+                        placeholder={t('detail.items.observationsPlaceholder')}
                         className="flex-1 rounded-md border bg-white px-2 py-1 text-xs"
                       />
                       <button className="rounded-md bg-[var(--color-primary)] px-2 py-1 text-xs font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                        OK
+                        {t('detail.items.saveCta')}
                       </button>
                     </form>
                   </td>
                 ) : (
                   <>
-                    <td className="px-3 py-2 text-right tabular-nums">{item.quantityReceived.toString()}</td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {item.quantityReceived.toString()}
+                    </td>
                     <td className="px-3 py-2 text-xs">
                       {item.isCompliant ? (
-                        <span className="text-[var(--color-success)]">Oui</span>
+                        <span className="text-[var(--color-success)]">
+                          {t('detail.items.compliantYes')}
+                        </span>
                       ) : (
-                        <span className="text-[var(--color-destructive)]">Non</span>
+                        <span className="text-[var(--color-destructive)]">
+                          {t('detail.items.compliantNo')}
+                        </span>
                       )}
                     </td>
                     <td className="px-3 py-2 text-xs text-[var(--color-muted-foreground)]">
@@ -199,46 +230,63 @@ export default async function ReceptionDetailPage(props: {
       {workflow && (
         <section className="rounded-lg border bg-[var(--color-card)] shadow-sm">
           <header className="flex items-baseline justify-between border-b px-4 py-3">
-            <h3 className="text-sm font-semibold">Signatures</h3>
+            <h3 className="text-sm font-semibold">{t('detail.workflow.title')}</h3>
             <div className="flex items-center gap-2 text-xs">
-              <span className={'h-2 w-2 rounded-full ' + (chainVerify.ok ? 'bg-[var(--color-success)]' : 'bg-[var(--color-destructive)]')} />
+              <span
+                className={
+                  'h-2 w-2 rounded-full ' +
+                  (chainVerify.ok ? 'bg-[var(--color-success)]' : 'bg-[var(--color-destructive)]')
+                }
+              />
               <span className="font-mono text-[var(--color-muted-foreground)]">
-                Chaine : {chainVerify.ok ? 'OK (' + chainVerify.count + ')' : 'KO'}
+                {t('detail.workflow.chainLabel')} :{' '}
+                {chainVerify.ok
+                  ? t('detail.workflow.chainOk', { count: chainVerify.count })
+                  : t('detail.workflow.chainKo')}
               </span>
             </div>
           </header>
-          <ol className="divide-y px-4 py-3 text-xs space-y-2">
-            {['OPS', requiresTechnical ? 'TECH' : null, 'FINANCE']
-              .filter(Boolean)
-              .map((stage) => {
-                const stg = stage as string;
-                const sig = workflow.signatures.find((s) => s.stage === ('RECEPTION_' + stg as SignatureStage));
-                return (
-                  <li key={stg} className="flex justify-between">
-                    <span className="font-mono">{stg}</span>
-                    {sig ? (
-                      <span>
-                        {sig.actor.email ?? sig.actorId} - {formatDateTime(sig.signedAt)}
-                      </span>
-                    ) : (
-                      <span className="text-[var(--color-muted-foreground)]">en attente</span>
-                    )}
-                  </li>
-                );
-              })}
+          <ol className="space-y-2 divide-y px-4 py-3 text-xs">
+            {['OPS', requiresTechnical ? 'TECH' : null, 'FINANCE'].filter(Boolean).map((stage) => {
+              const stg = stage as string;
+              const sig = workflow.signatures.find(
+                (s) => s.stage === (('RECEPTION_' + stg) as SignatureStage),
+              );
+              return (
+                <li key={stg} className="flex justify-between">
+                  <span className="font-mono">{stg}</span>
+                  {sig ? (
+                    <span>
+                      {t('detail.workflow.signedLine', {
+                        actor: sig.actor.email ?? sig.actorId,
+                        date: formatDateTime(sig.signedAt),
+                      })}
+                    </span>
+                  ) : (
+                    <span className="text-[var(--color-muted-foreground)]">
+                      {t('detail.workflow.waiting')}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         </section>
       )}
 
       <section className="rounded-lg border bg-[var(--color-card)] p-6 shadow-sm">
-        <h3 className="text-sm font-semibold">Actions</h3>
+        <h3 className="text-sm font-semibold">{t('detail.actions.title')}</h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {verdict.canSign && (
             <form action={handleSign} className="flex flex-1 gap-2">
               <input type="hidden" name="id" value={reception.id} />
-              <input name="comment" placeholder="Commentaire (optionnel)" className="flex-1 rounded-md border bg-white px-3 py-2 text-sm" />
+              <input
+                name="comment"
+                placeholder={t('detail.actions.signComment')}
+                className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
+              />
               <button className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-[var(--color-primary-foreground)] hover:opacity-90">
-                Signer {verdict.stage}
+                {t('detail.actions.signStage', { stage: verdict.stage })}
               </button>
             </form>
           )}
@@ -255,11 +303,11 @@ export default async function ReceptionDetailPage(props: {
                   name="reason"
                   required
                   minLength={5}
-                  placeholder="Motif rejet"
+                  placeholder={t('detail.actions.rejectReason')}
                   className="flex-1 rounded-md border bg-white px-3 py-2 text-sm"
                 />
-                <button className="rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)] hover:bg-[var(--color-destructive)]/10">
-                  Rejeter
+                <button className="hover:bg-[var(--color-destructive)]/10 rounded-md border border-[var(--color-destructive)] bg-white px-3 py-2 text-xs font-medium text-[var(--color-destructive)]">
+                  {t('detail.actions.reject')}
                 </button>
               </form>
             )}
