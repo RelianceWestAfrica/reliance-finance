@@ -4,7 +4,8 @@ import { buildKeycloakLogoutUrl } from '@/lib/keycloak-logout';
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  const postLogoutRedirectUri = `${req.nextUrl.origin}/login?reason=signed_out`;
+  const base = process.env.AUTH_URL ?? req.nextUrl.origin;
+  const postLogoutRedirectUri = `${base.replace(/\/$/, '')}/login?reason=signed_out`;
   const idToken = session?.idToken;
   const issuer = process.env.KEYCLOAK_ISSUER;
   const clientId = process.env.KEYCLOAK_ID;
