@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 type NavItem = { href: string; label: string; match?: string; icon: ReactNode };
 type NavGroup = { label: string; items: NavItem[] };
@@ -67,6 +67,23 @@ function initials(label: string) {
   return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || base.slice(0, 2).toUpperCase();
 }
 
+function AccountMenuItem({ href, title, sub, icon }: { href: string; title: string; sub: string; icon: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="flex items-start gap-3 rounded-[8px] px-2.5 py-2 transition-colors hover:bg-[var(--color-surface-2)]"
+    >
+      <span className="mt-[1px] flex-none text-[var(--color-muted-foreground)]">
+        <span className="block h-[16px] w-[16px] [&>svg]:h-full [&>svg]:w-full">{icon}</span>
+      </span>
+      <span className="leading-tight">
+        <span className="block text-[12.5px] font-medium text-[var(--color-foreground)]">{title}</span>
+        <span className="block text-[11px] text-[var(--color-faint)]">{sub}</span>
+      </span>
+    </Link>
+  );
+}
+
 export function AppSidebar({
   userLabel,
   roleLabel,
@@ -77,23 +94,23 @@ export function AppSidebar({
   logoutAction: () => Promise<void>;
 }) {
   const isActive = useActive();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <aside className="sticky top-0 hidden h-screen flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-white)] text-[var(--color-foreground)] md:flex">
-      <div className="border-b border-[var(--color-border)] px-5 py-[16px]">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[10px] bg-[var(--color-primary)] p-[7px]">
-            <img src="/rwa-icon.svg" alt="RWA" className="h-full w-full" />
-          </div>
-          <div className="leading-tight">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-faint)]">RWA</div>
-            <div className="text-[15px] font-bold text-[var(--color-foreground)]">Finances</div>
-          </div>
+      {/* Header: logo + brand, with FR + notifications pinned to the right edge */}
+      <div className="flex items-center gap-3 border-b border-[var(--color-border)] px-5 py-[16px]">
+        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[10px] bg-[var(--color-primary)] p-[7px]">
+          <img src="/rwa-icon.svg" alt="RWA" className="h-full w-full" />
         </div>
-        <div className="mt-3 flex items-center gap-1.5">
+        <div className="leading-tight">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-faint)]">RWA</div>
+          <div className="text-[15px] font-bold text-[var(--color-foreground)]">Finances</div>
+        </div>
+        <div className="ml-auto flex items-center gap-1.5">
           <button
             type="button"
-            className="flex items-center gap-1 rounded-[7px] border border-[var(--color-border)] px-2 py-[5px] text-[11px] font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
+            className="flex items-center gap-1 rounded-[7px] border border-[var(--color-border)] px-1.5 py-[5px] text-[11px] font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
           >
             FR
             <svg viewBox="0 0 24 24" className="h-3 w-3" {...s}><polyline points="6 9 12 15 18 9" /></svg>
@@ -138,24 +155,51 @@ export function AppSidebar({
         ))}
       </nav>
 
-      <div className="border-t border-[var(--color-border)] p-3">
-        <div className="flex items-center gap-3 px-1 py-1">
+      <div className="relative border-t border-[var(--color-border)] p-3">
+        {menuOpen && (
+          <>
+            <button
+              type="button"
+              aria-label="Fermer le menu"
+              className="fixed inset-0 z-[5] cursor-default"
+              onClick={() => setMenuOpen(false)}
+            />
+            <div className="absolute bottom-full left-3 right-3 z-10 mb-2 rounded-[12px] border border-[var(--color-border)] bg-[var(--color-surface-white)] p-1.5 shadow-[var(--shadow-lg)]">
+              <div className="px-2.5 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-faint)]">
+                Compte
+              </div>
+              <AccountMenuItem href="/profile" title="Mon profil" sub="Nom, email, photo…" icon={<svg viewBox="0 0 24 24" {...s}><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6" /></svg>} />
+              <AccountMenuItem href="/set-password" title="Mot de passe" sub="Réinitialiser le mot de passe" icon={<svg viewBox="0 0 24 24" {...s}><circle cx="8" cy="15" r="4" /><path d="M10.8 12.2 20 3M16 6l3 3M14 8l2 2" /></svg>} />
+              <AccountMenuItem href="/profile" title="Préférences" sub="Langue, affichage" icon={<svg viewBox="0 0 24 24" {...s}><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" /></svg>} />
+              <div className="my-1 h-px bg-[var(--color-border)]" />
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="flex w-full items-center gap-3 rounded-[8px] px-2.5 py-2 text-left text-[12.5px] font-medium text-[var(--color-destructive)] transition-colors hover:bg-[var(--color-destructive-soft)]"
+                >
+                  <span className="flex-none"><svg viewBox="0 0 24 24" className="h-4 w-4" {...s}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg></span>
+                  Déconnexion
+                </button>
+              </form>
+            </div>
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          className="flex w-full items-center gap-3 rounded-[9px] px-1 py-1.5 transition-colors hover:bg-[var(--color-surface-2)]"
+        >
           <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[9px] bg-[var(--color-primary-soft)] text-[13px] font-semibold text-[var(--color-primary)]">
             {initials(userLabel)}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 text-left">
             <div className="truncate text-[12.5px] font-medium text-[var(--color-foreground)]">{userLabel}</div>
             <div className="truncate text-[11px] text-[var(--color-faint)]">{roleLabel}</div>
           </div>
-        </div>
-        <form action={logoutAction} className="mt-2">
-          <button
-            type="submit"
-            className="w-full rounded-[8px] border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-[12px] font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]"
-          >
-            Déconnexion
-          </button>
-        </form>
+          <svg viewBox="0 0 24 24" className={'ml-auto h-4 w-4 flex-none text-[var(--color-faint)] transition-transform ' + (menuOpen ? 'rotate-180' : '')} {...s}><polyline points="6 9 12 15 18 9" /></svg>
+        </button>
+
         <a
           href="https://portal.rwa-core.com"
           className="mt-2 flex items-center gap-2 rounded-[8px] px-2 py-1.5 text-[11.5px] font-medium text-[var(--color-faint)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-foreground)]"
