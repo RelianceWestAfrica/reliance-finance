@@ -274,7 +274,7 @@ export function AppSidebar({
           <Link
             href="/profile"
             aria-label={tNav('selectLanguage')}
-            className="flex items-center gap-1 rounded-[7px] border border-[var(--color-border)] px-1.5 py-[5px] text-[11px] font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
+            className="flex h-9 items-center gap-1 rounded-[10px] border border-[var(--color-border)] px-2.5 text-[12px] font-medium text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
           >
             {localeCode}
             <svg viewBox="0 0 24 24" className="h-3 w-3" {...s}>
@@ -284,7 +284,7 @@ export function AppSidebar({
           <button
             type="button"
             aria-label={tNav('notifications')}
-            className="rounded-[7px] border border-[var(--color-border)] p-[6px] text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
+            className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[var(--color-border)] text-[var(--color-muted-foreground)] transition-colors hover:bg-[var(--color-surface-2)]"
           >
             <svg viewBox="0 0 24 24" className="h-[15px] w-[15px]" {...s}>
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
