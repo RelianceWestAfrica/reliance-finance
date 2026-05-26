@@ -46,7 +46,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <AppSidebar userLabel={userLabel} roleLabel={roleLabel} logoutAction={logoutAction} />
         <div className="min-w-0">
           <AppHeader />
-          <main className="mx-auto w-full max-w-[1240px] px-5 py-8 md:px-9 md:py-10">{children}</main>
+          <main className="w-full max-w-[1240px] px-5 py-8 md:px-9 md:py-10">{children}</main>
         </div>
       </div>
     </div>
