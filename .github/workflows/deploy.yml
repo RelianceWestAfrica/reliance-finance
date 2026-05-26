@@ -106,10 +106,22 @@ jobs:
           script: |
             set -euo pipefail
             cd /opt/reliance-finance
-            echo "IMAGE_TAG=sha-${GITHUB_SHA::7}" > .env.runtime
+            IMAGE_SHA="sha-${GITHUB_SHA::7}"
+            echo "IMAGE_TAG=${IMAGE_SHA}" > .env.runtime
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml pull web
-            docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml up -d --no-deps web
+            # --force-recreate garantit que le conteneur web est bien remplacé
+            # même quand compose ne détecte pas de changement de config.
+            docker compose --env-file .env.production --env-file .env.runtime -f docker-compose.prod.yml up -d --no-deps --force-recreate web
+
+            # Vérifie que le conteneur tourne bien sur l'image attendue.
+            RUNNING_IMG=$(docker inspect --format '{{.Config.Image}}' reliance-web 2>/dev/null || echo "")
+            echo "running image: ${RUNNING_IMG}"
+            case "${RUNNING_IMG}" in
+              *"${IMAGE_SHA}"*) echo "image tag matches ${IMAGE_SHA}";;
+              *) echo "FATAL: container is not on ${IMAGE_SHA} (got ${RUNNING_IMG})"; exit 1;;
+            esac
+
             ok=0
             for i in $(seq 1 12); do
               if curl -fsS https://finances.rwa-core.com/api/health | grep -q '"status":"ok"'; then ok=1; echo "HEALTH OK"; break; fi
