@@ -27,13 +27,13 @@ export function AppHeader() {
   const title = TITLES[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1);
 
   return (
-    <div className="sticky top-0 z-10 flex h-[52px] items-center border-b border-[var(--color-border)] bg-[var(--color-surface-white)] px-5 md:px-9">
-      <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-[13px] text-[var(--color-faint)]">
+    <div className="sticky top-0 z-10 flex h-12 items-center border-b border-[var(--color-border)] bg-[var(--color-surface-white)] px-5 md:px-9">
+      <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-[13px] text-[var(--fg-tertiary)]">
         <span>RWA</span>
-        <span className="opacity-40">/</span>
+        <span className="text-[var(--fg-muted)]">/</span>
         <span>Finances</span>
-        <span className="opacity-40">/</span>
-        <span className="font-medium text-[var(--color-foreground)]">{title}</span>
+        <span className="text-[var(--fg-muted)]">/</span>
+        <span className="font-medium text-[var(--fg-primary)]">{title}</span>
       </nav>
     </div>
   );

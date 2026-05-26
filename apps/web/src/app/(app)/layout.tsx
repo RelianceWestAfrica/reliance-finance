@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // Force le setup du mot de passe si premiere connexion (post-invitation)
   const userState = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { hashedPassword: true, isActive: true },
+    select: { hashedPassword: true, isActive: true, name: true },
   });
   if (!userState?.isActive) {
     redirect('/login?error=AccountDisabled');
@@ -25,7 +25,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const memberships = await getUserMemberships(session.user.id);
 
-  const userLabel = session.user.name ?? session.user.email ?? 'Utilisateur';
+  // Carte utilisateur : prénom + nom (depuis la base), pas l'email.
+  const userLabel = userState.name?.trim() || session.user.name || 'Utilisateur';
   const roleLabel =
     memberships.length > 0
       ? memberships
@@ -46,7 +47,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <AppSidebar userLabel={userLabel} roleLabel={roleLabel} logoutAction={logoutAction} />
         <div className="min-w-0">
           <AppHeader />
-          <main className="w-full max-w-[1240px] px-5 py-8 md:px-9 md:py-10">{children}</main>
+          <main className="w-full px-5 py-8 md:px-9 md:py-10">{children}</main>
         </div>
       </div>
     </div>
