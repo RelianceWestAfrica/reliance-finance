@@ -10,10 +10,14 @@ packages:
 #   - esbuild : binaire natif (utilise par tsx/next)
 #   - sharp : binaire natif (optimisation images Next.js)
 #   - unrs-resolver : binaire natif (utilise par turbo)
+#   - @parcel/watcher + @swc/core : dependances indirectes (turbo/next-intl),
+#     on les desactive explicitement pour ne pas etre interactif en CI.
 allowBuilds:
+  '@parcel/watcher': false
   '@prisma/client': true
   '@prisma/engines': true
   '@sentry/cli': true
+  '@swc/core': false
   argon2: true
   esbuild: true
   prisma: true
