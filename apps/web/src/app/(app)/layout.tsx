@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { auth, signOut } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { getUserMemberships } from '@/lib/rbac';
 import { prisma } from '@reliance-finance/database';
 import { AppSidebar, MobileNav } from '@/components/app-nav';
@@ -43,7 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   async function logoutAction() {
     'use server';
-    await signOut({ redirectTo: '/login' });
+    redirect('/api/auth/sso-logout');
   }
 
   return (
