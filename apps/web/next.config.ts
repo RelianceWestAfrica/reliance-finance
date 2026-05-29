@@ -10,7 +10,11 @@ const nextConfig: NextConfig = {
   // Mode standalone pour image Docker minimaliste (~100 MB vs ~1 GB)
   output: 'standalone',
   // Permet d'importer directement depuis les packages du monorepo sans build
-  transpilePackages: ['@reliance-finance/database', '@reliance-finance/workflow-engine'],
+  transpilePackages: [
+    '@reliance-finance/database',
+    '@reliance-finance/workflow-engine',
+    '@reliance-finance/bridge-contract',
+  ],
   // Argon2 est natif (node-gyp) - on l'exclut du bundle Edge
   serverExternalPackages: ['argon2', '@prisma/client', '.prisma/client'],
   experimental: {

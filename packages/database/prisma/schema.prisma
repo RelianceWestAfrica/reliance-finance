@@ -719,6 +719,11 @@ model ExpenseRequest {
   // Soft archive
   archivedAt      DateTime?
   rejectionReason String?
+  // Provenance pont inter-plateformes (cf. ADR 0003). Pas de FK dure :
+  // BridgeInbox.financeObjectId est polymorphe (ExpenseRequest | CashForecastLine | ...).
+  originApp       String?
+  originRef       String?
+  bridgeInboxId   String?
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
 
@@ -739,6 +744,7 @@ model ExpenseRequest {
   @@index([projectId])
   @@index([supplierId])
   @@index([createdById])
+  @@index([bridgeInboxId])
 }
 
 model ExpenseRequestItem {
@@ -1469,4 +1475,53 @@ model Attachment {
   paymentBankProof         Payment?                  @relation("PaymentBankProof")
 
   @@index([uploadedById])
+}
+
+// =============================================================================
+// PONT FINANCIER INTER-PLATEFORMES (cf. ADR 0003)
+// Reception entrante : staging idempotent des intentions poussees par les apps
+// sources (chantier, logistique, immobilier, RH). BridgeInbox decouple la
+// reception du mapping metier et garantit l'idempotence (exactly-once).
+// =============================================================================
+
+enum BridgeFlowType {
+  DISBURSEMENT // sortie -> ExpenseRequest
+  COLLECTION // entree (immobilier) -> CashForecastLine{INFLOW} + ecriture
+  PAYROLL_BATCH // paie (RH/SIRH, futur)
+  INTERCO // flux inter-entites (futur)
+}
+
+enum BridgeInboxStatus {
+  RECEIVED // recue, signature OK, en attente de traitement
+  PROCESSING // mapping en cours
+  COMMITTED // objet Finance cree (idempotent au-dela)
+  REJECTED // refusee (garde metier / validation) - non rejouable en l'etat
+  FAILED // erreur technique - rejouable
+}
+
+model BridgeInbox {
+  id             String            @id @default(cuid())
+  idempotencyKey String            @unique
+  sourceApp      String
+  flowType       BridgeFlowType
+  status         BridgeInboxStatus @default(RECEIVED)
+  schemaVersion  String
+  payloadHash    String // sha256 du corps brut recu (anti-rejeu/diagnostic)
+  payload        Json // intention complete telle que recue
+  // Resultat du mapping (polymorphe : pas de FK dure)
+  financeObjectType String? // "ExpenseRequest" | "CashForecastLine" | "JournalEntry"
+  financeObjectId   String?
+  financeRef        String? // reference Finance allouee (RWA-FDA-...)
+  // Diagnostics
+  errorCode    String?
+  errorMessage String?
+  attempts     Int       @default(0)
+  receivedAt   DateTime  @default(now())
+  committedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([sourceApp, status])
+  @@index([flowType, status])
+  @@index([status])
 }

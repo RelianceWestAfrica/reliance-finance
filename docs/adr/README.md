@@ -15,10 +15,11 @@ Format Michael Nygard, en francais :
 
 ## Index
 
-| #    | Titre                                  | Statut   |
-| ---- | -------------------------------------- | -------- |
-| 0001 | Modele de donnees                      | Accepted |
-| 0002 | Moteur de workflow                     | Accepted |
+| #    | Titre                            | Statut   |
+| ---- | -------------------------------- | -------- |
+| 0001 | Modele de donnees                | Accepted |
+| 0002 | Moteur de workflow               | Accepted |
+| 0003 | Pont financier inter-plateformes | Accepted |
 
 ## Quand ecrire un ADR ?
 
