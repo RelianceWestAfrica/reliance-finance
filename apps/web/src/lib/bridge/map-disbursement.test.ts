@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseFinancialIntent, type FinancialIntent } from '@reliance-finance/bridge-contract';
+import { parseFinancialIntent, type FinancialIntent } from '@reliancewestafrica/bridge-contract';
 import { ExpenseRequestType, OpexCapex, UrgencyLevel } from '@reliance-finance/database';
 
 import {
@@ -74,7 +74,10 @@ describe('buildItemsInput', () => {
   it('preserve la quantite fournie', () => {
     const items = buildItemsInput(
       makeIntent({
-        content: { title: 'Lot items', items: [{ position: 1, description: 'sac', quantity: '5.0000' }] },
+        content: {
+          title: 'Lot items',
+          items: [{ position: 1, description: 'sac', quantity: '5.0000' }],
+        },
       }),
     );
     expect(items[0]?.quantity).toBe('5.0000');

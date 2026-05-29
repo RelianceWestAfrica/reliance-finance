@@ -35,15 +35,15 @@ importers:
       '@react-pdf/renderer':
         specifier: ^4.5.1
         version: 4.5.1(react@19.2.6)
-      '@reliance-finance/bridge-contract':
-        specifier: workspace:*
-        version: link:../../packages/bridge-contract
       '@reliance-finance/database':
         specifier: workspace:*
         version: link:../../packages/database
       '@reliance-finance/workflow-engine':
         specifier: workspace:*
         version: link:../../packages/workflow-engine
+      '@reliancewestafrica/bridge-contract':
+        specifier: workspace:*
+        version: link:../../packages/bridge-contract
       '@reliancewestafrica/design-system':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)

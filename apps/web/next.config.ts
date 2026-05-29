@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     '@reliance-finance/database',
     '@reliance-finance/workflow-engine',
-    '@reliance-finance/bridge-contract',
+    '@reliancewestafrica/bridge-contract',
   ],
   // Argon2 est natif (node-gyp) - on l'exclut du bundle Edge
   serverExternalPackages: ['argon2', '@prisma/client', '.prisma/client'],

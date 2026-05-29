@@ -7,7 +7,7 @@
 // P0 : seul flowType DISBURSEMENT est mappe (COLLECTION/PAYROLL = phases ulterieures).
 // =============================================================================
 
-import { sha256Hex, type FinancialIntent } from '@reliance-finance/bridge-contract';
+import { sha256Hex, type FinancialIntent } from '@reliancewestafrica/bridge-contract';
 import { BridgeInboxStatus, Prisma, prisma } from '@reliance-finance/database';
 
 import { appendAudit, AuditAction } from '@/lib/audit/log';

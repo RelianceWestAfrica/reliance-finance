@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseFinancialIntent } from '@reliance-finance/bridge-contract';
+import { parseFinancialIntent } from '@reliancewestafrica/bridge-contract';
 
 function baseDisbursement(overrides: Record<string, unknown> = {}) {
   return {

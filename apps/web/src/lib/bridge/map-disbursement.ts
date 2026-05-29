@@ -5,7 +5,7 @@
 // derive le contexte du moteur de workflow. Testable isolement.
 // =============================================================================
 
-import type { FinancialIntent } from '@reliance-finance/bridge-contract';
+import type { FinancialIntent } from '@reliancewestafrica/bridge-contract';
 import {
   DocumentType,
   ExpenseRequestType,

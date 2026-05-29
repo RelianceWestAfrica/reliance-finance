@@ -1,5 +1,5 @@
 // =============================================================================
-// @reliance-finance/bridge-contract
+// @reliancewestafrica/bridge-contract
 // Contrat de donnees generique du pont financier inter-plateformes RWA.
 // Reutilisable par toutes les apps sources (chantier, logistique, immobilier, RH).
 // =============================================================================
