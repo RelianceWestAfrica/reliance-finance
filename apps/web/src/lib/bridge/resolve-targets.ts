@@ -125,3 +125,32 @@ export async function resolveSupplier(
     isStrategic: supplier.isStrategic,
   };
 }
+
+export interface ResolvedClient {
+  clientId: string | null;
+  clientName: string | null;
+}
+
+/**
+ * P4 (COLLECTION) : rapproche un client EXISTANT par (entite, code). Symetrique
+ * a resolveSupplier : l'onboarding client depuis le pont est hors-scope v1 ;
+ * client inconnu -> clientId null (le nom reste denormalise sur l'ecriture +
+ * conserve dans l'audit). On ne cree jamais le client ici (cf. ADR 0003).
+ */
+export async function resolveClient(
+  entityId: string,
+  counterparty: FinancialIntent['counterparty'],
+): Promise<ResolvedClient> {
+  if (!counterparty?.ref) {
+    return { clientId: null, clientName: counterparty?.name ?? null };
+  }
+  const client = await prisma.client.findUnique({
+    where: { entityId_code: { entityId, code: counterparty.ref } },
+    select: { id: true, name: true, isActive: true },
+  });
+  // Client inconnu OU desactive -> non bloquant : clientId null + nom denormalise.
+  if (!client || !client.isActive) {
+    return { clientId: null, clientName: counterparty.name ?? null };
+  }
+  return { clientId: client.id, clientName: client.name };
+}

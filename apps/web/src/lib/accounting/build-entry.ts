@@ -38,6 +38,7 @@ export interface BuiltEntry {
 
 export interface AccountMapping {
   supplier: string;
+  client: string;
   bank: string;
   cash: string;
   vatRecoverable: string;
@@ -47,6 +48,7 @@ export interface AccountMapping {
 
 export const DEFAULT_ACCOUNT_MAPPING: AccountMapping = {
   supplier: '401100',
+  client: '411100',
   bank: '512100',
   cash: '571000',
   vatRecoverable: '445000',
@@ -170,6 +172,64 @@ export function buildInvoiceEntry(
     lines,
     totalDebit: input.subtotalHt + input.taxAmount,
     totalCredit: input.totalTtc,
+  };
+}
+
+// =============================================================================
+// Encaissement client (COLLECTION, pont P4) : D 512100 (ou 571000 si CASH) / C 411100
+// =============================================================================
+// L'argent est deja recu (echeance immobiliere PAID cote source) : l'ecriture
+// constate l'entree de tresorerie et solde la creance client (compte collectif).
+
+export interface CollectionEntryInput {
+  collectionReference: string;
+  collectionAmount: number;
+  collectionDate: Date;
+  clientCode: string;
+  clientName?: string | null;
+  currency: string;
+  costCenterCode?: string | null;
+  paymentMethod?: 'BANK_TRANSFER' | 'CASH' | 'OTHER';
+}
+
+export function buildCollectionEntry(
+  input: CollectionEntryInput,
+  mapping: AccountMapping = DEFAULT_ACCOUNT_MAPPING,
+): BuiltEntry {
+  const cashAccount = input.paymentMethod === 'CASH' ? mapping.cash : mapping.bank;
+  const hasCode = input.clientCode.trim().length > 0;
+  const who = input.clientName
+    ? input.clientName + (hasCode ? ' (' + input.clientCode + ')' : '')
+    : hasCode
+      ? input.clientCode
+      : 'client';
+  const description = 'Encaissement client ' + who + ' - ' + input.collectionReference;
+
+  return {
+    journalCode: input.paymentMethod === 'CASH' ? 'CAI' : 'BNQ',
+    description,
+    entryDate: input.collectionDate,
+    currency: input.currency,
+    lines: [
+      {
+        position: 1,
+        accountCode: cashAccount,
+        debit: input.collectionAmount,
+        credit: 0,
+        description: 'Entree ' + (input.paymentMethod === 'CASH' ? 'caisse' : 'banque'),
+        costCenterCode: input.costCenterCode,
+      },
+      {
+        position: 2,
+        accountCode: mapping.client,
+        debit: 0,
+        credit: input.collectionAmount,
+        description: 'Creance client ' + who,
+        costCenterCode: input.costCenterCode,
+      },
+    ],
+    totalDebit: input.collectionAmount,
+    totalCredit: input.collectionAmount,
   };
 }
 

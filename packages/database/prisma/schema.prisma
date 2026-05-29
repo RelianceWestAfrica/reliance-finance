@@ -427,6 +427,7 @@ model Entity {
   costCenters       CostCenter[]
   thresholds        Threshold[]
   suppliers         Supplier[]
+  clients           Client[]
   expenseRequests   ExpenseRequest[]
   purchaseOrders    PurchaseOrder[]
   receptions        Reception[]
@@ -487,6 +488,34 @@ model CostCenter {
   project         Project?            @relation(fields: [projectId], references: [id])
   expenseRequests ExpenseRequest[]
   journalEntryLines JournalEntryLine[]
+
+  @@unique([entityId, code])
+  @@index([entityId])
+}
+
+// Referentiel CLIENT (pont financier P4 / COLLECTION). Symetrique a Supplier mais
+// allege : pas de workflow de validation bancaire en v1. Le rapprochement depuis
+// le pont resout un client EXISTANT par (entite, code) ; l'onboarding (creation)
+// reste hors pont (cf. resolveSupplier / ADR 0003).
+model Client {
+  id          String   @id @default(cuid())
+  entityId    String
+  code        String
+  name        String
+  legalForm   String?
+  rccm        String?
+  ifu         String?
+  email       String?
+  phone       String?
+  address     String?
+  country     String?
+  notes       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entity         Entity         @relation(fields: [entityId], references: [id])
+  journalEntries JournalEntry[]
 
   @@unique([entityId, code])
   @@index([entityId])
@@ -1280,7 +1309,8 @@ model JournalEntry {
   entityId         String
   periodId         String
   paymentId        String?
-  journalCode      String                                       // ex: ACH, BNQ, OD
+  clientId         String?                                      // encaissement COLLECTION (pont P4)
+  journalCode      String                                       // ex: ACH, BNQ, CAI, OD
   entryDate        DateTime
   description      String
   totalDebit       Decimal            @db.Decimal(18, 4)
@@ -1295,10 +1325,12 @@ model JournalEntry {
   entity   Entity             @relation(fields: [entityId], references: [id])
   period   AccountingPeriod   @relation(fields: [periodId], references: [id])
   payment  Payment?           @relation(fields: [paymentId], references: [id])
+  client   Client?            @relation(fields: [clientId], references: [id])
   lines    JournalEntryLine[]
 
   @@index([entityId, entryDate])
   @@index([paymentId])
+  @@index([clientId])
 }
 
 model JournalEntryLine {

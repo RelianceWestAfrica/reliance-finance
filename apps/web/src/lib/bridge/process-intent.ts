@@ -4,7 +4,8 @@
 // Gate atomique via la contrainte UNIQUE sur BridgeInbox.idempotencyKey :
 // - 1ere reception -> create RECEIVED puis traitement -> COMMITTED / REJECTED / FAILED
 // - rejeu d'une intention COMMITTED -> 200 idempotent (meme financeRef)
-// P0 : seul flowType DISBURSEMENT est mappe (COLLECTION/PAYROLL = phases ulterieures).
+// v1 : DISBURSEMENT (decaissement -> ExpenseRequest) et COLLECTION (encaissement
+// -> JournalEntry + CashForecastLine) sont mappes. PAYROLL_BATCH/INTERCO = ulterieurs.
 // =============================================================================
 
 import { sha256Hex, type FinancialIntent } from '@reliancewestafrica/bridge-contract';
@@ -12,6 +13,7 @@ import { BridgeInboxStatus, Prisma, prisma } from '@reliance-finance/database';
 
 import { appendAudit, AuditAction } from '@/lib/audit/log';
 
+import { createCollectionFromIntent } from './create-collection-from-intent';
 import { createExpenseRequestFromIntent } from './create-expense-request-from-intent';
 
 export interface ProcessIntentParams {
@@ -105,11 +107,12 @@ export async function processFinancialIntent(
   }
 
   // --- Dispatch par flowType ----------------------------------------------
-  if (intent.flowType !== 'DISBURSEMENT') {
+  // v1 : DISBURSEMENT (decaissement) et COLLECTION (encaissement) sont mappes.
+  if (intent.flowType !== 'DISBURSEMENT' && intent.flowType !== 'COLLECTION') {
     await markRejected(
       inboxId,
       'FLOW_NOT_IMPLEMENTED',
-      'flowType ' + intent.flowType + ' non implemente en v1 (P0 = DISBURSEMENT)',
+      'flowType ' + intent.flowType + ' non implemente en v1 (DISBURSEMENT, COLLECTION)',
     );
     return {
       httpStatus: 422,
@@ -127,17 +130,45 @@ export async function processFinancialIntent(
       data: { status: BridgeInboxStatus.PROCESSING, attempts: { increment: 1 } },
     });
 
-    const res = await createExpenseRequestFromIntent({ intent, source, bridgeInboxId: inboxId });
-    if (!res.ok) {
-      await markRejected(inboxId, res.code, res.message);
-      return {
-        httpStatus: 422,
-        body: {
-          received: false,
-          idempotencyKey,
-          error: { code: res.code, message: res.message, field: res.field },
-        },
-      };
+    let financeObjectType: string;
+    let financeObjectId: string;
+    let financeRef: string;
+    let financeStatus: string;
+
+    if (intent.flowType === 'DISBURSEMENT') {
+      const res = await createExpenseRequestFromIntent({ intent, source, bridgeInboxId: inboxId });
+      if (!res.ok) {
+        await markRejected(inboxId, res.code, res.message);
+        return {
+          httpStatus: 422,
+          body: {
+            received: false,
+            idempotencyKey,
+            error: { code: res.code, message: res.message, field: res.field },
+          },
+        };
+      }
+      financeObjectType = 'ExpenseRequest';
+      financeObjectId = res.expenseRequestId;
+      financeRef = res.reference;
+      financeStatus = res.status;
+    } else {
+      const res = await createCollectionFromIntent({ intent, source, bridgeInboxId: inboxId });
+      if (!res.ok) {
+        await markRejected(inboxId, res.code, res.message);
+        return {
+          httpStatus: 422,
+          body: {
+            received: false,
+            idempotencyKey,
+            error: { code: res.code, message: res.message, field: res.field },
+          },
+        };
+      }
+      financeObjectType = 'JournalEntry';
+      financeObjectId = res.journalEntryId;
+      financeRef = res.reference;
+      financeStatus = res.status;
     }
 
     await prisma.bridgeInbox.update({
@@ -145,9 +176,9 @@ export async function processFinancialIntent(
       data: {
         status: BridgeInboxStatus.COMMITTED,
         committedAt: new Date(),
-        financeObjectType: 'ExpenseRequest',
-        financeObjectId: res.expenseRequestId,
-        financeRef: res.reference,
+        financeObjectType,
+        financeObjectId,
+        financeRef,
         errorCode: null,
         errorMessage: null,
       },
@@ -160,8 +191,9 @@ export async function processFinancialIntent(
       payload: {
         source,
         idempotencyKey,
-        financeRef: res.reference,
-        financeObjectId: res.expenseRequestId,
+        flowType: intent.flowType,
+        financeRef,
+        financeObjectId,
       },
     }).catch(() => undefined);
 
@@ -170,10 +202,10 @@ export async function processFinancialIntent(
       body: {
         received: true,
         idempotencyKey,
-        financeRef: res.reference,
-        financeObjectType: 'ExpenseRequest',
-        financeObjectId: res.expenseRequestId,
-        status: res.status,
+        financeRef,
+        financeObjectType,
+        financeObjectId,
+        status: financeStatus,
       },
     };
   } catch (e) {

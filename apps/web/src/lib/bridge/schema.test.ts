@@ -66,6 +66,28 @@ describe('parseFinancialIntent', () => {
     expect(r.ok).toBe(false);
   });
 
+  it('accepte une COLLECTION avec contrepartie CLIENT (sans validation amont requise)', () => {
+    const r = parseFinancialIntent(
+      baseDisbursement({
+        flowType: 'COLLECTION',
+        counterparty: { kind: 'CLIENT', ref: 'CLI-001', name: 'SCI Horizon' },
+        upstreamValidations: [],
+      }),
+    );
+    expect(r.ok).toBe(true);
+  });
+
+  it('accepte une COLLECTION sans contrepartie', () => {
+    const r = parseFinancialIntent(
+      baseDisbursement({
+        flowType: 'COLLECTION',
+        counterparty: undefined,
+        upstreamValidations: [],
+      }),
+    );
+    expect(r.ok).toBe(true);
+  });
+
   it('met la devise en majuscules', () => {
     const r = parseFinancialIntent(
       baseDisbursement({ amount: { value: '100.0000', currency: 'xof' } }),
