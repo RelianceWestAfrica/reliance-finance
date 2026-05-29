@@ -7,7 +7,7 @@
 // dans la cascade de visas (Lignes 2->6), la Ligne 1 ayant ete faite cote source.
 // =============================================================================
 
-import type { FinancialIntent } from '@reliance-finance/bridge-contract';
+import type { FinancialIntent } from '@reliancewestafrica/bridge-contract';
 import {
   DocumentType,
   ExpenseRequestStatus,

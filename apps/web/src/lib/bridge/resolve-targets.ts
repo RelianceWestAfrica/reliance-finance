@@ -5,7 +5,7 @@
 // (decouplage des PK entre apps). Ce module les resout dans le referentiel Finance.
 // =============================================================================
 
-import type { FinancialIntent } from '@reliance-finance/bridge-contract';
+import type { FinancialIntent } from '@reliancewestafrica/bridge-contract';
 import { prisma } from '@reliance-finance/database';
 
 export interface ResolvedTargets {

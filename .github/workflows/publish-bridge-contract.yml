@@ -1,0 +1,42 @@
+name: Publish bridge-contract to GitHub Packages
+
+# Publication du contrat partage @reliancewestafrica/bridge-contract sur GitHub
+# Packages, consomme par les apps sources du pont (rwa-btp, logistique, ...).
+#
+# Flux : bump `version` dans packages/bridge-contract/package.json -> creer une
+# Release taggee `bridge-contract-vX.Y.Z` -> ce workflow build + publie.
+# npm rejette une version deja publiee : toujours bumper avant de tagger.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    # Ne publie que pour les releases du contrat (tag prefixe), pas les autres releases.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.release.tag_name, 'bridge-contract-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: pnpm --filter @reliancewestafrica/bridge-contract build
+      - name: Publish
+        run: pnpm --filter @reliancewestafrica/bridge-contract publish --no-git-checks
+        env:
+          # Le .npmrc committe route le scope @reliancewestafrica vers GitHub
+          # Packages et lit le token via ${NODE_AUTH_TOKEN}.
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

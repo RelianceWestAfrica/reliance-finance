@@ -5,7 +5,7 @@ import {
   isTimestampFresh,
   sha256Hex,
   verifyBridgeSignature,
-} from '@reliance-finance/bridge-contract';
+} from '@reliancewestafrica/bridge-contract';
 
 const SECRET = 'x'.repeat(40);
 const TS = '1716883200';

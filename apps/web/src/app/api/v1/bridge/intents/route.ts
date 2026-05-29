@@ -10,7 +10,7 @@
 
 import { NextResponse } from 'next/server';
 
-import { BRIDGE_HEADERS, parseFinancialIntent } from '@reliance-finance/bridge-contract';
+import { BRIDGE_HEADERS, parseFinancialIntent } from '@reliancewestafrica/bridge-contract';
 
 import { authenticateBridgeRequest } from '@/lib/bridge/authenticate';
 import { processFinancialIntent } from '@/lib/bridge/process-intent';

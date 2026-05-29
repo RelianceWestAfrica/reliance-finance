@@ -6,7 +6,7 @@
 // Tant qu'aucun secret n'est configure, l'endpoint refuse la source (inerte).
 // =============================================================================
 
-import { BRIDGE_SOURCE_APPS, type BridgeSourceApp } from '@reliance-finance/bridge-contract';
+import { BRIDGE_SOURCE_APPS, type BridgeSourceApp } from '@reliancewestafrica/bridge-contract';
 
 /** Normalise un nom d'app en suffixe d'env var (RWA-BTP -> RWA_BTP). */
 export function bridgeSecretEnvKey(app: string): string {

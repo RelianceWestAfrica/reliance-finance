@@ -2,7 +2,7 @@
 // Pont financier - Authentification d'une requete entrante (HMAC + anti-replay)
 // =============================================================================
 
-import { BRIDGE_HEADERS, verifyBridgeSignature } from '@reliance-finance/bridge-contract';
+import { BRIDGE_HEADERS, verifyBridgeSignature } from '@reliancewestafrica/bridge-contract';
 
 import { getBridgeSecret, isKnownBridgeSource } from './secrets';
 
