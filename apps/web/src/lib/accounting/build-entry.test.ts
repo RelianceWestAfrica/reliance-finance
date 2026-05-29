@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildPaymentEntry,
   buildInvoiceEntry,
+  buildCollectionEntry,
   isBalanced,
   DEFAULT_ACCOUNT_MAPPING,
 } from './build-entry.js';
@@ -146,6 +147,71 @@ describe('buildInvoiceEntry', () => {
       costCenterCode: 'CC-CHANTIER',
     });
     expect(e.lines.every((l) => l.costCenterCode === 'CC-CHANTIER')).toBe(true);
+  });
+});
+
+describe('buildCollectionEntry', () => {
+  it('encaissement banque : D 512100 / C 411100 equilibre', () => {
+    const e = buildCollectionEntry({
+      collectionReference: 'IMMO-ECH-2026-0001',
+      collectionAmount: 5_000_000,
+      collectionDate: NOW,
+      clientCode: 'CLI-001',
+      clientName: 'SCI Horizon',
+      currency: 'XOF',
+    });
+    expect(e.journalCode).toBe('BNQ');
+    expect(e.lines).toHaveLength(2);
+    expect(e.lines[0]?.accountCode).toBe('512100');
+    expect(e.lines[0]?.debit).toBe(5_000_000);
+    expect(e.lines[0]?.credit).toBe(0);
+    expect(e.lines[1]?.accountCode).toBe('411100');
+    expect(e.lines[1]?.debit).toBe(0);
+    expect(e.lines[1]?.credit).toBe(5_000_000);
+    expect(isBalanced(e)).toBe(true);
+  });
+
+  it('encaissement caisse : journal CAI + compte 571000 au debit', () => {
+    const e = buildCollectionEntry({
+      collectionReference: 'r',
+      collectionAmount: 250_000,
+      collectionDate: NOW,
+      clientCode: 'CLI-002',
+      currency: 'XOF',
+      paymentMethod: 'CASH',
+    });
+    expect(e.journalCode).toBe('CAI');
+    expect(e.lines[0]?.accountCode).toBe('571000');
+    expect(e.lines[1]?.accountCode).toBe('411100');
+    expect(isBalanced(e)).toBe(true);
+  });
+
+  it('positions contigues 1, 2 et costCenter propage', () => {
+    const e = buildCollectionEntry({
+      collectionReference: 'r',
+      collectionAmount: 100,
+      collectionDate: NOW,
+      clientCode: 'C',
+      currency: 'XOF',
+      costCenterCode: 'CC-CHANTIER',
+    });
+    expect(e.lines.map((l) => l.position)).toEqual([1, 2]);
+    expect(e.lines.every((l) => l.costCenterCode === 'CC-CHANTIER')).toBe(true);
+  });
+
+  it('mapping personnalise (compte client alternatif)', () => {
+    const e = buildCollectionEntry(
+      {
+        collectionReference: 'r',
+        collectionAmount: 100,
+        collectionDate: NOW,
+        clientCode: 'C',
+        currency: 'XOF',
+      },
+      { ...DEFAULT_ACCOUNT_MAPPING, client: '411200', bank: '512200' },
+    );
+    expect(e.lines[0]?.accountCode).toBe('512200');
+    expect(e.lines[1]?.accountCode).toBe('411200');
   });
 });
 
