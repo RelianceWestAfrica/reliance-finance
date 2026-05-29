@@ -165,6 +165,8 @@ export const AuditAction = {
   BRIDGE_INTENT_REJECTED: 'bridge.intent.rejected',
   BRIDGE_INTENT_FAILED: 'bridge.intent.failed',
   BRIDGE_SIGNATURE_REJECTED: 'bridge.signature.rejected',
+  BRIDGE_CALLBACK_SENT: 'bridge.callback.sent',
+  BRIDGE_CALLBACK_FAILED: 'bridge.callback.failed',
 } as const;
 
 export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction];

@@ -20,3 +20,13 @@ export function isKnownBridgeSource(app: string): app is BridgeSourceApp {
 export function getBridgeSecret(app: string): string | undefined {
   return process.env[bridgeSecretEnvKey(app)];
 }
+
+/** Normalise un nom d'app en cle d'env de l'URL de callback (statut retour). */
+export function bridgeCallbackUrlEnvKey(app: string): string {
+  return 'BRIDGE_CALLBACK_URL__' + app.toUpperCase().replace(/[^A-Z0-9]+/g, '_');
+}
+
+/** URL complete du endpoint de callback de la source (ex: https://chantier.rwa-core.com/api/bridge/callbacks). */
+export function getBridgeCallbackUrl(app: string): string | undefined {
+  return process.env[bridgeCallbackUrlEnvKey(app)];
+}

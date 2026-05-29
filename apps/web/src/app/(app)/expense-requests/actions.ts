@@ -42,6 +42,7 @@ import {
   type ExpenseRequestCtx,
 } from '@/lib/expense-requests/workflow-definitions';
 import { notifyHoldingRole, sendNotification } from '@/lib/notifications/send';
+import { notifyBridgeOnExpenseStatus } from '@/lib/bridge/dispatch-callback';
 
 const STAGE_TO_SIGNATURE_STAGE: Record<SignatureStageId, SignatureStage> = {
   VISA_FILIALE_N1: SignatureStage.VISA_FILIALE_N1,
@@ -588,6 +589,9 @@ export async function signExpenseRequest(
       ip,
       userAgent,
     }).catch(() => undefined);
+
+    // Pont (P2) : notifie la source d'origine que le dossier est approuve.
+    await notifyBridgeOnExpenseStatus(er.id, 'APPROVED').catch(() => undefined);
   } else {
     // Notifier les approbateurs de la prochaine etape
     const nextSlot = approvalChain[approvalChain.indexOf(slot) + 1];
@@ -680,6 +684,9 @@ export async function rejectExpenseRequest(
     entityType: 'ExpenseRequest',
     entityId: er.id,
   }).catch(() => undefined);
+
+  // Pont (P2) : notifie la source d'origine que le dossier est rejete.
+  await notifyBridgeOnExpenseStatus(er.id, 'REJECTED').catch(() => undefined);
 
   revalidatePath('/expense-requests/' + er.id);
   return { ok: true };
