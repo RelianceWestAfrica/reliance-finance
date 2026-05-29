@@ -157,9 +157,17 @@ export const AuditAction = {
   CASH_FORECAST_LINE_ADDED: 'cash_forecast.line_added',
   CASH_FORECAST_COMMITTED: 'cash_forecast.committed',
   CASH_RUPTURE_DETECTED: 'cash_forecast.rupture_detected',
+
+  // Pont financier inter-plateformes (ADR 0003)
+  BRIDGE_INTENT_RECEIVED: 'bridge.intent.received',
+  BRIDGE_INTENT_COMMITTED: 'bridge.intent.committed',
+  BRIDGE_INTENT_DUPLICATE: 'bridge.intent.duplicate',
+  BRIDGE_INTENT_REJECTED: 'bridge.intent.rejected',
+  BRIDGE_INTENT_FAILED: 'bridge.intent.failed',
+  BRIDGE_SIGNATURE_REJECTED: 'bridge.signature.rejected',
 } as const;
 
-export type AuditActionType = typeof AuditAction[keyof typeof AuditAction];
+export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction];
 
 export interface AuditAppendInput {
   entityType: string;

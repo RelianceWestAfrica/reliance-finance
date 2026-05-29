@@ -20,6 +20,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@react-pdf/renderer": "^4.5.1",
+    "@reliance-finance/bridge-contract": "workspace:*",
     "@reliance-finance/database": "workspace:*",
     "@reliance-finance/workflow-engine": "workspace:*",
     "@reliancewestafrica/design-system": "^1.1.0",
