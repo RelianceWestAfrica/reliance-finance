@@ -119,6 +119,15 @@ services:
       # Chemin absolu du binaire Query Engine Prisma (le bundle Next.js
       # standalone ne le trace pas automatiquement)
       PRISMA_QUERY_ENGINE_LIBRARY: /app/packages/database/src/generated/client/libquery_engine-linux-musl-openssl-3.0.x.so.node
+      # === Pont financier inter-plateformes (reception) ===
+      # Secret HMAC par app source (== FINANCE_BRIDGE_SECRET cote emetteur) et
+      # URL de callback statut (DISBURSEMENT APPROVED/REJECTED). Optionnels :
+      # le pont reste inerte tant qu'ils ne sont pas renseignes dans .env.runtime.
+      BRIDGE_SECRET__RWA_BTP: ${BRIDGE_SECRET__RWA_BTP:-}
+      BRIDGE_SECRET__RWA_ACHATS_LOGISTIQUE: ${BRIDGE_SECRET__RWA_ACHATS_LOGISTIQUE:-}
+      BRIDGE_SECRET__RELIANCE_DOMAINS: ${BRIDGE_SECRET__RELIANCE_DOMAINS:-}
+      BRIDGE_CALLBACK_URL__RWA_BTP: ${BRIDGE_CALLBACK_URL__RWA_BTP:-}
+      BRIDGE_CALLBACK_URL__RWA_ACHATS_LOGISTIQUE: ${BRIDGE_CALLBACK_URL__RWA_ACHATS_LOGISTIQUE:-}
     # Expose en loopback uniquement : nginx (systeme) fait le reverse proxy
     # + Let's Encrypt. Port 3001 (3000 deja pris par un autre service).
     ports:
